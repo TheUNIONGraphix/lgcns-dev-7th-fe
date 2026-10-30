@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>2026-10-29 Next.js · Tailwind · shadcn 공식 문서 정리</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    color: #1c1917;
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+  }
+  h1 { font-size: 20pt; line-height: 1.25; margin: 0 0 8px; }
+  h2 { font-size: 15pt; margin: 0 0 8px; page-break-after: avoid; }
+  h3 { font-size: 12pt; margin: 14px 0 4px; page-break-after: avoid; }
+  p { margin: 0 0 8px; }
+  a { color: #1d4ed8; text-decoration: none; }
+  code, .path {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 9pt;
+    background: #f5f5f4;
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+  .cover {
+    border-bottom: 3px solid #1c1917;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+  }
+  .meta { color: #57534e; font-size: 10pt; }
+  .note {
+    background: #fafaf9;
+    border-left: 3px solid #a8a29e;
+    padding: 8px 10px;
+    margin: 8px 0 12px;
+  }
+  .part { page-break-before: always; }
+  .part:first-of-type { page-break-before: auto; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 8.7pt; table-layout: fixed; }
+  th, td { border: 1px solid #d6d3d1; padding: 5px 6px; vertical-align: top; text-align: left; word-break: keep-all; overflow-wrap: break-word; line-height: 1.45; }
+  col.c1 { width: 24%; }
+  col.c2 { width: 28%; }
+  col.c3 { width: 22%; }
+  col.c4 { width: 26%; }
+  th { background: #f5f5f4; font-weight: 650; }
+  .card {
+    border: 1px solid #e7e5e4;
+    border-radius: 6px;
+    padding: 8px 10px 4px;
+    margin: 0 0 10px;
+    page-break-inside: avoid;
+  }
+  .card h3 { margin-top: 0; }
+  .label {
+    display: inline-block;
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #44403c;
+    margin-right: 6px;
+  }
+  ul { margin: 4px 0 8px; padding-left: 18px; }
+  li { margin: 2px 0; }
+  .url { font-size: 8.5pt; word-break: break-all; color: #1d4ed8; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <p class="meta">lgcns-fe-next · 2026-10-29 · Next.js 16.4.3 · React 19.3.0 · Tailwind CSS 4</p>
+  <h1>오늘 진행한 Next.js 작업과<br>연결된 공식 문서</h1>
+  <p>저장소에 있는 소스만 기준으로 골랐습니다. 데이터 페칭, 서버 액션, 미들웨어처럼 오늘 코드에 없는 Next.js 기능은 넣지 않았습니다.</p>
+  <div class="note">
+    shadcn/ui는 <code>package.json</code>에 없습니다. 3부는 설치 문서와, 오늘 만든 빈 버튼·네비게이션이 나중에 바꿀 공식 컴포넌트를 연결한 별도 정리입니다.
+  </div>
+</section>
+
+<h2>소스와 기술의 연결</h2>
+<table>
+  <colgroup>
+    <col style="width:26%" />
+    <col style="width:28%" />
+    <col style="width:22%" />
+    <col style="width:24%" />
+  </colgroup>
+  <thead>
+    <tr><th>오늘 한 일</th><th>소스</th><th>기술</th><th>공식 문서</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>주소는 <code>/</code>, <code>/login</code>인데 폴더 이름으로 구역을 나눔</td>
+      <td><code>app/(main)/</code>, <code>app/(auth)/</code></td>
+      <td>App Router, Route Groups</td>
+      <td>Project structure, Route Groups</td>
+    </tr>
+    <tr>
+      <td>홈은 헤더를 쓰고, 로그인은 다른 레이아웃</td>
+      <td><code>app/layout.tsx</code>, <code>app/(main)/layout.tsx</code>, <code>app/(auth)/layout.tsx</code></td>
+      <td>중첩 layout, <code>children</code></td>
+      <td>Layouts and Pages, layout</td>
+    </tr>
+    <tr>
+      <td>메뉴와 로고 클릭으로 이동</td>
+      <td><code>DesktopNavigation.tsx</code>, <code>MobileNavigation.tsx</code>, <code>LogoItem.tsx</code></td>
+      <td><code>next/link</code></td>
+      <td>Linking and Navigating, Link</td>
+    </tr>
+    <tr>
+      <td>모바일 메뉴만 클릭으로 열고 닫음</td>
+      <td><code>MobileNavigation.tsx</code></td>
+      <td><code>"use client"</code>, <code>useState</code></td>
+      <td>Server and Client Components, use client</td>
+    </tr>
+    <tr>
+      <td>외부 고양이 이미지, LG CNS 로고</td>
+      <td><code>BannerSwiperItem.tsx</code>, <code>LogoItem.tsx</code>, <code>next.config.ts</code></td>
+      <td><code>next/image</code>, <code>images.remotePatterns</code></td>
+      <td>Image, images 설정</td>
+    </tr>
+    <tr>
+      <td>Google 폰트를 CSS 변수로 넘김</td>
+      <td><code>app/layout.tsx</code>, <code>app/globals.css</code></td>
+      <td><code>next/font/google</code>, Metadata</td>
+      <td>Font, Metadata</td>
+    </tr>
+    <tr>
+      <td><code>@/component/...</code> import</td>
+      <td><code>tsconfig.json</code>, <code>app/(main)/layout.tsx</code></td>
+      <td>경로 별칭 <code>@/*</code></td>
+      <td>TypeScript</td>
+    </tr>
+    <tr>
+      <td>커밋 전 ESLint</td>
+      <td><code>.husky/pre-commit</code>, <code>eslint.config.mjs</code></td>
+      <td>eslint-config-next, Husky</td>
+      <td>ESLint, Husky</td>
+    </tr>
+    <tr>
+      <td>설정에 캐시·프리페치·Turbopack CSS 로더</td>
+      <td><code>next.config.ts</code></td>
+      <td><code>cacheComponents</code>, <code>partialPrefetching</code>, <code>turbopack</code></td>
+      <td>각 next.config 문서</td>
+    </tr>
+    <tr>
+      <td>제목 색을 props가 덮어씀</td>
+      <td><code>CustomTitle.tsx</code>, <code>BannerSwiperItem.tsx</code></td>
+      <td>Tailwind 유틸리티, tailwind-merge</td>
+      <td>Tailwind theme / utilities, tailwind-merge</td>
+    </tr>
+    <tr>
+      <td>데스크톱 메뉴는 md 이상, 햄버거는 그 미만</td>
+      <td><code>DesktopNavigation.tsx</code>, <code>MobileNavigation.tsx</code></td>
+      <td>반응형 variant <code>md:</code></td>
+      <td>Responsive design</td>
+    </tr>
+    <tr>
+      <td>버튼·네비는 아직 직접 작성. shadcn 미설치</td>
+      <td><code>Button.tsx</code>, <code>DesktopNavigation.tsx</code>, <code>MobileNavigation.tsx</code></td>
+      <td>shadcn/ui Button, Navigation Menu, Sheet</td>
+      <td>shadcn installation, Tailwind v4, 해당 컴포넌트</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>컴포넌트는 <code>app</code> 밖에 두었습니다. <code>component/atoms</code>, <code>molecules</code>, <code>organisms</code>, <code>templates</code>는 라우트가 아닙니다. Next.js는 라우트 파일이 아닌 UI를 <code>app</code> 밖이나 비공개 폴더에 두라고 안내합니다.</p>
+
+<section class="part">
+<h2>1. Next.js 공식 문서</h2>
+<p class="meta">버전은 프로젝트에 설치된 16.4.3 문서 기준입니다. 아래 주소는 nextjs.org의 App Router 문서입니다.</p>
+
+<div class="card">
+  <h3>프로젝트 구조</h3>
+  <p><span class="label">문서</span> Project structure and organization</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/project-structure</p>
+  <p><span class="label">소스</span> <code>app/</code>, <code>component/</code></p>
+  <p>폴더가 주소를 만들고, 라우트가 아닌 파일은 URL에 안 올라갑니다. 오늘 화면 컴포넌트는 <code>app</code> 밖 <code>component/</code>에 있으므로 <code>/component</code>라는 주소는 생기지 않습니다. <code>(main)</code>, <code>(auth)</code>처럼 괄호 폴더는 같은 문서의 Route groups 절과 아래 Route Groups 문서가 설명합니다.</p>
+</div>
+
+<div class="card">
+  <h3>페이지와 레이아웃</h3>
+  <p><span class="label">문서</span> Layouts and Pages</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/layouts-and-pages</p>
+  <p><span class="label">이어서</span> page · layout</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/file-conventions/page</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/file-conventions/layout</p>
+  <p><span class="label">소스</span> <code>app/(main)/page.tsx</code> → <code>/</code>, <code>app/(auth)/login/page.tsx</code> → <code>/login</code>, <code>app/layout.tsx</code>, <code>app/(main)/layout.tsx</code>, <code>app/(auth)/layout.tsx</code></p>
+  <p><code>page.tsx</code>의 default export가 그 주소의 화면입니다. <code>layout.tsx</code>는 <code>children</code>으로 페이지를 감쌉니다. 이동해도 레이아웃은 유지됩니다.</p>
+  <p>실제 감싸기 순서는 이렇습니다. 루트 <code>app/layout.tsx</code>가 <code>html</code>과 <code>body</code>를 만듭니다. <code>/</code>는 그 안에 <code>(main)/layout.tsx</code>의 <code>Header</code>가 한 번 더 감쌉니다. <code>/login</code>은 <code>Header</code> 대신 <code>(auth)/layout.tsx</code>를 탑니다. 루트 레이아웃의 <code>LayoutProps&lt;"/"&gt;</code>는 이 layout 문서와 TypeScript 문서가 설명하는, 라우트에 맞춰 생성되는 props 타입입니다.</p>
+</div>
+
+<div class="card">
+  <h3>라우트 그룹</h3>
+  <p><span class="label">문서</span> Route Groups</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/file-conventions/route-groups</p>
+  <p><span class="label">소스</span> <code>app/(main)/</code>, <code>app/(auth)/</code></p>
+  <p>괄호 폴더 이름은 URL에 들어가지 않습니다. <code>app/(auth)/login/page.tsx</code>의 주소는 <code>/auth/login</code>이 아니라 <code>/login</code>입니다. 그룹을 나눈 이유는 같은 깊이에서 레이아웃을 다르게 쓰기 위해서입니다. 메인에는 헤더, 인증 화면에는 <code>AuthLayout</code>만 붙습니다.</p>
+</div>
+
+<div class="card">
+  <h3>링크와 이동</h3>
+  <p><span class="label">문서</span> Linking and Navigating · Link</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/linking-and-navigating</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/components/link</p>
+  <p><span class="label">소스</span> <code>component/molecules/DesktopNavigation.tsx</code>, <code>component/molecules/MobileNavigation.tsx</code>, <code>component/molecules/LogoItem.tsx</code></p>
+  <p>앱 안 이동은 <code>&lt;a&gt;</code> 대신 <code>Link</code>를 씁니다. 데스크톱 메뉴는 <code>/</code>, <code>/about</code>, <code>/contact</code>로 연결됩니다. 오늘 <code>app</code> 안에 있는 페이지는 <code>/</code>와 <code>/login</code>뿐입니다. <code>/about</code>과 <code>/contact</code>용 <code>page.tsx</code>는 아직 없습니다.</p>
+  <p>로고의 <code>Link</code>는 <code>href="https://www.lgcns.com/"</code>와 <code>target="_blank"</code>입니다. 외부 주소도 <code>Link</code>로 열 수 있고, 이건 앱 내부 클라이언트 이동이 아닙니다.</p>
+</div>
+
+<div class="card">
+  <h3>서버 컴포넌트와 클라이언트 컴포넌트</h3>
+  <p><span class="label">문서</span> Server and Client Components · use client</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/server-and-client-components</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/directives/use-client</p>
+  <p><span class="label">소스</span> <code>component/molecules/MobileNavigation.tsx</code>만 <code>"use client"</code></p>
+  <p>App Router 컴포넌트는 기본이 서버 컴포넌트입니다. <code>useState</code>처럼 브라우저 상태가 필요하면 파일 맨 위에 <code>"use client"</code>를 붙입니다. 모바일 메뉴의 <code>isOpen</code>이 그 경우입니다. <code>Header</code>, <code>DesktopNavigation</code>, <code>BannerSwiperItem</code>에는 이 지시어가 없어서 서버 컴포넌트로 남습니다. 클라이언트 파일이 서버 컴포넌트를 import하면 그 경계가 따라오므로, 상태가 필요한 파일만 클라이언트 경계를 두는 것이 이 문서의 요지입니다.</p>
+</div>
+
+<div class="card">
+  <h3>이미지</h3>
+  <p><span class="label">문서</span> Image · images 설정 · 호스트 미설정 오류</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/images</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/components/image</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/next-config-js/images</p>
+  <p class="url">https://nextjs.org/docs/messages/next-image-unconfigured-host</p>
+  <p><span class="label">소스</span> <code>component/molecules/BannerSwiperItem.tsx</code>, <code>component/molecules/LogoItem.tsx</code>, <code>next.config.ts</code>의 <code>images.remotePatterns</code></p>
+  <p><code>next/image</code>의 <code>src</code>가 외부 주소이면, 그 호스트를 <code>remotePatterns</code>에 적어야 합니다. 오늘 <code>i.pinimg.com</code>이 빠져 있어서 런타임 오류가 났고, <code>protocol</code>, <code>hostname</code>, <code>pathname: "/**"</code>를 넣어 해결했습니다. 같은 배열에 <code>www.lgcns.com</code>도 있습니다. 로고 <code>Image</code>가 이 호스트의 SVG를 가리킵니다.</p>
+  <p>공식 Image 문서는 SVG를 기본으로 최적화하지 않습니다. SVG를 허용하려면 <code>images.dangerouslyAllowSVG</code>가 따로 필요합니다. 로고 소스는 SVG이고, 이 설정은 <code>next.config.ts</code>에 아직 없습니다.</p>
+  <p><code>width</code>와 <code>height</code>는 배너(1000)와 로고(100)에 모두 넘깁니다. 정적 import가 아닌 문자열 <code>src</code>에는 이 두 값이 필요합니다. <code>component/atoms/LogoImage.tsx</code>는 <code>next/image</code>가 아니라 <code>&lt;img&gt;</code>라서 이 제한을 타지 않습니다. 지금 로고 화면은 <code>LogoItem</code>이 그리고, <code>LogoImage</code>는 아직 연결되지 않았습니다.</p>
+</div>
+
+<div class="card">
+  <h3>폰트와 메타데이터</h3>
+  <p><span class="label">문서</span> Font · Metadata and OG images · generateMetadata</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/fonts</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/components/font</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/metadata-and-og-images</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/functions/generate-metadata</p>
+  <p><span class="label">소스</span> <code>app/layout.tsx</code>, <code>app/globals.css</code></p>
+  <p><code>next/font/google</code>의 <code>Geist</code>, <code>Geist_Mono</code>, <code>Gothic_A1</code>, <code>Black_Han_Sans</code>가 CSS 변수 이름을 만듭니다. <code>html</code>의 <code>className</code>에는 Black Han Sans, Geist, Geist Mono 변수가 붙어 있습니다. Gothic A1은 변수는 만들지만 <code>className</code>에는 아직 없습니다. <code>globals.css</code>의 <code>h1</code>은 <code>var(--font-black-han-sans)</code>를 쓰고, <code>@theme inline</code>은 Geist 변수를 Tailwind의 <code>--font-sans</code>, <code>--font-mono</code>로 연결합니다. 폰트 문서와 Tailwind <code>@theme</code> 문서가 이 한 줄에서 만납니다.</p>
+  <p>같은 파일의 <code>export const metadata</code>가 문서 제목과 설명을 바꿉니다. 지금 값은 create-next-app 기본값인 "Create Next App"입니다. 페이지마다 바꾸려면 해당 <code>page.tsx</code>나 <code>layout.tsx</code>에서 <code>metadata</code> 또는 <code>generateMetadata</code>를 둡니다.</p>
+</div>
+
+<div class="card">
+  <h3>CSS를 앱에 넣는 방법</h3>
+  <p><span class="label">문서</span> CSS</p>
+  <p class="url">https://nextjs.org/docs/app/getting-started/css</p>
+  <p><span class="label">소스</span> <code>app/layout.tsx</code>의 <code>import "./globals.css"</code>, <code>app/globals.css</code></p>
+  <p>전역 CSS는 루트 레이아웃에서 한 번 import합니다. 이 프로젝트는 그 파일 첫 줄 <code>@import "tailwindcss"</code>로 Tailwind v4를 올립니다. Next.js CSS 문서의 Tailwind 절이 이 설치 형태를 설명합니다. v3용 별도 가이드(<code>/docs/app/guides/tailwind-v3-css</code>)는 오늘 설정과 버전이 다릅니다.</p>
+</div>
+
+<div class="card">
+  <h3>TypeScript 경로 별칭</h3>
+  <p><span class="label">문서</span> TypeScript</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/typescript</p>
+  <p><span class="label">소스</span> <code>tsconfig.json</code>의 <code>"@/*": ["./*"]</code>, <code>app/(main)/layout.tsx</code>의 <code>import Header from "@/component/templates/Header"</code>, <code>app/(main)/page.tsx</code></p>
+  <p><code>@/</code>는 프로젝트 루트입니다. <code>app</code> 안의 페이지가 <code>component</code>를 상대 경로 <code>../../</code> 없이 가져옵니다. <code>component</code> 폴더 안에서는 아직 상대 경로(<code>../organisms/Logo</code>)를 씁니다. 둘 다 같은 파일을 가리키며, 별칭은 <code>tsconfig</code>의 <code>paths</code>와 Next TypeScript 설정이 맞춰 줍니다.</p>
+</div>
+
+<div class="card">
+  <h3>ESLint와 커밋 훅</h3>
+  <p><span class="label">Next 문서</span> ESLint</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/eslint</p>
+  <p><span class="label">Husky 문서</span> Get started</p>
+  <p class="url">https://typicode.github.io/husky/get-started.html</p>
+  <p><span class="label">소스</span> <code>eslint.config.mjs</code>, <code>package.json</code>의 <code>lint</code>·<code>prepare</code>, <code>.husky/pre-commit</code></p>
+  <p><code>eslint.config.mjs</code>는 <code>eslint-config-next</code>의 core-web-vitals와 typescript 설정을 펼칩니다. Next ESLint 문서가 이 구성을 설명합니다. Husky는 Next 공식 도구가 아닙니다. Git 루트가 <code>lgcns-fe-next</code>의 상위 폴더라서 <code>prepare</code>가 <code>cd .. && husky lgcns-fe-next/.husky</code>로 훅 경로를 맞춥니다. <code>pre-commit</code>은 저장소 루트에서 <code>lgcns-fe-next</code>로 들어가 <code>npm run lint</code>를 실행합니다.</p>
+</div>
+
+<div class="card">
+  <h3>next.config.ts에 켜 둔 항목</h3>
+  <p><span class="label">문서</span> cacheComponents · partialPrefetching · turbopack · agentFeedback</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/next-config-js/partialPrefetching</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack</p>
+  <p class="url">https://nextjs.org/docs/app/api-reference/config/next-config-js/agentFeedback</p>
+  <p><span class="label">소스</span> <code>next.config.ts</code></p>
+  <ul>
+    <li><code>cacheComponents: true</code>는 <code>use cache</code>와 정적 셸을 켭니다. 오늘 컴포넌트에는 <code>use cache</code>가 아직 없습니다. 설정만 켜진 상태입니다.</li>
+    <li><code>partialPrefetching: true</code>는 <code>cacheComponents</code>와 같이 둡니다. 공식 문서는 이 값을 비우면 경고가 난다고 합니다. <code>Link</code>의 프리페치 동작이 이 설정의 영향을 받습니다.</li>
+    <li><code>turbopack.rules</code>는 <code>*.css</code>를 <code>@tailwindcss/turbopack</code> 로더로 보냅니다. 패키지에도 <code>@tailwindcss/turbopack</code>가 있습니다. Turbopack 문서는 CSS를 기본 지원하므로, 이 로더 규칙은 그 기본 위에 프로젝트에서 추가한 설정입니다.</li>
+    <li><code>experimental.agentFeedback</code>는 오늘 화면 기능과 무관합니다. 설정 파일에 켜져 있어 문서 주소만 적습니다.</li>
+  </ul>
+</div>
+</section>
+
+<section class="part">
+<h2>2. Tailwind CSS 공식 문서</h2>
+<p>설치된 버전은 Tailwind CSS 4입니다. <code>app/globals.css</code> 첫 줄이 <code>@import "tailwindcss"</code>입니다. v3의 <code>@tailwind base/components/utilities</code> 세 줄 방식은 이 프로젝트에 없습니다.</p>
+
+<div class="card">
+  <h3>Next.js에 설치하기</h3>
+  <p><span class="label">문서</span> Install Tailwind CSS with Next.js · Tailwind CSS v4</p>
+  <p class="url">https://tailwindcss.com/docs/installation/framework-guides/nextjs</p>
+  <p class="url">https://tailwindcss.com/blog/tailwindcss-v4</p>
+  <p><span class="label">Next에서 같은 설명</span> https://nextjs.org/docs/app/getting-started/css</p>
+  <p><span class="label">소스</span> <code>package.json</code>의 <code>tailwindcss</code>, <code>@tailwindcss/turbopack</code>, <code>app/globals.css</code>, <code>app/layout.tsx</code></p>
+  <p>v4는 CSS 한 줄 import로 시작합니다. 템플릿 경로를 <code>tailwind.config</code>에 적지 않아도 클래스를 찾습니다. 이 저장소에는 <code>tailwind.config.js</code>가 없습니다.</p>
+</div>
+
+<div class="card">
+  <h3>테마 변수와 @theme inline</h3>
+  <p><span class="label">문서</span> Theme variables</p>
+  <p class="url">https://tailwindcss.com/docs/theme</p>
+  <p><span class="label">소스</span> <code>app/globals.css</code>의 <code>@theme inline</code>, <code>app/layout.tsx</code>의 <code>next/font</code></p>
+  <p><code>@theme</code>에 적은 CSS 변수가 유틸리티 클래스를 만듭니다. 예를 들어 <code>--color-background</code>는 색 유틸리티와 연결됩니다. <code>inline</code>은 테마 값을 별도 변수로 한 번 더 복사하지 않고, 이미 있는 변수를 그대로 가리키게 합니다. 공식 테마 문서의 예가 <code>@theme inline { --font-sans: var(--font-inter); }</code> 형태입니다.</p>
+  <p>오늘 코드는 그 예와 같습니다. <code>next/font</code>가 <code>--font-geist-sans</code>를 만들고, <code>@theme inline</code>이 <code>--font-sans: var(--font-geist-sans)</code>로 받습니다. <code>--color-background</code>와 <code>--color-foreground</code>도 <code>:root</code> 값을 가리킵니다. 다크 모드는 <code>prefers-color-scheme</code>로 <code>:root</code> 값만 바꿉니다.</p>
+</div>
+
+<div class="card">
+  <h3>반응형</h3>
+  <p><span class="label">문서</span> Responsive design · Display · Flex · Gap</p>
+  <p class="url">https://tailwindcss.com/docs/responsive-design</p>
+  <p class="url">https://tailwindcss.com/docs/display</p>
+  <p class="url">https://tailwindcss.com/docs/flex</p>
+  <p class="url">https://tailwindcss.com/docs/gap</p>
+  <p><span class="label">소스</span> <code>DesktopNavigation.tsx</code>의 <code>hidden md:flex</code>, <code>MobileNavigation.tsx</code>의 <code>md:hidden</code></p>
+  <p>접두사 없는 클래스는 모든 너비에 적용되고, <code>md:</code>는 768px(<code>48rem</code>) 이상에서만 적용됩니다. 모바일 전용 스타일을 만들 때 <code>sm:</code>을 "작은 화면"으로 쓰면 안 됩니다. 작은 화면은 접두사 없는 클래스이고, <code>md:</code>가 그 위를 덮습니다.</p>
+  <p>데스크톱 목록은 기본 <code>hidden</code>이었다가 <code>md:flex</code>로 나타납니다. 햄버거와 펼친 메뉴는 <code>md:hidden</code>이라 768px 이상에서는 숨습니다. <code>items-center</code>와 <code>gap-4</code>는 flex 컨테이너의 정렬과 간격입니다.</p>
+</div>
+
+<div class="card">
+  <h3>오늘 클래스와 유틸리티 문서</h3>
+  <table>
+    <thead>
+      <tr><th>클래스</th><th>소스</th><th>문서</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>text-2xl</code>, <code>font-bold</code>, <code>text-center</code>, <code>text-white</code>, <code>text-red-500</code>, <code>text-black</code></td>
+        <td><code>CustomTitle.tsx</code>, <code>BannerSwiperItem.tsx</code>, <code>(auth)/layout.tsx</code></td>
+        <td>https://tailwindcss.com/docs/font-size<br>https://tailwindcss.com/docs/font-weight<br>https://tailwindcss.com/docs/text-align<br>https://tailwindcss.com/docs/color</td>
+      </tr>
+      <tr>
+        <td><code>bg-white</code></td>
+        <td><code>app/(auth)/layout.tsx</code></td>
+        <td>https://tailwindcss.com/docs/background-color</td>
+      </tr>
+      <tr>
+        <td><code>min-h-full</code>, <code>flex</code>, <code>flex-col</code>, <code>h-full</code>, <code>w-full</code>, <code>w-6</code>, <code>h-6</code></td>
+        <td><code>app/layout.tsx</code>, <code>LogoImage.tsx</code>, <code>MobileNavigation.tsx</code></td>
+        <td>https://tailwindcss.com/docs/min-height<br>https://tailwindcss.com/docs/flex-direction<br>https://tailwindcss.com/docs/width<br>https://tailwindcss.com/docs/height</td>
+      </tr>
+      <tr>
+        <td><code>object-cover</code></td>
+        <td><code>LogoImage.tsx</code></td>
+        <td>https://tailwindcss.com/docs/object-fit</td>
+      </tr>
+      <tr>
+        <td><code>antialiased</code></td>
+        <td><code>app/layout.tsx</code></td>
+        <td>https://tailwindcss.com/docs/font-smoothing</td>
+      </tr>
+      <tr>
+        <td><code>sr-only</code></td>
+        <td><code>MobileNavigation.tsx</code> 버튼 문구 "Open main menu"</td>
+        <td>https://tailwindcss.com/docs/screen-readers</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><code>sr-only</code>는 화면에서는 숨기고 스크린 리더에는 읽히게 합니다. 아이콘 버튼에 이름만 남기는 패턴이고, 접근성 문서와도 맞습니다.</p>
+</div>
+
+<div class="card">
+  <h3>클래스 우선순위와 tailwind-merge</h3>
+  <p><span class="label">문서</span> tailwind-merge (Tailwind 공식 패키지는 아님)</p>
+  <p class="url">https://github.com/dcastil/tailwind-merge</p>
+  <p><span class="label">소스</span> <code>component/atoms/CustomTitle.tsx</code>, <code>component/atoms/LogoImage.tsx</code>, <code>package.json</code>의 <code>tailwind-merge</code></p>
+  <p>Tailwind 유틸리티는 클래스 문자열에 나중에 적었다고 이기지 않습니다. 같은 속성이면 생성된 CSS 안에서의 순서가 이깁니다. 그래서 <code>text-white ${className}</code>처럼 이어 붙이면, 밖에서 <code>text-red-500</code>을 넘겨도 흰색이 남을 수 있습니다.</p>
+  <p><code>twMerge("text-2xl font-bold text-center text-white", className)</code>는 겹치는 유틸리티만 나중 값으로 바꿉니다. <code>BannerSwiperItem</code>이 <code>className="text-red-500"</code>를 넘기면 결과 클래스는 <code>text-2xl font-bold text-center text-red-500</code>입니다. 크기, 굵기, 정렬은 기본값이 남습니다. <code>LogoImage</code>도 <code>w-full h-full object-cover</code> 위에 같은 방식으로 <code>className</code>을 올립니다.</p>
+  <p>3부의 shadcn <code>cn()</code>은 이 <code>twMerge</code>에 <code>clsx</code>를 더한 함수입니다. 지금 코드는 <code>clsx</code> 없이 <code>twMerge</code>만 씁니다.</p>
+</div>
+</section>
+
+<section class="part">
+<h2>3. shadcn/ui 공식 문서</h2>
+<div class="note">
+  이 프로젝트에는 shadcn/ui가 설치되어 있지 않습니다. <code>components.json</code>, <code>@radix-ui</code>, <code>class-variance-authority</code>, <code>lucide-react</code>가 없습니다. 아래는 오늘 만든 파일 중 나중에 shadcn 컴포넌트로 바꿀 자리와, 그 전에 읽을 설치 문서입니다.
+</div>
+
+<div class="card">
+  <h3>Next.js에 설치</h3>
+  <p><span class="label">문서</span> Installation · Next.js · Manual · components.json · Theming</p>
+  <p class="url">https://ui.shadcn.com/docs/installation</p>
+  <p class="url">https://ui.shadcn.com/docs/installation/next</p>
+  <p class="url">https://ui.shadcn.com/docs/installation/manual</p>
+  <p class="url">https://ui.shadcn.com/docs/components-json</p>
+  <p class="url">https://ui.shadcn.com/docs/theming</p>
+  <p><span class="label">이미 맞춰진 소스</span> <code>tsconfig.json</code>의 <code>@/*</code>, <code>app/globals.css</code>의 <code>@import "tailwindcss"</code>, 루트 레이아웃의 CSS import</p>
+  <p>공식 Next.js 설치는 App Router, Tailwind, <code>@/*</code> 별칭을 전제로 합니다. 이 세 가지는 오늘 프로젝트에 있습니다. <code>npx shadcn@latest init</code>을 실행하면 <code>components.json</code>과 보통 <code>lib/utils.ts</code>의 <code>cn</code>이 생깁니다. <code>cn</code>은 <code>clsx</code>로 클래스를 모으고 <code>tailwind-merge</code>로 충돌을 정리합니다. <code>CustomTitle</code>이 이미 <code>twMerge</code>를 직접 쓰고 있으므로, shadcn을 넣을 때 그 호출을 <code>cn</code>으로 모을 수 있습니다.</p>
+</div>
+
+<div class="card">
+  <h3>Tailwind v4와의 관계</h3>
+  <p><span class="label">문서</span> Tailwind v4</p>
+  <p class="url">https://ui.shadcn.com/docs/tailwind-v4</p>
+  <p><span class="label">소스</span> Tailwind 4, React 19.3, <code>@theme inline</code>이 이미 <code>globals.css</code>에 있음</p>
+  <p>shadcn은 Tailwind v4의 <code>@theme</code>과 <code>@theme inline</code>을 지원한다고 이 문서에 적혀 있습니다. 새 프로젝트의 기본 스타일은 <code>new-york</code>이고, 색은 OKLCH를 씁니다. 오늘 <code>globals.css</code>의 색은 <code>#ffffff</code>, <code>#171717</code> 같은 직접 값입니다. shadcn 테마를 넣으면 이 파일의 <code>:root</code>와 <code>@theme</code>에 컴포넌트용 색 변수가 추가됩니다. 기존 <code>--background</code>, <code>--foreground</code> 이름과 겹치는지 그때 맞춰야 합니다.</p>
+</div>
+
+<div class="card">
+  <h3>오늘 소스와 대응되는 컴포넌트</h3>
+  <table>
+    <thead>
+      <tr><th>오늘 소스</th><th>지금 상태</th><th>대응 문서</th><th>연결되는 기술</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>component/atoms/Button.tsx</code></td>
+        <td>빈 파일. 배너의 "View More"는 이 컴포넌트가 아니라 <code>BannerSwiperItem.tsx</code>의 <code>&lt;button&gt;</code></td>
+        <td>https://ui.shadcn.com/docs/components/button</td>
+        <td>Radix Slot, CVA variant, Tailwind. <code>variant</code>와 <code>size</code>로 스타일을 나눕니다. 지금 <code>CustomTitle</code>이 <code>className</code>으로 덮어쓰는 방식과 비슷하게, Button도 <code>className</code>을 <code>cn()</code>으로 받습니다.</td>
+      </tr>
+      <tr>
+        <td><code>component/molecules/DesktopNavigation.tsx</code></td>
+        <td><code>ul</code>과 <code>next/link</code>. <code>hidden md:flex</code></td>
+        <td>https://ui.shadcn.com/docs/components/navigation-menu</td>
+        <td>Radix Navigation Menu. 링크 자체는 계속 <code>next/link</code>를 넣을 수 있습니다. 반응형으로 숨기는 클래스는 Tailwind <code>md:</code>가 담당하고, shadcn이 그 레이아웃을 대신하지는 않습니다.</td>
+      </tr>
+      <tr>
+        <td><code>component/molecules/MobileNavigation.tsx</code></td>
+        <td><code>"use client"</code>, <code>useState</code>, 햄버거 SVG, <code>sr-only</code></td>
+        <td>https://ui.shadcn.com/docs/components/sheet</td>
+        <td>Radix Dialog 기반의 옆면 패널. 열림 상태를 직접 <code>useState</code>로 들고 있는 지금 구조를, Sheet의 <code>open</code>으로 옮기는 자리입니다. 클라이언트 컴포넌트여야 하는 점은 Next <code>use client</code> 문서 그대로입니다.</td>
+      </tr>
+      <tr>
+        <td><code>component/atoms/CustomTitle.tsx</code></td>
+        <td><code>twMerge</code>로 제목 단계와 클래스를 받음</td>
+        <td>https://ui.shadcn.com/docs/installation/manual 의 <code>cn</code> 절</td>
+        <td>shadcn에 같은 제목 컴포넌트는 없습니다. 연결점은 클래스 병합뿐입니다. Typography 예시는 https://ui.shadcn.com/docs/components 목록의 별도 타이포그래피 컴포넌트가 아니라 테마의 글자 스타일입니다.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><code>SubTitle.tsx</code>도 비어 있습니다. shadcn 문서에 1:1로 대응하는 컴포넌트는 없고, 설치 후 타이포그래피 클래스나 Button·제목 조합으로 채울 자리입니다.</p>
+</div>
+
+<div class="card">
+  <h3>넣기 전에 읽을 순서</h3>
+  <ol>
+    <li>Next.js 설치 문서. 별칭과 <code>globals.css</code>가 이미 있는지 확인하는 절차입니다.</li>
+    <li>Tailwind v4 문서. <code>@theme inline</code>과 기존 색 변수가 어떻게 합쳐지는지 봅니다.</li>
+    <li>Manual 설치의 <code>cn</code>. <code>CustomTitle</code>, <code>LogoImage</code>의 <code>twMerge</code>와 같은 역할입니다.</li>
+    <li>Button, Navigation Menu, Sheet. 빈 <code>Button.tsx</code>와 두 네비게이션 파일을 바꿀 때 엽니다.</li>
+  </ol>
+</div>
+</section>
+
+</body>
+</html>
