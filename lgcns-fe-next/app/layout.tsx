@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Gothic_A1, Black_Han_Sans } from "next/font/google";
+import AuthShell from "@/component/providers/AuthShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${blackHanSans.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <Suspense fallback={null}>
+          <AuthShell>{children}</AuthShell>
+        </Suspense>
       </body>
     </html>
   );

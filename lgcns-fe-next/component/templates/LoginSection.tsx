@@ -5,6 +5,7 @@ export default function LoginSection({
 }: {
   handleSubmit: (formData: FormData) => void;
 }) {
+
   return (
     <section>
       <LoginForm handleSubmit={handleSubmit} />
