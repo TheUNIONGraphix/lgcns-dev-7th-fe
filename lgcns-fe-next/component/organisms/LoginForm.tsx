@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import Form from "next/form";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,16 @@ import { emptyErrors } from "@/types/error/loginError";
 import loginSchema, { loginFieldMessage } from "@/schema/loginSchema";
 
 type LoginFieldName = keyof UserPayloadType;
+
+function LoginSubmitButton({ isValid }: { isValid: boolean }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={!isValid || pending} aria-busy={pending}>
+      {pending ? "로그인중" : "Login"}
+    </Button>
+  );
+}
 
 export default function LoginForm({
   handleSubmit,
@@ -55,9 +66,7 @@ export default function LoginForm({
         isClearable={true}
         onChange={handleChange}
       />
-      <Button type="submit" disabled={!isValid}>
-        Login
-      </Button>
+      <LoginSubmitButton isValid={isValid} />
     </Form>
   );
 }
