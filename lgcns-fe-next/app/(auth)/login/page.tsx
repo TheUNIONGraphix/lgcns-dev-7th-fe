@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import LoginSection from "@/component/templates/LoginSection";
 import { ACCESS_TOKEN_COOKIE } from "@/component/providers/authCookie";
@@ -8,11 +8,10 @@ export default function Login() {
     "use server";
     const userId = formData.get("userId");
     const password = formData.get("password");
-    // student@example.com
-    // api call
-    // http://localhost:8080/api/v1/auth/login
-    const baseUrl = "https://api.callab-hub.com";
-    const loginApiUrl = `${baseUrl}/api/v1/auth/login`;
+    const headerStore = await headers();
+    const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+    const protocol = headerStore.get("x-forwarded-proto") ?? "http";
+    const loginApiUrl = `${protocol}://${host}/api/auth/login`;
     const response = await fetch(loginApiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
