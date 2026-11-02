@@ -3,12 +3,13 @@ import LoginForm from "../organisms/LoginForm";
 export default function LoginSection({
   handleSubmit,
 }: {
-  handleSubmit: (formData: FormData) => void;
+  handleSubmit: (formData: FormData) => void | Promise<void>;
 }) {
-
   return (
     <section>
-      <LoginForm handleSubmit={handleSubmit} />
+      <form action={handleSubmit}>
+        <LoginForm />
+      </form>
     </section>
   );
 }

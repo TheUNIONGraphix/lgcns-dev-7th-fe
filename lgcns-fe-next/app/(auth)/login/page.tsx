@@ -11,7 +11,7 @@ export default function Login() {
     // student@example.com
     // api call
     // http://localhost:8080/api/v1/auth/login
-    const baseUrl = "http://localhost:8080";
+    const baseUrl = "https://api.callab-hub.com";
     const loginApiUrl = `${baseUrl}/api/v1/auth/login`;
     const response = await fetch(loginApiUrl, {
       method: "POST",

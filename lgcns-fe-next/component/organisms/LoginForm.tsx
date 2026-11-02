@@ -5,7 +5,6 @@ import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../providers/AuthProvider";
 
-import Form from "next/form";
 import { Button } from "@/components/ui/button";
 import FormField from "../molecules/FormField";
 import initialValues from "@/types/initial/loginInitial";
@@ -25,11 +24,7 @@ function LoginSubmitButton({ isValid }: { isValid: boolean }) {
   );
 }
 
-export default function LoginForm({
-  handleSubmit,
-}: {
-  handleSubmit: (formData: FormData) => void;
-}) {
+export default function LoginForm() {
   const [payload, setPayload] = useState(initialValues);
   const [errors, setErrors] = useState(emptyErrors);
   const isValid = loginSchema.safeParse(payload).success;
@@ -55,7 +50,7 @@ export default function LoginForm({
   };
 
   return (
-    <Form action={handleSubmit}>
+    <>
       <FormField
         id="userId"
         type="text"
@@ -77,6 +72,6 @@ export default function LoginForm({
         onChange={handleChange}
       />
       <LoginSubmitButton isValid={isValid} />
-    </Form>
+    </>
   );
 }
