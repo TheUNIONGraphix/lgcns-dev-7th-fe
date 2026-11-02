@@ -1,5 +1,6 @@
 import Image from "next/image";
 import CustomTitle from "../atoms/CustomTitle";
+import { Button } from "@/components/ui/button"
 
 export default function BannerSwiperItem() {
     return (
@@ -15,7 +16,7 @@ export default function BannerSwiperItem() {
                 className="text-red-500"
             >Cat Banner Title</CustomTitle>
             <p>Cat Banner Description</p>
-            <button>View More</button>
+            <Button variant="default" size="lg" className="customBtton-lgcns">View More</Button>
         </div>
     );
 }
