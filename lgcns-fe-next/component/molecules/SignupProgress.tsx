@@ -35,6 +35,12 @@ export default function SignupProgress({ current }: { current: SignupStep }) {
             <span className={`text-xs ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
               {step.label}
             </span>
+            <span
+              className={`text-[10px] font-medium ${active ? "text-primary" : "invisible"}`}
+              aria-hidden={active ? undefined : true}
+            >
+              현재
+            </span>
           </li>
         );
       })}

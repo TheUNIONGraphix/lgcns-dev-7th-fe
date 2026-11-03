@@ -1,64 +1,45 @@
-"use client";
-import { useState } from "react";
-import FormField from "../molecules/FormField";
-import { Button } from "@/components/ui/button";
-import SignupFields from "../organisms/SignupFields";
+import SignupProgress from "../molecules/SignupProgress";
+import SignupIdentityForm from "../organisms/SignupIdentityForm";
+import SignupInterestsForm from "../organisms/SignupInterestsForm";
+import SignupPasswordForm from "../organisms/SignupPasswordForm";
+import SignupProfileForm from "../organisms/SignupProfileForm";
 
-export default function SignupSection() {
+type SignupStep = 1 | 2 | 3 | 4;
 
-    // const handleSignup = () => {
-    //     console.log(userId, email);
-    // };
-
-    // const [userId, setUserId] = useState("");
-    // const [email, setEmail] = useState("");
-    // const [step, setStep] = useState(1);
-    // const [errors, setErrors] = useState({
-    //     userId: "",
-    //     email: "",
-    // });
-    // // 대문자 불가, 첫글자 숫자불가, 4자리이상, 20자리 이하, 특수기호 불가
-    // const regex = /^[a-z][a-z0-9]{3,19}$/;
-
-    // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (!regex.test(event.target.value)) {
-    //         setErrors((current) => ({ ...current, userId: "올바른 아이디를 입력해주세요. 대문자 불가, 첫글자 숫자불가, 4자리이상, 20자리 이하, 특수기호 불가" }));
-    //     } else {
-    //         setErrors((current) => ({ ...current, userId: "" }));
-    //     }
-    //     setUserId(event.target.value);
-    // };
-
-    // const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (!event.target.value.includes("@")) {
-    //         setErrors((current) => ({ ...current, email: "올바른 이메일을 입력해주세요." }));
-    //     } else {
-    //         setErrors((current) => ({ ...current, email: "" }));
-    //     }
-    //     setEmail(event.target.value);
-    // };
-
-    // const handleNext = () => {
-    //     if (errors.userId) {
-    //         return;
-    //     }
-    //     setStep(step + 1);
-    // };
-
-    // const handlePrevious = () => {
-    //     if (step === 1) {
-    //         return;
-    //     }
-    //     setStep(step - 1);
-    // };
-
+export default function SignupSection({
+  step,
+  draft,
+  errors,
+}: {
+  step: SignupStep;
+  draft: {
+    userId: string;
+    email: string;
+    password: string;
+    interestsText: string;
+  };
+  errors: {
+    userId?: string;
+    email?: string;
+    password?: string;
+    interests?: string;
+    profileImageUrl?: string;
+    form?: string;
+  };
+}) {
   return (
-    <section className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 py-8 relative h-screen">
+    <section
+      className="relative mx-auto flex h-screen w-full max-w-md flex-col gap-4 px-4 py-8"
+      aria-labelledby="signup-title"
+    >
       <h2 id="signup-title" className="text-xl font-semibold">
         회원가입
       </h2>
-      <SignupFields />
-     
+      <SignupProgress current={step} />
+      {step === 1 ? <SignupIdentityForm userId={draft.userId} email={draft.email} errors={errors} /> : null}
+      {step === 2 ? <SignupPasswordForm password={draft.password} errors={errors} /> : null}
+      {step === 3 ? <SignupInterestsForm interests={draft.interestsText} errors={errors} /> : null}
+      {step === 4 ? <SignupProfileForm errors={errors} /> : null}
     </section>
   );
 }
