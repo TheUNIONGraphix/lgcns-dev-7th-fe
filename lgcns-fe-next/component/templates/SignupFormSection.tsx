@@ -1,25 +1,14 @@
-import { Form } from "@base-ui/react/form";
-import SignupIdentityForm from "../organisms/SignupIdentityForm";
+import SignupSection from "./SignupSection";
+import type { SignupDraft, SignupErrors } from "@/actions/draft";
 
 export default function SignUpFormSection({
   step,
-  handleSignup,
+  draft,
+  errors,
 }: {
   step: number;
-  handleSignup: (formData: FormData) => void;
+  draft: SignupDraft;
+  errors: SignupErrors;
 }) {
-
-
-  return (
-    <Form
-      className="relative mx-auto flex h-screen w-full max-w-md flex-col gap-4 px-4 py-8"
-      aria-labelledby="signup-title"
-      id="signup-form"
-    >
-      <h2 id="signup-title" className="text-xl font-semibold">
-        회원가입
-      </h2>
-      { step === 1? <SignupIdentityForm /> : null}
-    </Form>
-  );
+  return <SignupSection step={step} draft={draft} errors={errors} />;
 }

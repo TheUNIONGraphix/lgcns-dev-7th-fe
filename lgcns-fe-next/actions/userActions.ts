@@ -27,12 +27,16 @@ function readText(formData: FormData, key: string) {
   return typeof value === "string" ? value : "";
 }
 
+function signupPath(step: SignupStep) {
+  return `/signup?step=${step}`;
+}
+
 async function ensureReached(draft: SignupDraft, step: SignupStep) {
   const max = furthestSignupStep(draft);
   if (step > max) {
     await writeSignupDraft({ ...draft, step: max });
     await writeSignupErrors({});
-    redirect("/signup");
+    redirect(signupPath(max));
   }
 }
 
@@ -66,13 +70,13 @@ async function finishSignup(profileImageUrl: string | undefined) {
   const identity = signupIdentitySchema.safeParse({ userId: draft.userId, email: draft.email });
   if (!identity.success || !draft.identityOk) {
     await writeSignupDraft({ ...draft, identityOk: false, step: 1 });
-    redirect("/signup");
+    redirect(signupPath(1));
   }
 
   const password = signupPasswordSchema.safeParse(draft.password);
   if (!password.success || !draft.passwordOk) {
     await writeSignupDraft({ ...draft, passwordOk: false, step: 2 });
-    redirect("/signup");
+    redirect(signupPath(2));
   }
 
   const interests = validateInterests(draft.interests);
@@ -81,7 +85,7 @@ async function finishSignup(profileImageUrl: string | undefined) {
       interests: interests.ok ? "관심사를 확인해 주세요." : interests.message,
     });
     await writeSignupDraft({ ...draft, interestsConfirmed: false, step: 3 });
-    redirect("/signup");
+    redirect(signupPath(3));
   }
 
   let failure: { step: SignupStep; errors: SignupErrors; clearIdentity?: boolean } | null = null;
@@ -114,7 +118,7 @@ async function finishSignup(profileImageUrl: string | undefined) {
       await writeSignupDraft({ ...draft, step: failure.step });
     }
     await writeSignupErrors(failure.errors);
-    redirect("/signup");
+    redirect(signupPath(failure.step));
   }
 
   await clearSignupState();
@@ -161,7 +165,7 @@ export async function submitSignupIdentity(formData: FormData) {
       email: nextEmailError,
       form: formError,
     });
-    redirect("/signup");
+    redirect(signupPath(1));
   }
 
   await writeSignupDraft({
@@ -172,7 +176,7 @@ export async function submitSignupIdentity(formData: FormData) {
     step: 2,
   });
   await writeSignupErrors({});
-  redirect("/signup");
+  redirect(signupPath(2));
 }
 
 export async function submitSignupPassword(formData: FormData) {
@@ -185,12 +189,12 @@ export async function submitSignupPassword(formData: FormData) {
     await writeSignupErrors({
       password: parsed.error.issues[0]?.message ?? "비밀번호는 8자 이상이어야 합니다.",
     });
-    redirect("/signup");
+    redirect(signupPath(2));
   }
 
   await writeSignupDraft({ ...draft, password: parsed.data, passwordOk: true, step: 3 });
   await writeSignupErrors({});
-  redirect("/signup");
+  redirect(signupPath(3));
 }
 
 export async function submitSignupInterests(formData: FormData) {
@@ -206,7 +210,7 @@ export async function submitSignupInterests(formData: FormData) {
       step: 3,
     });
     await writeSignupErrors({ interests: parsed.message });
-    redirect("/signup");
+    redirect(signupPath(3));
   }
 
   await writeSignupDraft({
@@ -217,7 +221,7 @@ export async function submitSignupInterests(formData: FormData) {
     step: 4,
   });
   await writeSignupErrors({});
-  redirect("/signup");
+  redirect(signupPath(4));
 }
 
 export async function skipSignupInterests() {
@@ -231,7 +235,7 @@ export async function skipSignupInterests() {
     step: 4,
   });
   await writeSignupErrors({});
-  redirect("/signup");
+  redirect(signupPath(4));
 }
 
 export async function submitSignupProfile(formData: FormData) {
@@ -245,13 +249,13 @@ export async function submitSignupProfile(formData: FormData) {
     unstable_rethrow(error);
     await writeSignupDraft({ ...draft, step: 4 });
     await writeSignupErrors({ profileImageUrl: "프로필 사진을 읽지 못했습니다." });
-    redirect("/signup");
+    redirect(signupPath(4));
   }
 
   if (!image.ok) {
     await writeSignupDraft({ ...draft, step: 4 });
     await writeSignupErrors({ profileImageUrl: image.message });
-    redirect("/signup");
+    redirect(signupPath(4));
   }
 
   await finishSignup(image.profileImageUrl);
@@ -269,5 +273,5 @@ export async function backSignupStep(formData: FormData) {
   const step = requested > max ? max : requested;
   await writeSignupDraft({ ...draft, step });
   await writeSignupErrors({});
-  redirect("/signup");
+  redirect(signupPath(step));
 }

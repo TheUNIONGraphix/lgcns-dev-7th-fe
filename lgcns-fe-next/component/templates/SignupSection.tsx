@@ -1,15 +1,17 @@
-import SignupProgress from "../molecules/SignupProgress";
 import SignupIdentityForm from "../organisms/SignupIdentityForm";
 import SignupInterestsForm from "../organisms/SignupInterestsForm";
 import SignupPasswordForm from "../organisms/SignupPasswordForm";
 import SignupProfileForm from "../organisms/SignupProfileForm";
+import type { SignupDraft, SignupErrors } from "@/actions/draft";
 
 export default function SignupSection({
   step,
-  handleSignup,
+  draft,
+  errors,
 }: {
   step: number;
-  handleSignup: (formData: FormData) => void;
+  draft: SignupDraft;
+  errors: SignupErrors;
 }) {
   return (
     <section
@@ -19,7 +21,6 @@ export default function SignupSection({
       <h2 id="signup-title" className="text-xl font-semibold">
         회원가입
       </h2>
-      <SignupProgress current={step} />
       {step === 1 ? <SignupIdentityForm userId={draft.userId} email={draft.email} errors={errors} /> : null}
       {step === 2 ? <SignupPasswordForm password={draft.password} errors={errors} /> : null}
       {step === 3 ? <SignupInterestsForm interests={draft.interestsText} errors={errors} /> : null}

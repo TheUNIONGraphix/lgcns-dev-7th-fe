@@ -202,3 +202,28 @@ button {
   background: #fff;
   color: #000;
 }
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 360px);
+  margin: 24px auto;
+  text-align: left;
+}
+
+.login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-form input,
+.login-form button {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.login-status:empty {
+  display: none;
+}

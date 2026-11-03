@@ -13,11 +13,9 @@ const STEPS = [
 export default function SignupProgress() {
 
   const searchParams = useSearchParams();
-  const step = searchParams.get("step") as string;
-  const stepNumber = step === undefined ? 1 : parseInt(step);
-
-  console.log("====================signup progress====================");
-  console.log(step);
+  const raw = searchParams.get("step");
+  const parsed = raw ? Number.parseInt(raw, 10) : 1;
+  const stepNumber = parsed === 2 || parsed === 3 || parsed === 4 ? parsed : 1;
   return (
     <ol className="grid grid-cols-4 gap-2" aria-label="회원가입 4단계">
       {STEPS.map((item) => {
