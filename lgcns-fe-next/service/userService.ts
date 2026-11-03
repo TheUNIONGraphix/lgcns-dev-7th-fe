@@ -1,6 +1,5 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/prisma";
-
 const publicUser = {
   id: true,
   email: true,
