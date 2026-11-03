@@ -18,7 +18,7 @@ import {
   type SignupDraft,
   type SignupErrors,
   type SignupStep,
-} from "./draft";
+} from "@/actions/draft";
 
 const IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
 

@@ -1,29 +1,30 @@
 import { Suspense } from "react";
-import SignupSection from "@/component/templates/SignupSection";
-import { furthestSignupStep, readSignupDraft, readSignupErrors } from "./draft";
+import SignupFallback from "@/components/loader/SignupFallback";
+import SignUpFormSection from "@/component/templates/SignupFormSection";
+import Link from "next/link";
 
-function SignupFallback() {
-  return (
-    <section className="relative mx-auto flex h-screen w-full max-w-md flex-col gap-4 px-4 py-8" aria-busy="true">
-      <h2 className="text-xl font-semibold">회원가입</h2>
-      <p className="text-sm text-muted-foreground">회원가입 단계를 불러오는 중입니다.</p>
-    </section>
-  );
-}
+export default async function SignupPage({searchParams}: {searchParams: Promise<{[key: string]: string | string[] | undefined}>}) {
+    const searchParamsData = await searchParams;
+    
+    console.log("step: ", searchParamsData.step);
 
-async function SignupContent() {
-  const draft = await readSignupDraft();
-  const errors = await readSignupErrors();
-  const maxStep = furthestSignupStep(draft);
-  const step = draft.step > maxStep ? maxStep : draft.step;
+    const handleSignup = async (formData: FormData) => {
+        "use server"
+        console.log(formData);
+    };
 
-  return <SignupSection step={step} draft={draft} errors={errors} />;
-}
+    const step = searchParamsData.step === undefined ? 1 : parseInt(searchParamsData.step as string);
 
-export default function SignupPage() {
   return (
     <Suspense fallback={<SignupFallback />}>
-      <SignupContent />
+        {/* <div className="flex flex-col gap-2 px-4 py-8">
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-3/4 rounded-md" />
+        </div> */}
+      <Link href={`/signup?step=${step + 1}`}><p className="text-blue-500 px-4 py-2 rounded-md bg-blue-500/10 red"> next </p></Link>
+      <Link href={`/signup?step=${step - 1}`}><p className="text-blue-500 px-4 py-2 rounded-md bg-blue-500/10 red"> previous </p></Link>
+      <SignUpFormSection step={step} handleSignup={handleSignup}/>
     </Suspense>
   );
 }

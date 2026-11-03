@@ -7,7 +7,7 @@ import ErrorMessage from "../atoms/ErrorMessage";
 
 const IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp"];
 
-export default function SignupPhotoInput({ form, error }: { form: string; error?: string }) {
+export default function SignupPhotoInput({ error }: { error?: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState("");
   const [localError, setLocalError] = useState("");
@@ -71,12 +71,11 @@ export default function SignupPhotoInput({ form, error }: { form: string; error?
 
   return (
     <div className="flex flex-col gap-2">
-      <input type="hidden" name="profileImageBlocked" form={form} value={blocked} />
+      <input type="hidden" name="profileImageBlocked" value={blocked} />
       <Input
         ref={inputRef}
         id="profileImage"
         name="profileImage"
-        form={form}
         type="file"
         accept="image/png,image/jpeg,image/gif,image/webp"
         aria-invalid={Boolean(message)}

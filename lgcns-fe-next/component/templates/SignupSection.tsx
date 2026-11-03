@@ -4,28 +4,12 @@ import SignupInterestsForm from "../organisms/SignupInterestsForm";
 import SignupPasswordForm from "../organisms/SignupPasswordForm";
 import SignupProfileForm from "../organisms/SignupProfileForm";
 
-type SignupStep = 1 | 2 | 3 | 4;
-
 export default function SignupSection({
   step,
-  draft,
-  errors,
+  handleSignup,
 }: {
-  step: SignupStep;
-  draft: {
-    userId: string;
-    email: string;
-    password: string;
-    interestsText: string;
-  };
-  errors: {
-    userId?: string;
-    email?: string;
-    password?: string;
-    interests?: string;
-    profileImageUrl?: string;
-    form?: string;
-  };
+  step: number;
+  handleSignup: (formData: FormData) => void;
 }) {
   return (
     <section
