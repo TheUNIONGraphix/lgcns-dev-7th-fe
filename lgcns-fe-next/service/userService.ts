@@ -54,6 +54,9 @@ async function login(input: { email: string; password: string }) {
     return { ok: false as const, message: "이메일 또는 비밀번호가 올바르지 않습니다." };
   }
 
+  console.log("=============userService.login=============");
+  console.log(user);
+
   return {
     ok: true as const,
     accessToken: randomBytes(32).toString("hex"),

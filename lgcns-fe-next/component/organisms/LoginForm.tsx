@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../providers/AuthProvider";
 
 import { Button } from "@/components/ui/button";
 import ErrorMessage from "../atoms/ErrorMessage";
@@ -29,14 +28,7 @@ export default function LoginForm() {
   const [formError, setFormError] = useState("");
   const [pending, setPending] = useState(false);
   const isValid = loginSchema.safeParse(payload).success;
-  const { isLoggedIn } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.replace("/");
-    }
-  }, [isLoggedIn, router]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
