@@ -17,7 +17,20 @@
   <body>
     <div class="auth-layout">
       <h1>AuthLayout</h1>
-      <div>Login</div>
+      <form id="login-form" class="login-form">
+        <label>
+          이메일
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label>
+          비밀번호
+          <input type="password" name="password" autocomplete="current-password" required />
+        </label>
+        <p id="login-error" role="alert"></p>
+        <button type="submit">로그인</button>
+      </form>
     </div>
+    <script src="js/config.js"></script>
+    <script src="js/login.js"></script>
   </body>
 </html>

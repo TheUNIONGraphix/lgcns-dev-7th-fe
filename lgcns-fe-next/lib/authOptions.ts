@@ -22,6 +22,8 @@ export const authOptions: NextAuthOptions = {
           password: credentials.password,
         });
         if (!result.ok) return null;
+        console.log("=============authOptions.authorize=============");
+        console.log(result);
 
         return {
           id: result.user.id,
@@ -51,6 +53,11 @@ export const authOptions: NextAuthOptions = {
         name: token.name ?? "",
       };
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
 };

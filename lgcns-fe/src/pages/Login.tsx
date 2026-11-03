@@ -1,12 +1,34 @@
-import { type FormEvent, useState } from 'react'
+import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginRequest, saveAccessToken } from "../lib/auth";
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [pending, setPending] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-  }
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (pending || !email || !password) return;
+
+    setPending(true);
+    setFormError("");
+    try {
+      const result = await loginRequest(email, password);
+      if (!result.ok) {
+        setFormError(result.message);
+        setPending(false);
+        return;
+      }
+      saveAccessToken(result.accessToken);
+      navigate("/");
+    } catch {
+      setFormError("로그인 요청에 실패했습니다.");
+      setPending(false);
+    }
+  };
 
   return (
     <section className="page">
@@ -34,10 +56,13 @@ function Login() {
             required
           />
         </label>
-        <button type="submit">로그인</button>
+        <p role="alert">{formError}</p>
+        <button type="submit" disabled={pending} aria-busy={pending}>
+          {pending ? "로그인중" : "로그인"}
+        </button>
       </form>
     </section>
-  )
+  );
 }
 
-export default Login
+export default Login;

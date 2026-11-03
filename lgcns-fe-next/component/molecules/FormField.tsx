@@ -10,27 +10,44 @@ export default function FormField({
   type,
   placeholder,
   value,
+  defaultValue = "",
   error,
   isClearable,
+  required = true,
+  autoComplete,
+  form,
   onChange,
 }: {
   id: string;
   name: string;
-  type: "text" | "password";
+  type: "text" | "password" | "email";
   placeholder: string;
-  value: string;
+  value?: string;
+  defaultValue?: string;
   error?: string;
   isClearable?: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+  autoComplete?: string;
+  form?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   const errorId = `${id}-error`;
   const [isVisible, setIsVisible] = useState(false);
-  const showClear = Boolean(isClearable && value);
+  const isControlled = value !== undefined;
+  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
+  const currentValue = isControlled ? value : uncontrolledValue;
+  const showClear = Boolean(isClearable && currentValue);
   const showToggle = type === "password";
   const inputType = showToggle && isVisible ? "text" : type;
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isControlled) setUncontrolledValue(event.target.value);
+    onChange?.(event);
+  };
+
   const handleClear = () => {
-    onChange({
+    if (!isControlled) setUncontrolledValue("");
+    onChange?.({
       target: { name, value: "" },
     } as React.ChangeEvent<HTMLInputElement>);
   };
@@ -42,13 +59,15 @@ export default function FormField({
           id={id}
           type={inputType}
           name={name}
+          form={form}
           placeholder={placeholder}
-          value={value}
-          required
+          value={currentValue}
+          required={required}
+          autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           className={showClear && showToggle ? "pr-14" : showClear || showToggle ? "pr-8" : undefined}
-          onChange={onChange}
+          onChange={handleChange}
         />
         {showToggle ? (
           <button
