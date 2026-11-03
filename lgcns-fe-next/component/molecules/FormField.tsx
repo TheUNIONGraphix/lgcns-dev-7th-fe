@@ -12,15 +12,19 @@ export default function FormField({
   value,
   error,
   isClearable,
+  required = true,
+  autoComplete,
   onChange,
 }: {
   id: string;
   name: string;
-  type: "text" | "password";
+  type: "text" | "password" | "email";
   placeholder: string;
   value: string;
   error?: string;
   isClearable?: boolean;
+  required?: boolean;
+  autoComplete?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   const errorId = `${id}-error`;
@@ -44,7 +48,8 @@ export default function FormField({
           name={name}
           placeholder={placeholder}
           value={value}
-          required
+          required={required}
+          autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           className={showClear && showToggle ? "pr-14" : showClear || showToggle ? "pr-8" : undefined}
