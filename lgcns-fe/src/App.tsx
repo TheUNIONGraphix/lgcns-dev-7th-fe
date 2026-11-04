@@ -1,39 +1,45 @@
-import { useEffect, useState } from 'react'
-import { NavLink, Route, Routes } from 'react-router-dom'
-import './App.css'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import { readAccessToken } from './lib/auth'
+import { Outlet, Route, Routes } from "react-router-dom";
+import { GuestRoute, MemberRoute } from "./components/AuthGate";
+import SiteHeader from "./components/SiteHeader";
+import About from "./pages/About";
+import Blog from "./pages/Blog";
+import Cart from "./pages/Cart";
+import ClientLogin from "./pages/ClientLogin";
+import Contact from "./pages/Contact";
+import Feed from "./pages/Feed";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Order from "./pages/Order";
+import Product from "./pages/Product";
+import Signup from "./pages/Signup";
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const sync = () => setIsLoggedIn(Boolean(readAccessToken()))
-    sync()
-    window.addEventListener("auth-change", sync)
-    return () => window.removeEventListener("auth-change", sync)
-  }, [])
-
+function MainLayout() {
   return (
     <>
-      <nav className="site-nav">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/about">About</NavLink>
-        <NavLink to="/contact">Contact</NavLink>
-        <NavLink to="/login">Login</NavLink>
-        {isLoggedIn ? <span>로그인됨</span> : null}
-      </nav>
-      <Routes>
+      <SiteHeader />
+      <Outlet />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </>
-  )
+        <Route path="/feed" element={<Feed />} />
+        <Route path="/blog/:blogId" element={<Blog />} />
+        <Route path="/product/*" element={<Product />} />
+        <Route path="/cart" element={<MemberRoute><Cart /></MemberRoute>} />
+        <Route path="/order" element={<MemberRoute><Order /></MemberRoute>} />
+      </Route>
+      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
+      <Route path="/client-login" element={<ClientLogin />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

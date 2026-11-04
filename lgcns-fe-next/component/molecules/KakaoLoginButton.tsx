@@ -15,7 +15,6 @@ export default function KakaoLoginButton({ callbackUrl }: { callbackUrl: string 
             onClick={handleKakaoLogin}
             className="h-14 w-full gap-3 rounded-[12px] border-transparent bg-[#fee500] text-[15px] font-semibold text-[#3a1d1d] shadow-none hover:bg-[#f5dc00]"
         >
-            <img src="/login/kakao-circle-x.svg" alt="" width={20} height={20} />
             카카오로 로그인
         </Button>
     );

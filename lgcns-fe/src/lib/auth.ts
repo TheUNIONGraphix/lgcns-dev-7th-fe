@@ -11,6 +11,11 @@ export function saveAccessToken(token: string) {
   window.dispatchEvent(new Event("auth-change"));
 }
 
+export function clearAccessToken() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  window.dispatchEvent(new Event("auth-change"));
+}
+
 export async function loginRequest(email: string, password: string) {
   const response = await fetch(`${apiBaseUrl}/api/auth/login`, {
     method: "POST",

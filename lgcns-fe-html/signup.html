@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko" data-path="/signup">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/config.js"></script>
+    <script src="js/guard.js"></script>
+  </head>
+  <body>
+    <main class="auth-screen">
+      <section id="signup" class="auth-card">
+        <header>
+          <h1>회원가입</h1>
+          <p>간단한 4단계로 계정을 만들어보세요</p>
+        </header>
+        <div class="signup-progress" aria-label="회원가입 4단계">
+          <span data-step-label="1">1 아이디</span>
+          <span data-step-label="2">2 비밀번호</span>
+          <span data-step-label="3">3 이메일</span>
+          <span data-step-label="4">4 프로필</span>
+        </div>
+        <div class="signup-bars" aria-hidden="true">
+          <span data-step-bar="1"></span>
+          <span data-step-bar="2"></span>
+          <span data-step-bar="3"></span>
+          <span data-step-bar="4"></span>
+        </div>
+        <div data-step="1">
+          <h2>아이디를 정해주세요</h2>
+          <p>로그인할 때 사용할 나만의 아이디예요.</p>
+          <label for="userId">아이디 <input id="userId" name="userId" type="text" autocomplete="username" placeholder="아이디를 입력해주세요" /></label>
+          <p>영문 소문자, 숫자, 밑줄(_)을 조합해 4~20자로 입력해주세요.</p>
+          <div class="signup-actions">
+            <button type="button" disabled>이전</button>
+            <button type="button" data-next="1">다음</button>
+          </div>
+          <p>1 / 4 단계</p>
+        </div>
+        <div data-step="2" hidden>
+          <h2>비밀번호를 설정해주세요</h2>
+          <p>안전한 비밀번호로 계정을 보호하세요.</p>
+          <label for="password">비밀번호
+            <span class="password-row">
+              <input id="password" name="password" type="password" autocomplete="new-password" placeholder="비밀번호를 입력해주세요" />
+              <button type="button" data-password-toggle="password" aria-pressed="false" aria-label="비밀번호 보기">보기</button>
+            </span>
+          </label>
+          <p>영문, 숫자, 특수문자를 포함한 8~20자</p>
+          <label for="passwordConfirm">비밀번호 확인
+            <span class="password-row">
+              <input id="passwordConfirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="비밀번호를 입력해주세요" />
+              <button type="button" data-password-toggle="passwordConfirm" aria-pressed="false" aria-label="비밀번호 보기">보기</button>
+            </span>
+          </label>
+          <div class="signup-actions">
+            <button type="button" data-back="1">이전</button>
+            <button type="button" data-next="2">다음</button>
+          </div>
+          <p>2 / 4 단계</p>
+        </div>
+        <div data-step="3" hidden>
+          <h2>이메일을 입력해주세요</h2>
+          <p>계정에 연결할 이메일 주소를 알려주세요.</p>
+          <label for="email">이메일 <input id="email" name="email" type="email" autocomplete="email" placeholder="이메일을 입력해주세요" /></label>
+          <p>자주 사용하는 이메일을 입력해주세요. 비밀번호를 잊었을 때 계정을 찾거나 중요한 안내를 받는 데 사용해요.</p>
+          <div class="signup-actions">
+            <button type="button" data-back="2">이전</button>
+            <button type="button" data-next="3">다음</button>
+          </div>
+          <p>3 / 4 단계</p>
+        </div>
+        <div data-step="4" hidden>
+          <h2>프로필을 꾸며보세요 <span>선택</span></h2>
+          <p>나를 보여줄 사진을 등록해주세요. 나중에 설정해도 괜찮아요.</p>
+          <label for="profileImage">이미지 업로드 / 변경 <input id="profileImage" name="profileImage" type="file" accept="image/png,image/jpeg" /></label>
+          <p>JPG, PNG · 최대 5MB</p>
+          <div class="signup-actions">
+            <button type="button" data-back="3">이전</button>
+            <button type="button" data-finish>가입 완료</button>
+          </div>
+          <button type="button" data-skip>건너뛰고 가입 완료</button>
+        </div>
+        <p id="signup-error" class="field-error" role="alert"></p>
+        <p>이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
+      </section>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/signup.js"></script>
+  </body>
+</html>

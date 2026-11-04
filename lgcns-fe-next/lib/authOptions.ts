@@ -98,6 +98,15 @@ export const authOptions: NextAuthOptions = {
         token.profileImageUrl = user?.image ?? google.image ?? token.profileImageUrl;
         return token;
       }
+
+      if (account?.provider === "credentials" && user) {
+        token.accessToken = user.accessToken;
+        token.expiresIn = user.expiresIn;
+        token.id = user.id;
+        token.email = user.email ?? token.email;
+        token.name = user.name ?? token.name;
+        return token;
+      }
       return token;
     },
     async session({ session, token }) {

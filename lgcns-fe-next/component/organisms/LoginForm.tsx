@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 import { signIn } from "next-auth/react";
 import { Check } from "lucide-react";
 
@@ -14,6 +14,18 @@ import loginSchema, { loginFieldMessage } from "@/schema/loginSchema";
 
 const SAVED_USER_ID_KEY = "lgcns-saved-user-id";
 
+function subscribeSavedUserId() {
+  return () => {};
+}
+
+function readSavedUserId() {
+  return window.localStorage.getItem(SAVED_USER_ID_KEY) ?? "";
+}
+
+function readSavedUserIdOnServer() {
+  return "";
+}
+
 type LoginFieldName = keyof UserPayloadType;
 
 const inputClassName =
@@ -22,25 +34,26 @@ const inputClassName =
 const fieldErrorClassName = "py-1 text-[12px] leading-[normal] text-red-500";
 
 export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
-  const [payload, setPayload] = useState(initialValues);
+  const savedUserId = useSyncExternalStore(subscribeSavedUserId, readSavedUserId, readSavedUserIdOnServer);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [password, setPassword] = useState(initialValues.password);
+  const [rememberChoice, setRememberChoice] = useState<boolean | null>(null);
+  const payload: UserPayloadType = {
+    userId: userId ?? savedUserId,
+    password,
+  };
+  const rememberId = rememberChoice ?? savedUserId.length > 0;
   const [errors, setErrors] = useState(emptyErrors);
   const [formError, setFormError] = useState("");
-  const [rememberId, setRememberId] = useState(false);
   const isValid = loginSchema.safeParse(payload).success;
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    const savedUserId = window.localStorage.getItem(SAVED_USER_ID_KEY);
-    if (!savedUserId) return;
-    setRememberId(true);
-    setPayload((current) => ({ ...current, userId: savedUserId }));
-  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name !== "userId" && name !== "password") return;
     const field: LoginFieldName = name;
-    setPayload((current) => ({ ...current, [field]: value }));
+    if (field === "userId") setUserId(value);
+    else setPassword(value);
     setErrors((current) => ({
       ...current,
       [field]: loginFieldMessage(field, value),
@@ -119,7 +132,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
               <input
                 type="checkbox"
                 checked={rememberId}
-                onChange={(event) => setRememberId(event.target.checked)}
+                onChange={(event) => setRememberChoice(event.target.checked)}
                 className="peer size-5 appearance-none rounded-[6px] border border-[#d1d5db] bg-white checked:border-[#2563eb] checked:bg-[#2563eb] transition-all duration-200"
               />
               <Check

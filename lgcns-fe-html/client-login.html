@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko" data-path="/client-login">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client Login</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/config.js"></script>
+    <script src="js/guard.js"></script>
+  </head>
+  <body>
+    <form id="client-login">
+      <input id="client-user-id" type="text" placeholder="ID" />
+      <input id="client-password" type="password" placeholder="Password" />
+      <button type="submit">Login</button>
+    </form>
+    <script>
+      var userId = document.querySelector("#client-user-id");
+      var password = document.querySelector("#client-password");
+      userId.addEventListener("input", function (event) {
+        console.log(event.target.value);
+      });
+      password.addEventListener("input", function (event) {
+        console.log(event.target.value);
+      });
+      document.querySelector("#client-login").addEventListener("submit", function (event) {
+        event.preventDefault();
+        console.log("================================================");
+        console.log("userId: ", userId.value, "password: ", password.value);
+        console.log("================================================");
+      });
+    </script>
+  </body>
+</html>

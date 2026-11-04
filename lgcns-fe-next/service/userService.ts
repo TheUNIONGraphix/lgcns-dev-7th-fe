@@ -226,8 +226,9 @@ async function create(input: {
 }
 
 async function login(input: { email: string; password: string }) {
-  const user = await prisma.user.findUnique({
-    where: { email: input.email },
+  const loginId = input.email.trim();
+  const user = await prisma.user.findFirst({
+    where: { OR: [{ email: loginId }, { userId: loginId }] },
     select: {
       id: true,
       email: true,
