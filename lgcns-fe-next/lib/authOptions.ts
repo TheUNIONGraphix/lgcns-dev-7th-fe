@@ -92,13 +92,11 @@ export const authOptions: NextAuthOptions = {
         if (typeof account.expires_at === "number") {
           token.expiresIn = account.expires_at - Math.floor(Date.now() / 1000);
         }
-      }
-
-      if (user) {
-        token.accessToken = user.accessToken;
-        token.expiresIn = user.expiresIn;
-        token.id = user.id;
-        if (user.profileImageUrl) token.profileImageUrl = user.profileImageUrl;
+        token.id = user?.id ?? String(google.id ?? account.providerAccountId);
+        token.email = user?.email ?? google.email ?? token.email;
+        token.name = user?.name ?? google.name ?? token.name;
+        token.profileImageUrl = user?.image ?? google.image ?? token.profileImageUrl;
+        return token;
       }
       return token;
     },

@@ -6,7 +6,7 @@ export default function GoogleLoginButton({ callbackUrl }: { callbackUrl: string
     const handleGoogleLogin = () => {
         signIn("google", {
             redirect: true,
-            callbackUrl,
+            callbackUrl: callbackUrl || "/",
         });
     };
     return (

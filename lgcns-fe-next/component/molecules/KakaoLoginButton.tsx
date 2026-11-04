@@ -6,7 +6,7 @@ export default function KakaoLoginButton({ callbackUrl }: { callbackUrl: string 
     const handleKakaoLogin = () => {
         signIn("kakao", {
             redirect: true,
-            callbackUrl,
+            callbackUrl: callbackUrl || "/",
         });
     };
     return (
