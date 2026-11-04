@@ -1,55 +1,45 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-
 const STEPS = [
   { id: 1, label: "아이디" },
   { id: 2, label: "비밀번호" },
-  { id: 3, label: "관심사" },
+  { id: 3, label: "이메일" },
   { id: 4, label: "프로필" },
 ] as const;
 
+export default function SignupProgress({ step }: { step: number }) {
+  const stepNumber = step === 2 || step === 3 || step === 4 ? step : 1;
 
-export default function SignupProgress() {
-
-  const searchParams = useSearchParams();
-  const raw = searchParams.get("step");
-  const parsed = raw ? Number.parseInt(raw, 10) : 1;
-  const stepNumber = parsed === 2 || parsed === 3 || parsed === 4 ? parsed : 1;
   return (
-    <ol className="grid grid-cols-4 gap-2" aria-label="회원가입 4단계">
-      {STEPS.map((item) => {
-        const active = item.id === stepNumber;
-        const done = item.id < stepNumber;
-        return (
-          <li
-            key={item.id}
-            className="flex flex-col items-center gap-1 text-center"
-            aria-current={active ? "step" : undefined}
-          >
-            <span
-              className={`inline-flex size-8 items-center justify-center rounded-full text-sm ${
-                active
-                  ? "bg-primary font-semibold text-primary-foreground ring-2 ring-primary ring-offset-2"
-                  : done
-                    ? "bg-primary/80 font-medium text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
+    <div className="flex w-full flex-col gap-3" aria-label="회원가입 4단계">
+      <ol className="flex w-full gap-2">
+        {STEPS.map((item) => {
+          const active = item.id === stepNumber;
+          const done = item.id < stepNumber;
+          return (
+            <li
+              key={item.id}
+              className={`flex min-w-0 flex-1 items-center justify-center gap-[5px] text-[12px] leading-[normal] whitespace-nowrap ${
+                active || done ? "text-[#2563eb]" : "text-[#9ca3af]"
               }`}
+              aria-current={active ? "step" : undefined}
             >
-              {item.id}
-            </span>
-            <span className={`text-xs ${active ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
-              {item.label}
-            </span>
-            <span
-              className={`text-[10px] font-medium ${active ? "text-primary" : "invisible"}`}
-              aria-hidden={active ? undefined : true}
-            >
-              현재
-            </span>
-          </li>
-        );
-      })}
-    </ol>
+              {done ? (
+                <img src="/signup/check-13.svg" alt="" width={13} height={13} className="h-[13px] w-[13px] max-w-none" />
+              ) : (
+                <span className="font-semibold">{item.id}</span>
+              )}
+              <span className={active ? "font-bold" : "font-medium"}>{item.label}</span>
+            </li>
+          );
+        })}
+      </ol>
+      <div className="flex w-full gap-[6px]">
+        {STEPS.map((item) => (
+          <span
+            key={item.id}
+            className={`h-1 min-w-0 flex-1 rounded-full ${item.id <= stepNumber ? "bg-[#2563eb]" : "bg-[#e5e7eb]"}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

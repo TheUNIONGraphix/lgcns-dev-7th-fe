@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
@@ -14,6 +15,7 @@ export default function SignupSubmitButton({
   name,
   value,
   className,
+  icon,
 }: {
   label: string;
   pendingLabel: string;
@@ -22,6 +24,7 @@ export default function SignupSubmitButton({
   name?: string;
   value?: string;
   className?: string;
+  icon?: ReactNode;
 }) {
   const status = useFormStatus();
   const pending = status.pending && status.action === action;
@@ -37,6 +40,7 @@ export default function SignupSubmitButton({
       className={cn(buttonVariants({ variant }), className)}
     >
       {pending ? pendingLabel : label}
+      {pending ? null : icon}
     </button>
   );
 }

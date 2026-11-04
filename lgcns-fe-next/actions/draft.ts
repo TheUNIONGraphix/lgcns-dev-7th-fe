@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { connection } from "next/server";
-import { signupIdentitySchema, signupPasswordSchema, validateInterests } from "@/schema/signupSchema";
+import { signupEmailSchema, signupPasswordSchema, signupUserIdSchema } from "@/schema/signupSchema";
 
 const DRAFT_COOKIE = "signup-draft";
 const ERROR_COOKIE = "signup-errors";
@@ -18,7 +18,8 @@ type SignupStep = 1 | 2 | 3 | 4;
 type SignupDraft = {
   userId: string;
   email: string;
-  identityOk: boolean;
+  userIdOk: boolean;
+  emailOk: boolean;
   password: string;
   passwordOk: boolean;
   interestsText: string;
@@ -31,6 +32,7 @@ type SignupErrors = {
   userId?: string;
   email?: string;
   password?: string;
+  passwordConfirm?: string;
   interests?: string;
   profileImageUrl?: string;
   form?: string;
@@ -40,7 +42,8 @@ function emptySignupDraft(): SignupDraft {
   return {
     userId: "",
     email: "",
-    identityOk: false,
+    userIdOk: false,
+    emailOk: false,
     password: "",
     passwordOk: false,
     interestsText: "",
@@ -59,7 +62,7 @@ function asStep(value: unknown): SignupStep {
   return 1;
 }
 
-function normalizeSignupDraft(value: Partial<SignupDraft> | null | undefined): SignupDraft {
+function normalizeSignupDraft(value: (Partial<SignupDraft> & { identityOk?: boolean }) | null | undefined): SignupDraft {
   const interests = Array.isArray(value?.interests)
     ? value.interests
         .filter((item): item is string => typeof item === "string")
@@ -67,10 +70,13 @@ function normalizeSignupDraft(value: Partial<SignupDraft> | null | undefined): S
         .map((item) => clip(item, 40))
     : [];
 
+  const legacyIdentity = value?.identityOk === true;
+
   return {
     userId: clip(typeof value?.userId === "string" ? value.userId : "", 50),
     email: clip(typeof value?.email === "string" ? value.email : "", 254),
-    identityOk: value?.identityOk === true,
+    userIdOk: value?.userIdOk === true || legacyIdentity,
+    emailOk: value?.emailOk === true || legacyIdentity,
     password: clip(typeof value?.password === "string" ? value.password : "", 1024),
     passwordOk: value?.passwordOk === true,
     interestsText: clip(typeof value?.interestsText === "string" ? value.interestsText : "", 2000),
@@ -82,7 +88,7 @@ function normalizeSignupDraft(value: Partial<SignupDraft> | null | undefined): S
 
 function normalizeSignupErrors(value: Partial<SignupErrors> | null | undefined): SignupErrors {
   const next: SignupErrors = {};
-  const keys = ["userId", "email", "password", "interests", "profileImageUrl", "form"] as const;
+  const keys = ["userId", "email", "password", "passwordConfirm", "interests", "profileImageUrl", "form"] as const;
   for (const key of keys) {
     const message = value?.[key];
     if (typeof message === "string" && message.trim()) next[key] = clip(message, 200);
@@ -91,13 +97,9 @@ function normalizeSignupErrors(value: Partial<SignupErrors> | null | undefined):
 }
 
 function furthestSignupStep(draft: SignupDraft): SignupStep {
-  const identity = signupIdentitySchema.safeParse({ userId: draft.userId, email: draft.email });
-  if (!draft.identityOk || !identity.success) return 1;
-  const password = signupPasswordSchema.safeParse(draft.password);
-  if (!draft.passwordOk || !password.success) return 2;
-  if (!draft.interestsConfirmed) return 3;
-  const interests = validateInterests(draft.interests);
-  if (!interests.ok) return 3;
+  if (!draft.userIdOk || !signupUserIdSchema.safeParse(draft.userId).success) return 1;
+  if (!draft.passwordOk || !signupPasswordSchema.safeParse(draft.password).success) return 2;
+  if (!draft.emailOk || !signupEmailSchema.safeParse(draft.email).success) return 3;
   return 4;
 }
 

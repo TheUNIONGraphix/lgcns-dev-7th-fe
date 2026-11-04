@@ -5,10 +5,12 @@ import SignupFallback from "@/components/loader/SignupFallback";
 import { furthestSignupStep, readSignupDraft, readSignupErrors } from "@/actions/draft";
 
 async function SignupContent({
-  stepParam,
+  searchParams,
 }: {
-  stepParam: string | string[] | undefined;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParamsData = await searchParams;
+  const stepParam = searchParamsData.step;
   const draft = await readSignupDraft();
   const errors = await readSignupErrors();
   const maxStep = furthestSignupStep(draft);
@@ -24,16 +26,14 @@ async function SignupContent({
   return <SignupSection step={step} draft={draft} errors={errors} />;
 }
 
-export default async function SignupPage({
+export default function SignupPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const searchParamsData = await searchParams;
-
   return (
     <Suspense fallback={<SignupFallback />}>
-      <SignupContent stepParam={searchParamsData.step} />
+      <SignupContent searchParams={searchParams} />
     </Suspense>
   );
 }

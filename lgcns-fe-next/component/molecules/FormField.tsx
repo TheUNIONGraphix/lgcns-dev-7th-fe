@@ -16,6 +16,10 @@ export default function FormField({
   required = true,
   autoComplete,
   form,
+  inputClassName,
+  showPasswordToggle = true,
+  collapseEmptyError = false,
+  errorClassName,
   onChange,
 }: {
   id: string;
@@ -29,6 +33,10 @@ export default function FormField({
   required?: boolean;
   autoComplete?: string;
   form?: string;
+  inputClassName?: string;
+  showPasswordToggle?: boolean;
+  collapseEmptyError?: boolean;
+  errorClassName?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   const errorId = `${id}-error`;
@@ -37,7 +45,7 @@ export default function FormField({
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const currentValue = isControlled ? value : uncontrolledValue;
   const showClear = Boolean(isClearable && currentValue);
-  const showToggle = type === "password";
+  const showToggle = showPasswordToggle && type === "password";
   const inputType = showToggle && isVisible ? "text" : type;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +74,10 @@ export default function FormField({
           autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className={showClear && showToggle ? "pr-14" : showClear || showToggle ? "pr-8" : undefined}
+          className={[
+            inputClassName,
+            showClear && showToggle ? "pr-14" : showClear || showToggle ? "pr-8" : undefined,
+          ].filter(Boolean).join(" ")}
           onChange={handleChange}
         />
         {showToggle ? (
@@ -91,7 +102,9 @@ export default function FormField({
           </button>
         ) : null}
       </div>
-      <ErrorMessage id={errorId} error={error} />
+      {collapseEmptyError && !error ? null : (
+        <ErrorMessage id={errorId} error={error} className={errorClassName} />
+      )}
     </div>
   );
 }

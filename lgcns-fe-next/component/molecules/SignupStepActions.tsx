@@ -4,13 +4,21 @@ import { backSignupStep } from "@/actions/userActions";
 
 type SignupFormAction = (formData: FormData) => void | Promise<void>;
 
+const nextClassName =
+  "h-14 min-w-0 flex-1 gap-2 rounded-[12px] bg-[#2563eb] px-4 text-[16px] font-semibold text-white shadow-[0px_4px_12px_0px_rgba(37,99,235,0.2)] hover:bg-[#1d4ed8]";
+
+const backClassName =
+  "h-14 w-[104px] shrink-0 rounded-[12px] border border-[#d1d5db] bg-white px-0 text-[16px] font-semibold text-[#374151] shadow-none hover:bg-white";
+
 export default function SignupStepActions({
   backStep,
   skipAction,
-  skipPendingLabel = "이동 중",
+  skipPendingLabel = "가입 중",
   submitAction,
   submitLabel,
   submitPendingLabel,
+  showArrow = false,
+  stepLabel,
   encType,
   children,
 }: {
@@ -20,39 +28,57 @@ export default function SignupStepActions({
   submitAction: SignupFormAction;
   submitLabel: string;
   submitPendingLabel: string;
+  showArrow?: boolean;
+  stepLabel?: string;
   encType?: "multipart/form-data";
   children: ReactNode;
 }) {
   return (
-    <form action={submitAction} noValidate encType={encType} className="flex flex-col gap-4">
-      {children}
-      <div className="flex flex-wrap gap-2">
-        <SignupSubmitButton
-          action={submitAction}
-          label={submitLabel}
-          pendingLabel={submitPendingLabel}
-          className="order-3"
-        />
-        {backStep ? (
+    <form action={submitAction} noValidate encType={encType} className="flex w-full flex-col gap-8">
+      {backStep ? <input type="hidden" name="backStep" value={String(backStep)} /> : null}
+      <div className="flex min-h-[357px] w-full flex-col gap-6">{children}</div>
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex w-full gap-3">
+          {backStep ? (
+            <SignupSubmitButton
+              action={backSignupStep}
+              label="이전"
+              pendingLabel="이동 중"
+              variant="outline"
+              className={backClassName}
+            />
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="h-14 w-[104px] shrink-0 rounded-[12px] border border-[#e5e7eb] bg-[#f9fafb] text-[16px] font-semibold text-[#9ca3af]"
+            >
+              이전
+            </button>
+          )}
           <SignupSubmitButton
-            action={backSignupStep}
-            name="backStep"
-            value={String(backStep)}
-            label="이전"
-            pendingLabel="이동 중"
-            variant="outline"
-            className="order-1"
+            action={submitAction}
+            label={submitLabel}
+            pendingLabel={submitPendingLabel}
+            className={nextClassName}
+            icon={
+              showArrow ? (
+                <img src="/signup/arrow-right.svg" alt="" width={18} height={18} className="h-[18px] w-[18px] max-w-none" />
+              ) : undefined
+            }
           />
-        ) : null}
+        </div>
         {skipAction ? (
           <SignupSubmitButton
             action={skipAction}
-            label="건너뛰기"
+            label="건너뛰고 가입 완료"
             pendingLabel={skipPendingLabel}
             variant="outline"
-            className="order-2"
+            className="h-6 w-full rounded-none border-0 bg-transparent px-0 text-[13px] font-normal text-[#6b7280] shadow-none hover:bg-transparent"
           />
-        ) : null}
+        ) : (
+          <p className="flex h-6 items-center justify-center text-[13px] leading-[normal] text-[#9ca3af]">{stepLabel}</p>
+        )}
       </div>
     </form>
   );

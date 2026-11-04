@@ -1,9 +1,8 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import ErrorMessage from "../atoms/ErrorMessage";
@@ -13,24 +12,29 @@ import { UserPayloadType } from "@/types/request/RequestType";
 import { emptyErrors } from "@/types/error/loginError";
 import loginSchema, { loginFieldMessage } from "@/schema/loginSchema";
 
+const SAVED_USER_ID_KEY = "lgcns-saved-user-id";
+
 type LoginFieldName = keyof UserPayloadType;
 
-function LoginSubmitButton({ isValid, isPending }: { isValid: boolean; isPending: boolean }) {
-  console.log("isPending", isPending);
-  return (
-    <Button type="submit" disabled={!isValid || isPending} aria-busy={isPending}>
-      {isPending ? "Logging in..." : "Login"}
-    </Button>
-  );
-}
+const inputClassName =
+  "h-[52px] rounded-[10px] border-[#d1d5db] bg-white px-4 text-[15px] leading-[normal] text-[#111827] shadow-none placeholder:text-[#9ca3af] focus-visible:border-[#2563eb] focus-visible:ring-[#2563eb]/20 md:text-[15px]";
+
+const fieldErrorClassName = "py-1 text-[12px] leading-[normal] text-red-500";
 
 export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
   const [payload, setPayload] = useState(initialValues);
   const [errors, setErrors] = useState(emptyErrors);
   const [formError, setFormError] = useState("");
+  const [rememberId, setRememberId] = useState(false);
   const isValid = loginSchema.safeParse(payload).success;
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
+
+  useEffect(() => {
+    const savedUserId = window.localStorage.getItem(SAVED_USER_ID_KEY);
+    if (!savedUserId) return;
+    setRememberId(true);
+    setPayload((current) => ({ ...current, userId: savedUserId }));
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -45,8 +49,19 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isValid) return;
-    startTransition( async () => {
+    if (!isValid) {
+      setErrors({
+        userId: loginFieldMessage("userId", payload.userId),
+        password: loginFieldMessage("password", payload.password),
+      });
+      return;
+    }
+
+    if (rememberId) window.localStorage.setItem(SAVED_USER_ID_KEY, payload.userId);
+    else window.localStorage.removeItem(SAVED_USER_ID_KEY);
+
+    setFormError("");
+    startTransition(async () => {
       await signIn("credentials", {
         email: payload.userId,
         password: payload.password,
@@ -54,33 +69,80 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         callbackUrl,
       });
     });
-    setFormError("");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <FormField
-        id="userId"
-        type="text"
-        name="userId"
-        placeholder="ID"
-        value={payload.userId}
-        error={errors.userId}
-        isClearable={true}
-        onChange={handleChange}
-      />
-      <FormField
-        id="password"
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={payload.password}
-        error={errors.password}
-        isClearable={true}
-        onChange={handleChange}
-      />
-      <ErrorMessage id="login-error" error={formError} />
-      <LoginSubmitButton isValid={isValid} isPending={isPending} />
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-6">
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="userId" className="text-[14px] font-medium leading-[normal] text-[#374151]">
+            아이디
+          </label>
+          <FormField
+            id="userId"
+            type="text"
+            name="userId"
+            placeholder="아이디를 입력해주세요"
+            value={payload.userId}
+            error={errors.userId}
+            autoComplete="username"
+            required={false}
+            inputClassName={inputClassName}
+            collapseEmptyError
+            errorClassName={fieldErrorClassName}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label htmlFor="password" className="text-[14px] font-medium leading-[normal] text-[#374151]">
+            비밀번호
+          </label>
+          <FormField
+            id="password"
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력해주세요"
+            value={payload.password}
+            error={errors.password}
+            autoComplete="current-password"
+            required={false}
+            showPasswordToggle
+            inputClassName={inputClassName}
+            collapseEmptyError
+            errorClassName={fieldErrorClassName}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <label className="flex cursor-pointer items-center gap-2">
+            <span className="relative size-5 shrink-0">
+              <input
+                type="checkbox"
+                checked={rememberId}
+                onChange={(event) => setRememberId(event.target.checked)}
+                className="peer size-5 appearance-none rounded-[6px] border border-[#d1d5db] bg-white checked:border-[#2563eb] checked:bg-[#2563eb] transition-all duration-200"
+              />
+              <Check
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 left-1/2 hidden size-3.5 -translate-x-1/2 -translate-y-1/2 text-white peer-checked:block"
+                strokeWidth={3}
+              />
+            </span>
+            <span className="text-[14px] leading-[normal] whitespace-nowrap text-[#4b5563]">아이디 저장하기</span>
+          </label>
+          <button type="button" className="text-right text-[14px] leading-[normal] font-semibold whitespace-nowrap text-[#2563eb]">
+            비밀번호 찾기 / 아이디 찾기
+          </button>
+        </div>
+      </div>
+      {formError ? <ErrorMessage id="login-error" error={formError} className={fieldErrorClassName} /> : null}
+      <Button
+        type="submit"
+        aria-busy={isPending}
+        className="h-14 w-full rounded-[12px] bg-[#2563eb] text-[16px] font-semibold leading-[normal] text-white shadow-[0px_4px_6px_rgba(37,99,235,0.2)] hover:bg-[#1d4ed8]"
+      >
+        {isPending ? "로그인 중..." : "로그인"}
+      </Button>
     </form>
   );
 }

@@ -1,4 +1,3 @@
-import ErrorMessage from "../atoms/ErrorMessage";
 import SignupPhotoInput from "../molecules/SignupPhotoInput";
 import SignupStepActions from "../molecules/SignupStepActions";
 import { skipSignupProfile, submitSignupProfile } from "@/actions/userActions";
@@ -14,20 +13,27 @@ export default function SignupProfileForm({
       skipAction={skipSignupProfile}
       skipPendingLabel="가입 중"
       submitAction={submitSignupProfile}
-      submitLabel="가입하기"
+      submitLabel="가입 완료"
       submitPendingLabel="가입 중"
       encType="multipart/form-data"
     >
-      <p className="text-sm text-muted-foreground">
-        프로필 사진은 선택입니다. 500KB 이하의 PNG, JPEG, GIF, WEBP만 등록할 수 있고, 건너뛰면 사진 없이 가입합니다.
-      </p>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="profileImage" className="text-sm font-medium">
-          프로필 사진
-        </label>
-        <SignupPhotoInput error={errors.profileImageUrl} />
+      <div className="flex flex-col gap-[10px]">
+        <div className="flex items-center gap-2">
+          <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">프로필을 꾸며보세요</h2>
+          <span className="rounded-[6px] bg-[#f3f4f6] px-2 py-1 text-[11px] leading-[normal] font-medium text-[#6b7280]">
+            선택
+          </span>
+        </div>
+        <p className="text-[14px] leading-[1.6] text-[#6b7280]">
+          나를 보여줄 사진을 등록해주세요. 나중에 설정해도 괜찮아요.
+        </p>
       </div>
-      <ErrorMessage id="signup-error" error={errors.form} />
+      <SignupPhotoInput error={errors.profileImageUrl} />
+      {errors.form ? (
+        <p className="text-center text-[13px] text-red-500" role="alert">
+          {errors.form}
+        </p>
+      ) : null}
     </SignupStepActions>
   );
 }
