@@ -4,7 +4,10 @@ import { signIn } from "next-auth/react";
 
 export default function GoogleLoginButton() {
     const handleGoogleLogin = () => {
-        signIn("google");
+        signIn("google", {
+            redirect: true,
+            callbackUrl: "/",
+        });
     };
     return (
         <Button onClick={handleGoogleLogin} variant="outline" className="w-full py-4 py-4">

@@ -6,7 +6,7 @@ export default function LoginSection() {
   return (
     <section>
       <LoginForm />
-      <KakaoLoginButton />
+      {/* <KakaoLoginButton /> */}
       <GoogleLoginButton />
     </section>
   );
