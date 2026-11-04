@@ -41,11 +41,39 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
+      if (account?.provider === "kakao") {
+        const kakao = profile as {
+          id?: number;
+          kakao_account?: {
+            email?: string;
+            profile?: { nickname?: string; profile_image_url?: string };
+          };
+        };
+        console.log("=============kakao profile=============");
+        console.log(profile);
+        console.log("=============kakao account=============");
+        console.log(account);
+        console.log("=============kakao user=============");
+        console.log(user);
+
+        token.accessToken = account.access_token;
+        if (typeof account.expires_at === "number") {
+          token.expiresIn = account.expires_at - Math.floor(Date.now() / 1000);
+        }
+        token.id = user?.id ?? String(kakao.id ?? account.providerAccountId);
+        token.email = user?.email ?? kakao.kakao_account?.email ?? token.email;
+        token.name = user?.name ?? kakao.kakao_account?.profile?.nickname ?? token.name;
+        token.profileImageUrl =
+          user?.image ?? kakao.kakao_account?.profile?.profile_image_url ?? token.profileImageUrl;
+        return token;
+      }
+
       if (user) {
         token.accessToken = user.accessToken;
         token.expiresIn = user.expiresIn;
         token.id = user.id;
+        if (user.profileImageUrl) token.profileImageUrl = user.profileImageUrl;
       }
       return token;
     },
@@ -56,7 +84,10 @@ export const authOptions: NextAuthOptions = {
         id: token.id ?? "",
         email: token.email ?? "",
         name: token.name ?? "",
+        profileImageUrl: token.profileImageUrl,
       };
+      console.log("=============session=============");
+      console.log(session);
       return session;
     },
     async redirect({ url, baseUrl }) {

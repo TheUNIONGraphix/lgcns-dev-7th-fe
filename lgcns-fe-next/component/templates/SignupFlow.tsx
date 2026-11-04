@@ -1,7 +1,17 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
-import type { SignupErrors, SignupStep } from "@/schema/signupSchema";
+
+type SignupStep = 1 | 2 | 3 | 4;
+
+type SignupErrors = {
+  userId?: string;
+  email?: string;
+  password?: string;
+  interests?: string;
+  profileImageUrl?: string;
+  form?: string;
+};
 
 type SignupDraft = {
   userId: string;

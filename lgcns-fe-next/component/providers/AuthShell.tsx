@@ -1,9 +1,10 @@
-import { readAccessToken } from "@/lib/readAccessToken";
+import { connection } from "next/server";
 import { AuthProvider } from "@/component/providers/AuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
 export default async function AuthShell({ children }: { children: React.ReactNode }) {
+  await connection();
   const session = await getServerSession(authOptions);
   console.log("=============getServerSession=============");
   console.log(session);

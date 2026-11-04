@@ -6,6 +6,7 @@ declare module "next-auth/jwt" {
         accessToken?: string;
         expiresIn?: number;
         id?: string;
+        profileImageUrl?: string;
     }
 }
 
@@ -22,10 +23,8 @@ declare module "next-auth" {
     }
     interface User {
         id: string;
-        accessToken: string;
-        expiresIn: number;
-        email: string;
-        name: string;
+        accessToken?: string;
+        expiresIn?: number;
         profileImageUrl?: string;
     }
 } 
