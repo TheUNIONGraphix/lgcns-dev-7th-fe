@@ -24,7 +24,7 @@ function LoginSubmitButton({ isValid, isPending }: { isValid: boolean; isPending
   );
 }
 
-export default function LoginForm() {
+export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
   const [payload, setPayload] = useState(initialValues);
   const [errors, setErrors] = useState(emptyErrors);
   const [formError, setFormError] = useState("");
@@ -50,8 +50,8 @@ export default function LoginForm() {
       await signIn("credentials", {
         email: payload.userId,
         password: payload.password,
-        redirect: true, 
-        callbackUrl: "/",
+        redirect: true,
+        callbackUrl,
       });
     });
     setFormError("");

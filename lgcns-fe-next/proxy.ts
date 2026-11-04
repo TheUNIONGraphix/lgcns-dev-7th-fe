@@ -1,22 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withoutAuthUrlList, authUrlList } from "./config/initial";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./lib/authOptions";
+import { getToken } from "next-auth/jwt";
+import { authUrlList, safeCallbackPath, withoutAuthUrlList } from "./config/initial";
 
 export async function proxy(request: NextRequest) {
-    const session = await getServerSession(authOptions);
+    const token = await getToken({ req: request });
+    const accessToken = token?.accessToken;
+    const loggedIn = typeof accessToken === "string" && accessToken.length > 0;
     const { pathname } = request.nextUrl;
 
-    if (session?.accessToken) {
-        if (!authUrlList.includes(pathname)) {
-            return NextResponse.next();
-        }
-    }
-    
     if (withoutAuthUrlList.includes(pathname)) {
-        return NextResponse.next();
+        if (!loggedIn) return NextResponse.next();
+        const callbackUrl = safeCallbackPath(request.nextUrl.searchParams.get("callbackUrl"));
+        return NextResponse.redirect(new URL(callbackUrl, request.url));
     }
-    return NextResponse.redirect(new URL("/login", request.url));
+
+    if (authUrlList.includes(pathname) && !loggedIn) {
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackUrl", `${pathname}${request.nextUrl.search}`);
+        return NextResponse.redirect(loginUrl);
+    }
+
+    return NextResponse.next();
 }
 
 export const config = {
