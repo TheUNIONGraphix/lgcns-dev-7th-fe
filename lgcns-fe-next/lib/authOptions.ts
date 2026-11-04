@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import KakaoProvider from "next-auth/providers/kakao";
+import GoogleProvider from "next-auth/providers/google";
 
 import { userService } from "@/service/userService";
 
@@ -39,6 +40,10 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.KAKAO_CLIENT_ID ?? "",
       clientSecret: process.env.KAKAO_CLIENT_SECRET ?? "",
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
   ],
   callbacks: {
     async jwt({ token, user, account, profile }) {
@@ -67,6 +72,26 @@ export const authOptions: NextAuthOptions = {
         token.profileImageUrl =
           user?.image ?? kakao.kakao_account?.profile?.profile_image_url ?? token.profileImageUrl;
         return token;
+      }
+
+      if (account?.provider === "google") {
+        const google = profile as {
+          id?: string;
+          email?: string;
+          name?: string;
+          image?: string;
+        };
+        console.log("=============google profile=============");
+        console.log(profile);
+        console.log("=============google account=============");
+        console.log(account);
+        console.log("=============google user=============");
+        console.log(user);
+
+        token.accessToken = account.access_token;
+        if (typeof account.expires_at === "number") {
+          token.expiresIn = account.expires_at - Math.floor(Date.now() / 1000);
+        }
       }
 
       if (user) {
