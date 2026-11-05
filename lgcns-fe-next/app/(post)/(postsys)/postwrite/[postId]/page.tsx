@@ -8,6 +8,7 @@ async function RedirectToQuery({
 }) {
   const { postId } = await params;
   redirect(`/postwrite?postId=${encodeURIComponent(postId)}`);
+  return null;
 }
 
 export default function LegacyPostWritePage({
