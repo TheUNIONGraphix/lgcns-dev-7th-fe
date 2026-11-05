@@ -12,7 +12,7 @@ export default function CustomTitle({
   return (
     <TitleType
       className={twMerge(
-        "text-2xl font-bold text-center text-white",
+        "text-center text-2xl font-bold text-foreground",
         className,
       )}
     >

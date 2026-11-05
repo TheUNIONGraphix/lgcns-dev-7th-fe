@@ -26,7 +26,9 @@ export async function createPost(formData: FormData) {
 export async function updatePost(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const user = await author(
-    postService.isObjectId(postId) ? `/postwrite/${postId}` : "/posts",
+    postService.isObjectId(postId)
+      ? `/postwrite?postId=${encodeURIComponent(postId)}`
+      : "/posts",
   );
   const result = await postService.updatePost({
     postId,

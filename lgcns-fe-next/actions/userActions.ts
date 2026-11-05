@@ -81,7 +81,7 @@ export async function submitSignup(
 
   let userId = readText(formData, "userId");
   let password = readText(formData, "password");
-  let passwordConfirm = readText(formData, "passwordConfirm");
+  const passwordConfirm = readText(formData, "passwordConfirm");
   let email = readText(formData, "email");
 
   try {

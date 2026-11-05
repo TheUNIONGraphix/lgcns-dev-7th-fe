@@ -80,7 +80,7 @@ export default function PostCard({
         {canManage ? (
           <>
             <Link
-              href={`/postwrite/${post.id}`}
+              href={`/postwrite?postId=${encodeURIComponent(post.id)}`}
               className="font-medium text-[#111827]"
             >
               수정
@@ -120,7 +120,7 @@ export default function PostCard({
               required
               maxLength={300}
               placeholder="댓글"
-              className="h-10 min-w-0 flex-1 rounded-lg border border-[#d1d5db] px-3 text-sm outline-none focus:border-[#2563eb]"
+              className="h-10 min-w-0 flex-1 rounded-lg border border-[#d1d5db] bg-white px-3 text-sm text-[#111827] outline-none placeholder:text-[#9ca3af] focus:border-[#2563eb]"
             />
             <button
               type="submit"

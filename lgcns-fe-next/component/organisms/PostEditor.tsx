@@ -29,7 +29,10 @@ const QuillBox = memo(function QuillBox({
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -60,7 +63,7 @@ const QuillBox = memo(function QuillBox({
     };
   }, [initialHtml]);
 
-  return <div ref={hostRef} className="min-h-48 bg-white" />;
+  return <div ref={hostRef} className="min-h-48" />;
 });
 
 export default function PostEditor({
@@ -77,7 +80,7 @@ export default function PostEditor({
   const [html, setHtml] = useState(initialHtml);
 
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <form action={action} className="post-editor flex flex-col gap-4">
       {postId ? <input type="hidden" name="postId" value={postId} /> : null}
       <input type="hidden" name="body" value={html} />
       <QuillBox initialHtml={initialHtml} onChange={setHtml} />

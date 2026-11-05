@@ -1,5 +1,6 @@
 import { postText, sanitizePostHtml } from "@/lib/postHtml";
 import { prisma } from "@/lib/prisma";
+import type { PostListResponseType } from "@/types/response/ResponseType";
 
 const MAX_POST_TEXT = 5000;
 const MAX_COMMENT_TEXT = 300;
@@ -47,24 +48,38 @@ function toComment(comment: {
   };
 }
 
-async function listPosts(): Promise<PostItem[]> {
-  const posts = await prisma.post.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
-  if (posts.length === 0) return [];
+async function listPosts(
+  pageNumber: number,
+  sortOrder: "ASC" | "DESC",
+): Promise<PostListResponseType> {
+  const pageSize = 20;
+  const requestedPage = Number.isInteger(pageNumber) && pageNumber > 0 ? pageNumber : 1;
+  const totalItems = await prisma.post.count();
+  const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
+  const currentPage = totalPages === 0 ? 1 : Math.min(requestedPage, totalPages);
+  const posts =
+    totalItems === 0
+      ? []
+      : await prisma.post.findMany({
+          orderBy: { createdAt: sortOrder === "ASC" ? "asc" : "desc" },
+          skip: (currentPage - 1) * pageSize,
+          take: pageSize,
+        });
 
   const ids = posts.map((post) => post.id);
-  const [comments, likes] = await Promise.all([
-    prisma.comment.findMany({
-      where: { postId: { in: ids } },
-      orderBy: { createdAt: "asc" },
-    }),
-    prisma.like.findMany({
-      where: { postId: { in: ids } },
-      select: { postId: true },
-    }),
-  ]);
+  const [comments, likes] =
+    ids.length === 0
+      ? [[], []]
+      : await Promise.all([
+          prisma.comment.findMany({
+            where: { postId: { in: ids } },
+            orderBy: { createdAt: "asc" },
+          }),
+          prisma.like.findMany({
+            where: { postId: { in: ids } },
+            select: { postId: true },
+          }),
+        ]);
 
   const commentsByPost = new Map<string, CommentItem[]>();
   for (const comment of comments) {
@@ -78,19 +93,27 @@ async function listPosts(): Promise<PostItem[]> {
     likeCountByPost.set(like.postId, (likeCountByPost.get(like.postId) ?? 0) + 1);
   }
 
-  return posts.map((post) => {
-    const postComments = commentsByPost.get(post.id) ?? [];
-    return {
-      id: post.id,
-      authorId: post.authorId,
-      authorName: post.authorName,
-      body: post.body,
-      createdAt: post.createdAt.toISOString(),
-      likeCount: likeCountByPost.get(post.id) ?? 0,
-      commentCount: postComments.length,
-      comments: postComments,
-    };
-  });
+  return {
+    posts: posts.map((post) => {
+      const postComments = commentsByPost.get(post.id) ?? [];
+      return {
+        id: post.id,
+        authorId: post.authorId,
+        authorName: post.authorName,
+        body: post.body,
+        createdAt: post.createdAt.toISOString(),
+        likeCount: likeCountByPost.get(post.id) ?? 0,
+        commentCount: postComments.length,
+        comments: postComments,
+      };
+    }),
+    totalPages,
+    totalItems,
+    currentPage,
+    pageSize,
+    hasNextPage: currentPage < totalPages,
+    hasPreviousPage: currentPage > 1,
+  };
 }
 
 async function getPost(postId: string): Promise<PostItem | null> {
