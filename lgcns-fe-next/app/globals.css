@@ -179,6 +179,22 @@ h1 {
   }
 }
 
+.post-editor {
+  color-scheme: light;
+  color: #111827;
+}
+
+.post-editor .ql-toolbar.ql-snow,
+.post-editor .ql-container.ql-snow,
+.post-editor .ql-editor {
+  background: #fff;
+  color: #111827;
+}
+
+.post-editor .ql-editor.ql-blank::before {
+  color: #9ca3af;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -1,54 +1,41 @@
-import CustomTitle from "../atoms/CustomTitle";
-import ErrorMessage from "../atoms/ErrorMessage";
-import FormField from "../molecules/FormField";
+import type { SignupIntent } from "@/actions/signupForm";
+import SignupIdField from "../molecules/SignupIdField";
 import SignupStepActions from "../molecules/SignupStepActions";
-import { submitSignupIdentity } from "@/actions/userActions";
 
 export default function SignupIdentityForm({
   userId = "",
-  email = "",
   errors = {},
+  isPending = false,
+  pendingIntent,
 }: {
   userId?: string;
-  email?: string;
-  errors?: { userId?: string; email?: string; form?: string };
+  errors?: { userId?: string; form?: string };
+  isPending?: boolean;
+  pendingIntent?: SignupIntent;
 }) {
   return (
-    <SignupStepActions submitAction={submitSignupIdentity} submitLabel="다음" submitPendingLabel="확인 중">
-      <CustomTitle TitleType="h2">아이디를 입력해주세요.</CustomTitle>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="userId" className="text-sm font-medium">
-          아이디
-        </label>
-        <FormField
-          id="userId"
-          type="text"
-          name="userId"
-          placeholder="아이디"
-          defaultValue={userId}
-          error={errors.userId}
-          isClearable
-          required={false}
-          autoComplete="username"
-        />
+    <SignupStepActions
+      submitLabel="다음"
+      submitPendingLabel="확인 중"
+      showArrow
+      stepLabel="1 / 4 단계"
+      isPending={isPending}
+      pendingIntent={pendingIntent}
+    >
+      <div className="flex flex-col gap-[10px]">
+        <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">
+          아이디를 정해주세요
+        </h2>
+        <p className="text-[14px] leading-[1.6] text-[#6b7280]">
+          로그인할 때 사용할 나만의 아이디예요.
+        </p>
       </div>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium">
-          이메일
-        </label>
-        <FormField
-          id="email"
-          type="email"
-          name="email"
-          placeholder="이메일"
-          defaultValue={email}
-          error={errors.email}
-          isClearable
-          required={false}
-          autoComplete="email"
-        />
-      </div>
-      <ErrorMessage id="signup-identity-error" error={errors.form} />
+      <SignupIdField defaultValue={userId} error={errors.userId} />
+      {errors.form ? (
+        <p className="text-[13px] text-red-500" role="alert">
+          {errors.form}
+        </p>
+      ) : null}
     </SignupStepActions>
   );
 }

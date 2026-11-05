@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     agentFeedback: true,
+    serverActions: {
+      bodySizeLimit: "6mb",
+    },
   },
   cacheComponents: true,
   partialPrefetching: true,
@@ -25,6 +28,7 @@ const nextConfig: NextConfig = {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
+        condition: { not: "foreign" },
       },
     },
   },

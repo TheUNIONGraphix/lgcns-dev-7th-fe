@@ -1,0 +1,80 @@
+"use server";
+
+import { updateTag } from "next/cache";
+import { redirect } from "next/navigation";
+import { readCurrentUser } from "@/lib/currentUser";
+import { postService } from "@/service/postService";
+
+async function author(callbackPath: string) {
+  const user = await readCurrentUser();
+  if (!user) redirect(`/login?callbackUrl=${encodeURIComponent(callbackPath)}`);
+  return user;
+}
+
+export async function createPost(formData: FormData) {
+  const user = await author("/postwrite");
+  const result = await postService.createPost({
+    authorId: user.id,
+    authorName: user.name,
+    body: String(formData.get("body") ?? ""),
+  });
+  if (!result.ok) return;
+  updateTag("posts");
+  redirect(`/postdetail/${result.id}`);
+}
+
+export async function updatePost(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const user = await author(
+    postService.isObjectId(postId)
+      ? `/postwrite?postId=${encodeURIComponent(postId)}`
+      : "/posts",
+  );
+  const result = await postService.updatePost({
+    postId,
+    authorId: user.id,
+    body: String(formData.get("body") ?? ""),
+  });
+  if (!result.ok) {
+    if (result.reason === "invalid") return;
+    redirect("/posts");
+  }
+  updateTag("posts");
+  redirect(`/postdetail/${postId}`);
+}
+
+export async function deletePost(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const user = await author(
+    postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
+  );
+  const result = await postService.deletePost({ postId, authorId: user.id });
+  if (!result.ok) redirect("/posts");
+  updateTag("posts");
+  redirect("/posts");
+}
+
+export async function toggleLike(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const user = await author(
+    postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
+  );
+  const result = await postService.toggleLike({ postId, userId: user.id });
+  if (!result.ok) return;
+  updateTag("posts");
+}
+
+export async function createComment(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const user = await author(
+    postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
+  );
+  const result = await postService.createComment({
+    postId,
+    authorId: user.id,
+    authorName: user.name,
+    body: String(formData.get("body") ?? ""),
+  });
+  if (!result.ok) return;
+  updateTag("posts");
+}

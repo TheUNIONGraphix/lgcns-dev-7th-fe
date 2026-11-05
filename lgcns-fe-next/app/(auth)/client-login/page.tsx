@@ -1,11 +1,10 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export default function ClientLogin() {
-
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
 
@@ -27,9 +26,19 @@ export default function ClientLogin() {
 
   return (
     <form onSubmit={handleSubmit}>
-    <Input type="text" placeholder="ID" value={userId} onChange={handleUserIdChange} />
-    <Input type="password" placeholder="Password" value={password} onChange={handlePasswordChange} />
-    <Button type="submit">Login</Button>
+      <Input
+        type="text"
+        placeholder="ID"
+        value={userId}
+        onChange={handleUserIdChange}
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={handlePasswordChange}
+      />
+      <Button type="submit">Login</Button>
     </form>
   );
 }

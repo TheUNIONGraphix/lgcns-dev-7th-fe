@@ -1,30 +1,55 @@
 "use client";
-import Link from "next/link"
-import { useState } from "react";
 
-export default function MobileNavigation(){
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <>
-        <div className="md:hidden">
-            <button onClick={() => setIsOpen(!isOpen)}>
-                <span className="sr-only">Open main menu</span>
-                <svg 
-                className="w-6 h-6" 
-                aria-hidden="true" fill="currentColor" 
-                viewBox="0 0 20 20" 
-                xmlns="http://www.w3.org/2000/svg"><path 
-                fillRule="evenodd" 
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
-            </button>
-        </div>
-        {isOpen && (
-            <div className="md:hidden">
-                <ul>
-                    <li><Link href="/">Home</Link></li>
-                </ul>
-            </div>
-        )}
-        </>
-    );
+import Link from "next/link";
+import { useState } from "react";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
+export default function MobileNavigation({
+  items,
+}: {
+  items: { href: string; label: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger
+        className="md:hidden"
+        render={
+          <Button variant="outline" size="icon" className="md:hidden" />
+        }
+      >
+        <Menu />
+        <span className="sr-only">메뉴 열기</span>
+      </SheetTrigger>
+      <SheetContent side="left">
+        <SheetHeader>
+          <SheetTitle>메뉴</SheetTitle>
+          <SheetDescription className="sr-only">사이트 메뉴</SheetDescription>
+        </SheetHeader>
+        <ul className="flex flex-col gap-1 px-2">
+          {items.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className="block rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </SheetContent>
+    </Sheet>
+  );
 }

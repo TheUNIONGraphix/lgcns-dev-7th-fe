@@ -1,35 +1,49 @@
-import ErrorMessage from "../atoms/ErrorMessage";
-import FormField from "../molecules/FormField";
+import type { SignupIntent } from "@/actions/signupForm";
+import SignupPasswordFields from "../molecules/SignupPasswordFields";
 import SignupStepActions from "../molecules/SignupStepActions";
-import { submitSignupPassword } from "@/actions/userActions";
 
 export default function SignupPasswordForm({
   password,
+  passwordConfirm,
   errors,
+  isPending = false,
+  pendingIntent,
 }: {
   password: string;
-  errors: { password?: string; form?: string };
+  passwordConfirm: string;
+  errors: { password?: string; passwordConfirm?: string; form?: string };
+  isPending?: boolean;
+  pendingIntent?: SignupIntent;
 }) {
   return (
-    <SignupStepActions backStep={1} submitAction={submitSignupPassword} submitLabel="다음" submitPendingLabel="확인 중">
-      <p className="text-sm text-muted-foreground">비밀번호는 8자 이상이어야 합니다.</p>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium">
-          비밀번호
-        </label>
-        <FormField
-          id="password"
-          type="password"
-          name="password"
-          placeholder="비밀번호"
-          defaultValue={password}
-          error={errors.password}
-          isClearable
-          required={false}
-          autoComplete="new-password"
-        />
+    <SignupStepActions
+      showBack
+      submitLabel="다음"
+      submitPendingLabel="확인 중"
+      showArrow
+      stepLabel="2 / 4 단계"
+      isPending={isPending}
+      pendingIntent={pendingIntent}
+    >
+      <div className="flex flex-col gap-[10px]">
+        <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">
+          비밀번호를 설정해주세요
+        </h2>
+        <p className="text-[14px] leading-[1.6] text-[#6b7280]">
+          안전한 비밀번호로 계정을 보호하세요.
+        </p>
       </div>
-      <ErrorMessage id="signup-error" error={errors.form} />
+      <SignupPasswordFields
+        defaultPassword={password}
+        defaultConfirm={passwordConfirm}
+        passwordError={errors.password}
+        confirmError={errors.passwordConfirm}
+      />
+      {errors.form ? (
+        <p className="text-[13px] text-red-500" role="alert">
+          {errors.form}
+        </p>
+      ) : null}
     </SignupStepActions>
   );
 }

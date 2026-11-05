@@ -1,6 +1,6 @@
 interface UserPayloadType {
-    userId: string;
-    password: string;
+  userId: string;
+  password: string;
 }
 
 export type { UserPayloadType };

@@ -1,5 +1,5 @@
-"use client"
-import { useRouter } from "next/navigation"
+"use client";
+import { useRouter } from "next/navigation";
 
 export default function FeedNextButton({
   page,
@@ -7,22 +7,22 @@ export default function FeedNextButton({
   sort,
   search,
 }: {
-  page: string
-  limit: string
-  sort: string
-  search: string
+  page: string;
+  limit: string;
+  sort: string;
+  search: string;
 }) {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <button
       onClick={() => {
         router.push(
-          `/feed?page=${parseInt(page) + 1}&limit=${limit}&sort=${sort}&search=${search}`
-        )
+          `/feed?page=${parseInt(page) + 1}&limit=${limit}&sort=${sort}&search=${search}`,
+        );
       }}
     >
       Next
     </button>
-  )
+  );
 }

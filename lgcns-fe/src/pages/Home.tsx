@@ -1,53 +1,51 @@
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../assets/vite.svg'
-import Ticks from '../components/Ticks'
-import CenterHero from '../components/CenterHero'
-import CountBtn from '../components/CountBtn'
-import SocialIconList from '../components/SocialIconList'
+const banner =
+  "https://i.pinimg.com/1200x/49/9b/65/499b651238e31591d4f0f15bd36042bf.jpg";
+
+function Banner() {
+  return (
+    <article className="flex flex-col items-center gap-2">
+      <img
+        className="h-auto w-full max-w-full"
+        src={banner}
+        alt="cat banner"
+        width={1000}
+        height={1000}
+      />
+      <h3 className="text-center text-2xl font-bold text-red-500">
+        Cat Banner Title
+      </h3>
+      <p>Cat Banner Description</p>
+      <button
+        type="button"
+        className="rounded-lg bg-[#171717] px-4 py-2 text-sm font-medium text-white"
+      >
+        View More
+      </button>
+    </article>
+  );
+}
 
 function Home() {
   return (
     <>
-      <CenterHero />
-      <Ticks />
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <SocialIconList />
-          <CountBtn />
+      <section>
+        <div id="swiper" className="flex flex-col">
+          <Banner />
+          <Banner />
+          <Banner />
         </div>
       </section>
-      <Ticks />
-      <section id="spacer">
-        <CountBtn />
+      <section className="flex flex-col gap-4 px-4 py-20">
+        <button
+          type="button"
+          className="rounded-lg bg-[#171717] px-6 py-8 text-2xl font-bold text-white"
+          onClick={() => console.log("Click me")}
+        >
+          Click me
+        </button>
       </section>
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;

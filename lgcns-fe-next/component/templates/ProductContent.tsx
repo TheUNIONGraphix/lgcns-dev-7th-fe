@@ -1,12 +1,12 @@
-import CustomTitle from "@/component/atoms/CustomTitle"
+import CustomTitle from "@/component/atoms/CustomTitle";
 
 export default async function ProductContent({
   params,
 }: {
-  params: Promise<{ productCategoryName: string[] }>
+  params: Promise<{ productCategoryName: string[] }>;
 }) {
-  const { productCategoryName } = await params
-  console.log(productCategoryName.join("/"))
+  const { productCategoryName } = await params;
+  console.log(productCategoryName.join("/"));
   return (
     <div>
       <CustomTitle TitleType="h1" className="text-2xl font-bold">
@@ -14,5 +14,5 @@ export default async function ProductContent({
       </CustomTitle>
       <p>{productCategoryName}</p>
     </div>
-  )
+  );
 }

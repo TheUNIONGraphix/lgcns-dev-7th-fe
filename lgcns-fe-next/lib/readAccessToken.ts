@@ -6,7 +6,9 @@ export async function readAccessToken() {
   await connection();
   const cookieStore = await cookies();
   const req = {
-    cookies: Object.fromEntries(cookieStore.getAll().map((cookie) => [cookie.name, cookie.value])),
+    cookies: Object.fromEntries(
+      cookieStore.getAll().map((cookie) => [cookie.name, cookie.value]),
+    ),
     headers: {},
   } as GetTokenParams["req"];
   const token = await getToken({ req });

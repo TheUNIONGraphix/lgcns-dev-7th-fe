@@ -1,5 +1,3 @@
 export default function Ticks() {
-  return (
-    <div className="ticks"></div>
-  )
+  return <div className="ticks"></div>;
 }

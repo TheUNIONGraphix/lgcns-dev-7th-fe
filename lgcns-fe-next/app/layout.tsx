@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 const gothicA1 = Gothic_A1({
-    variable: "--font-gothic-a1",
-    subsets: ["latin"],
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-gothic-a1",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 const blackHanSans = Black_Han_Sans({
-    variable: "--font-black-han-sans",
-    subsets: ["latin"],
-    weight: ["400"],
+  variable: "--font-black-han-sans",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {

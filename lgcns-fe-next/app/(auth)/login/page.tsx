@@ -1,8 +1,10 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import LoginSection from "@/component/templates/LoginSection";
-import { readAccessToken } from "@/lib/readAccessToken";
 
-export default async function Login() {
-  if (await readAccessToken()) redirect("/");
-  return <LoginSection />;
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginSection />
+    </Suspense>
+  );
 }
