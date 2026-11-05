@@ -194,6 +194,16 @@ async function deletePost(input: { postId: string; authorId: string }) {
   return { ok: true as const };
 }
 
+async function findLikedPostIds(input: { userId: string; postIds: string[] }) {
+  const postIds = input.postIds.filter(isObjectId);
+  if (!input.userId || postIds.length === 0) return [];
+  const likes = await prisma.like.findMany({
+    where: { userId: input.userId, postId: { in: postIds } },
+    select: { postId: true },
+  });
+  return likes.map((like) => like.postId);
+}
+
 async function toggleLike(input: { postId: string; userId: string }) {
   if (!isObjectId(input.postId)) {
     return { ok: false as const, reason: "invalid" as const };
@@ -244,6 +254,7 @@ export const postService = {
   createPost,
   updatePost,
   deletePost,
+  findLikedPostIds,
   toggleLike,
   createComment,
 };

@@ -1,7 +1,7 @@
 import CustomTitle from "../atoms/CustomTitle";
 import PostCard from "./PostCard";
 import { readCurrentUser } from "@/lib/currentUser";
-import type { PostListResponseType } from "@/lib/postCache";
+import { findViewerLikedPostIds, type PostListResponseType } from "@/lib/postCache";
 
 export default async function PostListSection({
   sortOrder,
@@ -12,6 +12,13 @@ export default async function PostListSection({
 }) {
   const [user, data] = await Promise.all([readCurrentUser(), postList]);
   const viewerId = user?.id ?? null;
+  const likedIds = viewerId
+    ? await findViewerLikedPostIds(
+        viewerId,
+        data.posts.map((post) => post.id),
+      )
+    : [];
+  const likedPostIds = new Set(likedIds);
   const sortLabel = sortOrder === "ASC" ? "오래된순" : "최신순";
 
   if (data.posts.length === 0) {
@@ -29,7 +36,11 @@ export default async function PostListSection({
       <ul className="flex flex-col gap-4">
         {data.posts.map((post) => (
           <li key={post.id}>
-            <PostCard post={post} canManage={post.authorId === viewerId} />
+            <PostCard
+              post={post}
+              liked={likedPostIds.has(post.id)}
+              canManage={post.authorId === viewerId}
+            />
           </li>
         ))}
       </ul>

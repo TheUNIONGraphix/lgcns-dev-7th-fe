@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import PostCard from "@/component/organisms/PostCard";
 import PostLiveRefresh from "@/component/organisms/PostLiveRefresh";
 import { readCurrentUser } from "@/lib/currentUser";
-import { getCachedPost } from "@/lib/postCache";
+import { findViewerLikedPostIds, getCachedPost } from "@/lib/postCache";
 
 async function PostDetail({
   params,
@@ -12,10 +12,17 @@ async function PostDetail({
   params: Promise<{ postId: string }>;
 }) {
   const { postId } = await params;
-  const user = await readCurrentUser();
-  const post = await getCachedPost(postId);
+  const [user, post] = await Promise.all([readCurrentUser(), getCachedPost(postId)]);
   if (!post) notFound();
-  return <PostCard post={post} full canManage={post.authorId === user?.id} />;
+  const likedIds = user ? await findViewerLikedPostIds(user.id, [post.id]) : [];
+  return (
+    <PostCard
+      post={post}
+      full
+      liked={likedIds.includes(post.id)}
+      canManage={post.authorId === user?.id}
+    />
+  );
 }
 
 export default function PostDetailPage({

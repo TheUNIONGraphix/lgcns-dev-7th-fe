@@ -16,6 +16,10 @@ export async function getCachedPosts(
   return postService.listPosts(pageNumber, sortOrder);
 }
 
+export async function findViewerLikedPostIds(userId: string, postIds: string[]) {
+  return postService.findLikedPostIds({ userId, postIds });
+}
+
 export async function getCachedPost(postId: string): Promise<PostItem | null> {
   "use cache";
   cacheTag("posts");

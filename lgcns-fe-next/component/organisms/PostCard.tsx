@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useOptimistic, useState } from "react";
+import { useFormStatus } from "react-dom";
 import { createComment, deletePost, toggleLike } from "@/actions/postActions";
 import type { PostItem } from "@/lib/postCache";
 import "quill/dist/quill.snow.css";
@@ -23,12 +24,64 @@ function excerpt(html: string) {
   return `${text.slice(0, 140)}…`;
 }
 
+function applyLike(current: { count: number; liked: boolean }, nextLiked: boolean) {
+  if (nextLiked === current.liked) return current;
+  return {
+    liked: nextLiked,
+    count: Math.max(0, current.count + (nextLiked ? 1 : -1)),
+  };
+}
+
+function LikeSubmit({ count, liked }: { count: number; liked: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-pressed={liked}
+      className={
+        liked
+          ? "rounded-lg border border-[#2563eb] bg-[#2563eb] px-3 py-1.5 font-medium text-white disabled:opacity-70"
+          : "rounded-lg border border-[#d1d5db] bg-white px-3 py-1.5 font-medium text-[#111827] disabled:opacity-70"
+      }
+    >
+      좋아요 {count}
+    </button>
+  );
+}
+
+function LikeButton({
+  postId,
+  count,
+  liked,
+}: {
+  postId: string;
+  count: number;
+  liked: boolean;
+}) {
+  const [like, setLike] = useOptimistic({ count, liked }, applyLike);
+
+  return (
+    <form
+      action={async (formData) => {
+        setLike(!like.liked);
+        await toggleLike(formData);
+      }}
+    >
+      <input type="hidden" name="postId" value={postId} />
+      <LikeSubmit count={like.count} liked={like.liked} />
+    </form>
+  );
+}
+
 export default function PostCard({
   post,
+  liked = false,
   canManage = false,
   full = false,
 }: {
   post: PostItem;
+  liked?: boolean;
   canManage?: boolean;
   full?: boolean;
 }) {
@@ -54,15 +107,7 @@ export default function PostCard({
         </p>
       )}
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        <form action={toggleLike}>
-          <input type="hidden" name="postId" value={post.id} />
-          <button
-            type="submit"
-            className="rounded-lg border border-[#d1d5db] px-3 py-1.5 font-medium text-[#111827]"
-          >
-            좋아요 {post.likeCount}
-          </button>
-        </form>
+        <LikeButton postId={post.id} count={post.likeCount} liked={liked} />
         <span className="text-[#374151]">댓글 {post.commentCount}</span>
         {full ? null : (
           <Link href={`/postdetail/${post.id}`} className="font-medium text-[#2563eb]">

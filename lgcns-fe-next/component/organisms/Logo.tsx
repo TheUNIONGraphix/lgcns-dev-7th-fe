@@ -3,7 +3,7 @@ export default function Logo() {
   return (
     <h1>
       <LogoItem />
-      <span className="logo-text">LGCNS</span>
+      <span className="sr-only">LGCNS</span>
     </h1>
   );
 }
