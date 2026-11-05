@@ -8,7 +8,13 @@ const USER_ID_PATTERN = /^[a-z0-9_]{4,20}$/;
 const inputClassName =
   "h-[52px] rounded-[10px] bg-white px-4 pr-11 text-[15px] leading-[normal] text-[#111827] shadow-none placeholder:text-[#9ca3af] focus-visible:ring-0 md:text-[15px]";
 
-export default function SignupIdField({ defaultValue = "", error = "" }: { defaultValue?: string; error?: string }) {
+export default function SignupIdField({
+  defaultValue = "",
+  error = "",
+}: {
+  defaultValue?: string;
+  error?: string;
+}) {
   const [value, setValue] = useState(defaultValue);
   const [serverError, setServerError] = useState(error);
   const formatOk = USER_ID_PATTERN.test(value);
@@ -18,7 +24,10 @@ export default function SignupIdField({ defaultValue = "", error = "" }: { defau
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <label htmlFor="userId" className="text-[14px] leading-[normal] font-medium text-[#374151]">
+        <label
+          htmlFor="userId"
+          className="text-[14px] leading-[normal] font-medium text-[#374151]"
+        >
           아이디
         </label>
         <div className="relative">
@@ -56,7 +65,13 @@ export default function SignupIdField({ defaultValue = "", error = "" }: { defau
       </div>
       {showSuccess ? (
         <p className="flex items-center gap-2 text-[13px] leading-[1.5] text-[#2563eb]">
-          <img src="/signup/check-16.svg" alt="" width={16} height={16} className="h-4 w-4 max-w-none" />
+          <img
+            src="/signup/check-16.svg"
+            alt=""
+            width={16}
+            height={16}
+            className="h-4 w-4 max-w-none"
+          />
           사용할 수 있는 아이디예요.
         </p>
       ) : null}

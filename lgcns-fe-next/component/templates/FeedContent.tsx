@@ -1,16 +1,16 @@
-import FeedNextButton from "@/component/molecules/FeedNextButton"
+import FeedNextButton from "@/component/molecules/FeedNextButton";
 
 export default async function FeedContent({
   searchParams,
 }: {
   searchParams: Promise<{
-    page: string
-    limit: string
-    sort: string
-    search: string
-  }>
+    page: string;
+    limit: string;
+    sort: string;
+    search: string;
+  }>;
 }) {
-  const { page, limit, sort, search } = await searchParams
+  const { page, limit, sort, search } = await searchParams;
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -21,5 +21,5 @@ export default async function FeedContent({
       <p>search: {search}</p>
       <FeedNextButton page={page} limit={limit} sort={sort} search={search} />
     </div>
-  )
+  );
 }

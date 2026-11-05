@@ -36,7 +36,10 @@ function PasswordInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={id} className="text-[14px] leading-[normal] font-medium text-[#374151]">
+      <label
+        htmlFor={id}
+        className="text-[14px] leading-[normal] font-medium text-[#374151]"
+      >
         {label}
       </label>
       <div className="relative">
@@ -59,7 +62,13 @@ function PasswordInput({
           className="absolute top-1/2 right-4 -translate-y-1/2"
           onClick={() => setVisible((current) => !current)}
         >
-          <img src="/signup/eye-off.svg" alt="" width={18} height={18} className="h-[18px] w-[18px] max-w-none" />
+          <img
+            src="/signup/eye-off.svg"
+            alt=""
+            width={18}
+            height={18}
+            className="h-[18px] w-[18px] max-w-none"
+          />
         </button>
       </div>
     </div>
@@ -68,21 +77,24 @@ function PasswordInput({
 
 export default function SignupPasswordFields({
   defaultPassword = "",
+  defaultConfirm = "",
   passwordError = "",
   confirmError = "",
 }: {
   defaultPassword?: string;
+  defaultConfirm?: string;
   passwordError?: string;
   confirmError?: string;
 }) {
   const [password, setPassword] = useState(defaultPassword);
-  const [confirm, setConfirm] = useState(defaultPassword);
+  const [confirm, setConfirm] = useState(defaultConfirm);
   const [serverPasswordError, setServerPasswordError] = useState(passwordError);
   const [serverConfirmError, setServerConfirmError] = useState(confirmError);
   const score = strengthScore(password);
   const matches = password.length > 0 && password === confirm;
-  const passwordMessage = password === defaultPassword ? serverPasswordError : "";
-  const confirmMessage = confirm === defaultPassword && password === defaultPassword ? serverConfirmError : "";
+  const passwordMessage =
+    password === defaultPassword ? serverPasswordError : "";
+  const confirmMessage = confirm === defaultConfirm ? serverConfirmError : "";
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -108,14 +120,20 @@ export default function SignupPasswordFields({
               />
             ))}
           </span>
-          {score === 3 ? <span className="text-[12px] leading-[normal] text-[#2563eb]">안전한 비밀번호</span> : null}
+          {score === 3 ? (
+            <span className="text-[12px] leading-[normal] text-[#2563eb]">
+              안전한 비밀번호
+            </span>
+          ) : null}
         </div>
         {passwordMessage ? (
           <p className="text-[12px] leading-[normal] text-red-500" role="alert">
             {passwordMessage}
           </p>
         ) : (
-          <p className="text-[12px] leading-[normal] text-[#6b7280]">영문, 숫자, 특수문자를 포함한 8~20자</p>
+          <p className="text-[12px] leading-[normal] text-[#6b7280]">
+            영문, 숫자, 특수문자를 포함한 8~20자
+          </p>
         )}
       </div>
       <div className="flex flex-col gap-[10px]">
@@ -133,7 +151,13 @@ export default function SignupPasswordFields({
         />
         {matches && !confirmMessage ? (
           <p className="flex items-center gap-2 text-[13px] leading-[1.5] text-[#2563eb]">
-            <img src="/signup/check-16.svg" alt="" width={16} height={16} className="h-4 w-4 max-w-none" />
+            <img
+              src="/signup/check-16.svg"
+              alt=""
+              width={16}
+              height={16}
+              className="h-4 w-4 max-w-none"
+            />
             비밀번호가 일치해요.
           </p>
         ) : null}

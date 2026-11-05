@@ -110,7 +110,13 @@ export default function SignupPhotoInput({ error }: { error?: string }) {
         className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-[#d1d5db] bg-white px-4 text-[13px] leading-[normal] font-semibold text-[#374151]"
         onClick={() => inputRef.current?.click()}
       >
-        <img src="/signup/upload.svg" alt="" width={16} height={16} className="h-4 w-4 max-w-none" />
+        <img
+          src="/signup/upload.svg"
+          alt=""
+          width={16}
+          height={16}
+          className="h-4 w-4 max-w-none"
+        />
         이미지 업로드 / 변경
       </button>
       {fileName ? (
@@ -123,9 +129,15 @@ export default function SignupPhotoInput({ error }: { error?: string }) {
           </button>
         </p>
       ) : null}
-      <p className="text-center text-[12px] leading-[normal] text-[#9ca3af]">JPG, PNG · 최대 5MB</p>
+      <p className="text-center text-[12px] leading-[normal] text-[#9ca3af]">
+        JPG, PNG · 최대 5MB
+      </p>
       {message ? (
-        <p id="profileImage-error" className="text-center text-[12px] text-red-500" role="alert">
+        <p
+          id="profileImage-error"
+          className="text-center text-[12px] text-red-500"
+          role="alert"
+        >
           {message}
         </p>
       ) : null}

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -76,8 +76,14 @@ export default function FormField({
           aria-describedby={error ? errorId : undefined}
           className={[
             inputClassName,
-            showClear && showToggle ? "pr-14" : showClear || showToggle ? "pr-8" : undefined,
-          ].filter(Boolean).join(" ")}
+            showClear && showToggle
+              ? "pr-14"
+              : showClear || showToggle
+                ? "pr-8"
+                : undefined,
+          ]
+            .filter(Boolean)
+            .join(" ")}
           onChange={handleChange}
         />
         {showToggle ? (
@@ -88,7 +94,11 @@ export default function FormField({
             className="absolute top-1/2 right-1.5 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
             onClick={() => setIsVisible((current) => !current)}
           >
-            {isVisible ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+            {isVisible ? (
+              <EyeOff className="size-3.5" />
+            ) : (
+              <Eye className="size-3.5" />
+            )}
           </button>
         ) : null}
         {showClear ? (

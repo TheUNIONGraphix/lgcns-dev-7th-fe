@@ -1,15 +1,22 @@
 import { connection } from "next/server";
 import { AuthProvider } from "@/component/providers/AuthProvider";
 import { getServerSession } from "next-auth";
+import { verifyAccessToken } from "@/lib/accessJwt";
 import { authOptions } from "@/lib/authOptions";
 
-export default async function AuthShell({ children }: { children: React.ReactNode }) {
+export default async function AuthShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   await connection();
   const session = await getServerSession(authOptions);
-  console.log("=============getServerSession=============");
-  console.log(session);
-  console.log("=============AuthShell=============");
-  console.log(session);
+  const accessToken = session?.accessToken ?? "";
+  const verified = accessToken ? await verifyAccessToken(accessToken) : null;
 
-  return <AuthProvider accessToken={session?.accessToken ?? null}>{children}</AuthProvider>;
+  return (
+    <AuthProvider accessToken={verified ? accessToken : null}>
+      {children}
+    </AuthProvider>
+  );
 }

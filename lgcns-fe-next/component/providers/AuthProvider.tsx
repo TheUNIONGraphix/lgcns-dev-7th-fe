@@ -23,8 +23,8 @@ export function AuthProvider({
     accessToken,
     isLoggedIn: Boolean(accessToken),
   };
-  console.log("=============AuthProvider=============");
-  console.log(value);
+  // console.log("=============AuthProvider=============");
+  // console.log(value);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,25 +1,31 @@
+import type { SignupIntent } from "@/actions/signupForm";
 import SignupPhotoInput from "../molecules/SignupPhotoInput";
 import SignupStepActions from "../molecules/SignupStepActions";
-import { skipSignupProfile, submitSignupProfile } from "@/actions/userActions";
 
 export default function SignupProfileForm({
   errors,
+  isPending = false,
+  pendingIntent,
 }: {
   errors: { profileImageUrl?: string; form?: string };
+  isPending?: boolean;
+  pendingIntent?: SignupIntent;
 }) {
   return (
     <SignupStepActions
-      backStep={3}
-      skipAction={skipSignupProfile}
+      showBack
+      showSkip
       skipPendingLabel="가입 중"
-      submitAction={submitSignupProfile}
       submitLabel="가입 완료"
       submitPendingLabel="가입 중"
-      encType="multipart/form-data"
+      isPending={isPending}
+      pendingIntent={pendingIntent}
     >
       <div className="flex flex-col gap-[10px]">
         <div className="flex items-center gap-2">
-          <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">프로필을 꾸며보세요</h2>
+          <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">
+            프로필을 꾸며보세요
+          </h2>
           <span className="rounded-[6px] bg-[#f3f4f6] px-2 py-1 text-[11px] leading-[normal] font-medium text-[#6b7280]">
             선택
           </span>

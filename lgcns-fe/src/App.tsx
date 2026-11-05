@@ -32,11 +32,39 @@ function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/blog/:blogId" element={<Blog />} />
         <Route path="/product/*" element={<Product />} />
-        <Route path="/cart" element={<MemberRoute><Cart /></MemberRoute>} />
-        <Route path="/order" element={<MemberRoute><Order /></MemberRoute>} />
+        <Route
+          path="/cart"
+          element={
+            <MemberRoute>
+              <Cart />
+            </MemberRoute>
+          }
+        />
+        <Route
+          path="/order"
+          element={
+            <MemberRoute>
+              <Order />
+            </MemberRoute>
+          }
+        />
       </Route>
-      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
-      <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
+      <Route
+        path="/login"
+        element={
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <GuestRoute>
+            <Signup />
+          </GuestRoute>
+        }
+      />
       <Route path="/client-login" element={<ClientLogin />} />
     </Routes>
   );

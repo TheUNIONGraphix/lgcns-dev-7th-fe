@@ -1,0 +1,226 @@
+import { postText, sanitizePostHtml } from "@/lib/postHtml";
+import { prisma } from "@/lib/prisma";
+
+const MAX_POST_TEXT = 5000;
+const MAX_COMMENT_TEXT = 300;
+
+export type CommentItem = {
+  id: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
+};
+
+export type PostItem = {
+  id: string;
+  authorId: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
+  likeCount: number;
+  commentCount: number;
+  comments: CommentItem[];
+};
+
+function isObjectId(value: string) {
+  return /^[a-f\d]{24}$/i.test(value);
+}
+
+function preparePostBody(raw: string) {
+  const body = sanitizePostHtml(raw);
+  const text = postText(body);
+  if (!text || text.length > MAX_POST_TEXT) return null;
+  return body;
+}
+
+function toComment(comment: {
+  id: string;
+  authorName: string;
+  body: string;
+  createdAt: Date;
+}): CommentItem {
+  return {
+    id: comment.id,
+    authorName: comment.authorName,
+    body: comment.body,
+    createdAt: comment.createdAt.toISOString(),
+  };
+}
+
+async function listPosts(): Promise<PostItem[]> {
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+  if (posts.length === 0) return [];
+
+  const ids = posts.map((post) => post.id);
+  const [comments, likes] = await Promise.all([
+    prisma.comment.findMany({
+      where: { postId: { in: ids } },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.like.findMany({
+      where: { postId: { in: ids } },
+      select: { postId: true },
+    }),
+  ]);
+
+  const commentsByPost = new Map<string, CommentItem[]>();
+  for (const comment of comments) {
+    const list = commentsByPost.get(comment.postId) ?? [];
+    list.push(toComment(comment));
+    commentsByPost.set(comment.postId, list);
+  }
+
+  const likeCountByPost = new Map<string, number>();
+  for (const like of likes) {
+    likeCountByPost.set(like.postId, (likeCountByPost.get(like.postId) ?? 0) + 1);
+  }
+
+  return posts.map((post) => {
+    const postComments = commentsByPost.get(post.id) ?? [];
+    return {
+      id: post.id,
+      authorId: post.authorId,
+      authorName: post.authorName,
+      body: post.body,
+      createdAt: post.createdAt.toISOString(),
+      likeCount: likeCountByPost.get(post.id) ?? 0,
+      commentCount: postComments.length,
+      comments: postComments,
+    };
+  });
+}
+
+async function getPost(postId: string): Promise<PostItem | null> {
+  if (!isObjectId(postId)) return null;
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) return null;
+
+  const [comments, likes] = await Promise.all([
+    prisma.comment.findMany({
+      where: { postId },
+      orderBy: { createdAt: "asc" },
+    }),
+    prisma.like.findMany({
+      where: { postId },
+      select: { id: true },
+    }),
+  ]);
+
+  return {
+    id: post.id,
+    authorId: post.authorId,
+    authorName: post.authorName,
+    body: post.body,
+    createdAt: post.createdAt.toISOString(),
+    likeCount: likes.length,
+    commentCount: comments.length,
+    comments: comments.map(toComment),
+  };
+}
+
+async function createPost(input: {
+  authorId: string;
+  authorName: string;
+  body: string;
+}) {
+  const body = preparePostBody(input.body);
+  if (!body) return { ok: false as const, reason: "invalid" as const };
+  const post = await prisma.post.create({
+    data: { authorId: input.authorId, authorName: input.authorName, body },
+  });
+  return { ok: true as const, id: post.id };
+}
+
+async function updatePost(input: {
+  postId: string;
+  authorId: string;
+  body: string;
+}) {
+  const body = preparePostBody(input.body);
+  if (!isObjectId(input.postId) || !body) {
+    return { ok: false as const, reason: "invalid" as const };
+  }
+  const post = await prisma.post.findUnique({
+    where: { id: input.postId },
+    select: { authorId: true },
+  });
+  if (!post || post.authorId !== input.authorId) {
+    return { ok: false as const, reason: "forbidden" as const };
+  }
+  await prisma.post.update({ where: { id: input.postId }, data: { body } });
+  return { ok: true as const, id: input.postId };
+}
+
+async function deletePost(input: { postId: string; authorId: string }) {
+  if (!isObjectId(input.postId)) {
+    return { ok: false as const, reason: "invalid" as const };
+  }
+  const post = await prisma.post.findUnique({
+    where: { id: input.postId },
+    select: { authorId: true },
+  });
+  if (!post || post.authorId !== input.authorId) {
+    return { ok: false as const, reason: "forbidden" as const };
+  }
+  await prisma.comment.deleteMany({ where: { postId: input.postId } });
+  await prisma.like.deleteMany({ where: { postId: input.postId } });
+  await prisma.post.delete({ where: { id: input.postId } });
+  return { ok: true as const };
+}
+
+async function toggleLike(input: { postId: string; userId: string }) {
+  if (!isObjectId(input.postId)) {
+    return { ok: false as const, reason: "invalid" as const };
+  }
+  const existing = await prisma.like.findUnique({
+    where: { postId_userId: { postId: input.postId, userId: input.userId } },
+  });
+  if (existing) {
+    await prisma.like.delete({ where: { id: existing.id } });
+  } else {
+    await prisma.like.create({
+      data: { postId: input.postId, userId: input.userId },
+    });
+  }
+  return { ok: true as const };
+}
+
+async function createComment(input: {
+  postId: string;
+  authorId: string;
+  authorName: string;
+  body: string;
+}) {
+  const body = input.body.trim();
+  if (!isObjectId(input.postId) || !body || body.length > MAX_COMMENT_TEXT) {
+    return { ok: false as const, reason: "invalid" as const };
+  }
+  const post = await prisma.post.findUnique({
+    where: { id: input.postId },
+    select: { id: true },
+  });
+  if (!post) return { ok: false as const, reason: "missing" as const };
+  await prisma.comment.create({
+    data: {
+      postId: input.postId,
+      authorId: input.authorId,
+      authorName: input.authorName,
+      body,
+    },
+  });
+  return { ok: true as const };
+}
+
+export const postService = {
+  isObjectId,
+  listPosts,
+  getPost,
+  createPost,
+  updatePost,
+  deletePost,
+  toggleLike,
+  createComment,
+};

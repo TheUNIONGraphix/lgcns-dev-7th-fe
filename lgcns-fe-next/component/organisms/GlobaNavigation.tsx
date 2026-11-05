@@ -1,12 +1,18 @@
 import MobileNavigation from "../molecules/MobileNavigation";
 import DesktopNavigation from "../molecules/DesktopNavigation";
 
-export default function GlobalNavigation(){
+const items = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+  { href: "/posts", label: "Posts" },
+];
 
-    return (
-        <nav>
-            <MobileNavigation />
-            <DesktopNavigation /> 
-        </nav>
-    );
+export default function GlobalNavigation() {
+  return (
+    <nav className="flex items-center">
+      <MobileNavigation items={items} />
+      <DesktopNavigation items={items} />
+    </nav>
+  );
 }

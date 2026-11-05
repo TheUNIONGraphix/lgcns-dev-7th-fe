@@ -3,11 +3,48 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import KakaoProvider from "next-auth/providers/kakao";
 import GoogleProvider from "next-auth/providers/google";
 
+import { EXPIRES_IN_SECONDS, signAccessToken } from "@/lib/accessJwt";
 import { userService } from "@/service/userService";
+
+function text(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function socialProfile(
+  provider: string,
+  profile: unknown,
+  user: { email?: string | null; name?: string | null; image?: string | null },
+) {
+  const record =
+    profile && typeof profile === "object"
+      ? (profile as {
+          email?: string;
+          name?: string;
+          picture?: string;
+          kakao_account?: {
+            email?: string;
+            profile?: { nickname?: string; profile_image_url?: string };
+          };
+        })
+      : {};
+  const kakao = record.kakao_account;
+  return {
+    email: text(user.email) ?? text(record.email) ?? text(kakao?.email),
+    name:
+      text(user.name) ??
+      text(record.name) ??
+      text(kakao?.profile?.nickname) ??
+      provider,
+    profileImageUrl:
+      text(user.image) ??
+      text(record.picture) ??
+      text(kakao?.profile?.profile_image_url),
+  };
+}
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt", maxAge: 60 * 60 * 2 },
+  session: { strategy: "jwt", maxAge: EXPIRES_IN_SECONDS },
   pages: { signIn: "/login" },
   providers: [
     CredentialsProvider({
@@ -24,8 +61,6 @@ export const authOptions: NextAuthOptions = {
           password: credentials.password,
         });
         if (!result.ok) return null;
-        console.log("=============authOptions.authorize=============");
-        console.log(result);
 
         return {
           id: result.user.id,
@@ -39,6 +74,12 @@ export const authOptions: NextAuthOptions = {
     KakaoProvider({
       clientId: process.env.KAKAO_CLIENT_ID ?? "",
       clientSecret: process.env.KAKAO_CLIENT_SECRET ?? "",
+      authorization: {
+        url: "https://kauth.kakao.com/oauth/authorize",
+        params: {
+          scope: "profile_nickname,profile_image,account_email",
+        },
+      },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -47,55 +88,28 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account, profile }) {
-      if (account?.provider === "kakao") {
-        const kakao = profile as {
-          id?: number;
-          kakao_account?: {
-            email?: string;
-            profile?: { nickname?: string; profile_image_url?: string };
-          };
-        };
-        console.log("=============kakao profile=============");
-        console.log(profile);
-        console.log("=============kakao account=============");
-        console.log(account);
-        console.log("=============kakao user=============");
-        console.log(user);
-
-        token.accessToken = account.access_token;
-        if (typeof account.expires_at === "number") {
-          token.expiresIn = account.expires_at - Math.floor(Date.now() / 1000);
-        }
-        token.id = user?.id ?? String(kakao.id ?? account.providerAccountId);
-        token.email = user?.email ?? kakao.kakao_account?.email ?? token.email;
-        token.name = user?.name ?? kakao.kakao_account?.profile?.nickname ?? token.name;
-        token.profileImageUrl =
-          user?.image ?? kakao.kakao_account?.profile?.profile_image_url ?? token.profileImageUrl;
-        return token;
-      }
-
-      if (account?.provider === "google") {
-        const google = profile as {
-          id?: string;
-          email?: string;
-          name?: string;
-          image?: string;
-        };
-        console.log("=============google profile=============");
-        console.log(profile);
-        console.log("=============google account=============");
-        console.log(account);
-        console.log("=============google user=============");
-        console.log(user);
-
-        token.accessToken = account.access_token;
-        if (typeof account.expires_at === "number") {
-          token.expiresIn = account.expires_at - Math.floor(Date.now() / 1000);
-        }
-        token.id = user?.id ?? String(google.id ?? account.providerAccountId);
-        token.email = user?.email ?? google.email ?? token.email;
-        token.name = user?.name ?? google.name ?? token.name;
-        token.profileImageUrl = user?.image ?? google.image ?? token.profileImageUrl;
+      if (
+        account &&
+        (account.provider === "kakao" || account.provider === "google")
+      ) {
+        const social = socialProfile(account.provider, profile, user ?? {});
+        const linked = await userService.linkSocialAccount({
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+          email: social.email,
+          name: social.name,
+          profileImageUrl: social.profileImageUrl,
+        });
+        token.accessToken = await signAccessToken({
+          id: linked.id,
+          email: linked.email,
+          name: linked.name ?? "",
+        });
+        token.expiresIn = EXPIRES_IN_SECONDS;
+        token.id = linked.id;
+        token.email = linked.email;
+        token.name = linked.name ?? "";
+        token.profileImageUrl = linked.profileImageUrl ?? undefined;
         return token;
       }
 
@@ -111,15 +125,13 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken ?? "";
-      session.expiresIn = token.expiresIn ?? 60 * 60 * 2;
+      session.expiresIn = token.expiresIn ?? EXPIRES_IN_SECONDS;
       session.user = {
         id: token.id ?? "",
         email: token.email ?? "",
         name: token.name ?? "",
         profileImageUrl: token.profileImageUrl,
       };
-      console.log("=============session=============");
-      console.log(session);
       return session;
     },
     async redirect({ url, baseUrl }) {

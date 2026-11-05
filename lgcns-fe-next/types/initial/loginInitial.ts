@@ -1,8 +1,8 @@
 import { UserPayloadType } from "@/types/request/RequestType";
 
 const initialValues: UserPayloadType = {
-    userId: "",
-    password: "",
+  userId: "",
+  password: "",
 };
-  
+
 export default initialValues;

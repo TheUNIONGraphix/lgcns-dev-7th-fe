@@ -26,7 +26,12 @@ function MemberRoute({ children }: { children: ReactNode }) {
   const loggedIn = useLoggedIn();
   if (!loggedIn) {
     const callback = `${location.pathname}${location.search}`;
-    return <Navigate to={`/login?callbackUrl=${encodeURIComponent(callback)}`} replace />;
+    return (
+      <Navigate
+        to={`/login?callbackUrl=${encodeURIComponent(callback)}`}
+        replace
+      />
+    );
   }
   return children;
 }

@@ -1,21 +1,47 @@
 "use client";
 
-import { useAuth } from "@/component/providers/AuthProvider";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { useTransition } from "react";
+import { useAuth } from "@/component/providers/AuthProvider";
 
 export default function LoginStatus() {
   const { isLoggedIn } = useAuth();
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
-  if (!isLoggedIn) return null;
 
-  const handleLogout = async () => {
+  if (!isLoggedIn) {
+    const callbackUrl =
+      pathname === "/login" || pathname === "/signup" ? "/" : pathname;
+    return (
+      <Button
+        nativeButton={false}
+        render={
+          <Link href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`} />
+        }
+        className="shrink-0"
+      >
+        로그인
+      </Button>
+    );
+  }
+
+  const handleLogout = () => {
     startTransition(async () => {
-      // TODO: 로그아웃 처리 api 호출
       await signOut({ callbackUrl: "/" });
     });
   };
 
-  return (<Button onClick={handleLogout} disabled={isPending}>{isPending ? "로그아웃 중..." : "로그아웃"}</Button>);
+  return (
+    <Button
+      variant="outline"
+      onClick={handleLogout}
+      disabled={isPending}
+      className="shrink-0"
+    >
+      {isPending ? "로그아웃 중..." : "로그아웃"}
+    </Button>
+  );
 }

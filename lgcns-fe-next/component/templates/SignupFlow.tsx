@@ -44,7 +44,11 @@ export function SignupFlow({ children }: { children: React.ReactNode }) {
     [step, draft, errors],
   );
 
-  return <SignupFlowContext.Provider value={value}>{children}</SignupFlowContext.Provider>;
+  return (
+    <SignupFlowContext.Provider value={value}>
+      {children}
+    </SignupFlowContext.Provider>
+  );
 }
 
 export function useSignupFlow() {

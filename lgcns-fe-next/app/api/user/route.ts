@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { signupIdentitySchema, signupPasswordSchema } from "@/schema/signupSchema";
+import {
+  signupIdentitySchema,
+  signupPasswordSchema,
+} from "@/schema/signupSchema";
 import { userService } from "@/service/userService";
 
 const corsHeaders = {
@@ -30,7 +33,11 @@ export async function POST(request: Request) {
   const parsed = createUserSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, message: parsed.error.issues[0]?.message ?? "요청 본문을 확인해 주세요." },
+      {
+        success: false,
+        message:
+          parsed.error.issues[0]?.message ?? "요청 본문을 확인해 주세요.",
+      },
       { status: 400, headers: corsHeaders },
     );
   }
@@ -43,5 +50,8 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ success: true, data: result.user }, { status: 201, headers: corsHeaders });
+  return NextResponse.json(
+    { success: true, data: result.user },
+    { status: 201, headers: corsHeaders },
+  );
 }

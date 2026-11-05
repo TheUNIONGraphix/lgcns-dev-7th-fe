@@ -5,37 +5,39 @@ import { useFormStatus } from "react-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "cn";
 
-type SignupFormAction = (formData: FormData) => void | Promise<void>;
+type SignupIntent = "next" | "back" | "skip";
 
 export default function SignupSubmitButton({
+  intent,
   label,
   pendingLabel,
   variant = "default",
-  action,
-  name,
-  value,
   className,
   icon,
+  isPending = false,
+  pendingIntent,
 }: {
+  intent: SignupIntent;
   label: string;
   pendingLabel: string;
   variant?: "default" | "outline";
-  action: SignupFormAction;
-  name?: string;
-  value?: string;
   className?: string;
   icon?: ReactNode;
+  isPending?: boolean;
+  pendingIntent?: SignupIntent;
 }) {
   const status = useFormStatus();
-  const pending = status.pending && status.action === action;
+  const submitted = status.data?.get("intent");
+  const pending =
+    (status.pending && submitted === intent) ||
+    (isPending && pendingIntent === intent);
 
   return (
     <button
       type="submit"
-      formAction={action}
-      name={name}
-      value={value}
-      disabled={status.pending}
+      name="intent"
+      value={intent}
+      disabled={status.pending || isPending}
       aria-busy={pending}
       className={cn(buttonVariants({ variant }), className)}
     >

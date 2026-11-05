@@ -1,0 +1,27 @@
+---
+description: 컴포넌트는 atoms, molecules, organisms, templates 계층만 사용한다
+alwaysApply: true
+---
+
+# 아토믹 설계
+
+`lgcns-fe-next/component`는 아래 폴더와 의존 방향만 사용한다. 상위 계층을 하위에서 import하지 않는다.
+
+| 계층 | 역할 | import 가능 |
+| --- | --- | --- |
+| atoms | 버튼, 문구, 아이콘 하나 | UI primitive, provider |
+| molecules | atom을 묶은 입력·버튼 묶음 | atoms |
+| organisms | 폼, 카드처럼 동작이 있는 구역 | atoms, molecules, actions |
+| templates | 화면 골격 | organisms, molecules, atoms |
+
+- molecule과 atom은 `@/actions`, `@/service`를 import하지 않는다. action은 organism이 props로 넘긴다.
+- page는 template을 배치하고, 조회는 service 또는 service를 감싼 cache를 사용한다.
+- `components/ui`는 shadcn primitive다. 화면 조합은 `component/`에 둔다.
+
+```tsx
+// molecule: action을 직접 가져오지 않는다
+<SignupSubmitButton action={backAction} label="이전" />
+
+// organism: action을 연결한다
+<SignupStepActions backAction={backSignupStep} submitAction={submitSignupPassword} />
+```

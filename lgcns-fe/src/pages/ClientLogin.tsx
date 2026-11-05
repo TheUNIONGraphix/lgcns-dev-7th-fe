@@ -13,7 +13,10 @@ function ClientLogin() {
   };
 
   return (
-    <form className="mx-auto flex w-full max-w-sm flex-col gap-4 p-8" onSubmit={handleSubmit}>
+    <form
+      className="mx-auto flex w-full max-w-sm flex-col gap-4 p-8"
+      onSubmit={handleSubmit}
+    >
       <label className={fieldLabel}>
         ID
         <input
@@ -40,7 +43,9 @@ function ClientLogin() {
           }}
         />
       </label>
-      <button className={primaryButton} type="submit">Login</button>
+      <button className={primaryButton} type="submit">
+        Login
+      </button>
     </form>
   );
 }

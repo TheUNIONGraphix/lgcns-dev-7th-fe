@@ -1,11 +1,11 @@
-import socialData from '../data/socialData';
-import SocialIconItem from './SocialIconItem';
+import socialData from "../data/socialData";
+import SocialIconItem from "./SocialIconItem";
 export default function SocialIconList() {
-    return (
-        <ul>
-            {socialData.map((social) => (
-                <SocialIconItem key={social.id} social={social} target='_blank' />
-            ))}
-        </ul>
-    )
+  return (
+    <ul>
+      {socialData.map((social) => (
+        <SocialIconItem key={social.id} social={social} target="_blank" />
+      ))}
+    </ul>
+  );
 }

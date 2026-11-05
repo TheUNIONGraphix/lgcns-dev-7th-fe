@@ -1,14 +1,11 @@
 import SignupSection from "./SignupSection";
-import type { SignupDraft, SignupErrors } from "@/actions/draft";
+import type { SignupFormState } from "@/actions/signupForm";
 
-export default function SignUpFormSection({
-  step,
-  draft,
-  errors,
-}: {
-  step: number;
-  draft: SignupDraft;
-  errors: SignupErrors;
-}) {
-  return <SignupSection step={step} draft={draft} errors={errors} />;
+type SignupAction = (
+  state: SignupFormState,
+  formData: FormData,
+) => Promise<SignupFormState>;
+
+export default function SignUpFormSection({ action }: { action: SignupAction }) {
+  return <SignupSection action={action} />;
 }

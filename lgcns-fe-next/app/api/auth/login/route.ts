@@ -22,7 +22,11 @@ export async function POST(request: Request) {
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, message: parsed.error.issues[0]?.message ?? "요청 본문을 확인해 주세요." },
+      {
+        success: false,
+        message:
+          parsed.error.issues[0]?.message ?? "요청 본문을 확인해 주세요.",
+      },
       { status: 400, headers: corsHeaders },
     );
   }

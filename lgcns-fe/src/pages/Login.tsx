@@ -3,7 +3,14 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiBaseUrl } from "../lib/env";
 import { loginRequest, saveAccessToken } from "../lib/auth";
 import { safeCallbackPath } from "../lib/routes";
-import { authCard, authMain, errorText, fieldLabel, primaryButton, textInput } from "../lib/ui";
+import {
+  authCard,
+  authMain,
+  errorText,
+  fieldLabel,
+  primaryButton,
+  textInput,
+} from "../lib/ui";
 
 const SAVED_USER_ID_KEY = "lgcns-saved-user-id";
 
@@ -21,14 +28,20 @@ function readSavedUserIdOnServer() {
 
 function fieldMessage(field: "userId" | "password", value: string) {
   if (value) return "";
-  return field === "userId" ? "아이디를 입력해 주세요." : "비밀번호를 입력해 주세요.";
+  return field === "userId"
+    ? "아이디를 입력해 주세요."
+    : "비밀번호를 입력해 주세요.";
 }
 
 function Login() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const callbackUrl = safeCallbackPath(params.get("callbackUrl"));
-  const savedUserId = useSyncExternalStore(subscribeSavedUserId, readSavedUserId, readSavedUserIdOnServer);
+  const savedUserId = useSyncExternalStore(
+    subscribeSavedUserId,
+    readSavedUserId,
+    readSavedUserIdOnServer,
+  );
   const [userId, setUserId] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [rememberChoice, setRememberChoice] = useState<boolean | null>(null);
@@ -93,11 +106,18 @@ function Login() {
               value={idValue}
               onChange={(event) => {
                 setUserId(event.target.value);
-                setErrors((current) => ({ ...current, userId: fieldMessage("userId", event.target.value) }));
+                setErrors((current) => ({
+                  ...current,
+                  userId: fieldMessage("userId", event.target.value),
+                }));
               }}
             />
           </label>
-          {errors.userId ? <p className={errorText} role="alert">{errors.userId}</p> : null}
+          {errors.userId ? (
+            <p className={errorText} role="alert">
+              {errors.userId}
+            </p>
+          ) : null}
           <label className={fieldLabel} htmlFor="password">
             비밀번호
             <span className="flex items-center gap-2">
@@ -111,21 +131,30 @@ function Login() {
                 value={password}
                 onChange={(event) => {
                   setPassword(event.target.value);
-                  setErrors((current) => ({ ...current, password: fieldMessage("password", event.target.value) }));
+                  setErrors((current) => ({
+                    ...current,
+                    password: fieldMessage("password", event.target.value),
+                  }));
                 }}
               />
               <button
                 type="button"
                 className="shrink-0 text-sm font-semibold text-[#374151]"
                 aria-pressed={passwordVisible}
-                aria-label={passwordVisible ? "비밀번호 숨기기" : "비밀번호 보기"}
+                aria-label={
+                  passwordVisible ? "비밀번호 숨기기" : "비밀번호 보기"
+                }
                 onClick={() => setPasswordVisible((current) => !current)}
               >
                 {passwordVisible ? "숨기기" : "보기"}
               </button>
             </span>
           </label>
-          {errors.password ? <p className={errorText} role="alert">{errors.password}</p> : null}
+          {errors.password ? (
+            <p className={errorText} role="alert">
+              {errors.password}
+            </p>
+          ) : null}
           <div className="flex items-center justify-between gap-3">
             <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-[#4b5563]">
               <input
@@ -136,10 +165,24 @@ function Login() {
               />
               아이디 저장하기
             </label>
-            <button type="button" className="text-sm font-semibold text-[#2563eb]">비밀번호 찾기 / 아이디 찾기</button>
+            <button
+              type="button"
+              className="text-sm font-semibold text-[#2563eb]"
+            >
+              비밀번호 찾기 / 아이디 찾기
+            </button>
           </div>
-          {formError ? <p className={errorText} role="alert">{formError}</p> : null}
-          <button className={`${primaryButton} w-full`} type="submit" disabled={pending} aria-busy={pending}>
+          {formError ? (
+            <p className={errorText} role="alert">
+              {formError}
+            </p>
+          ) : null}
+          <button
+            className={`${primaryButton} w-full`}
+            type="submit"
+            disabled={pending}
+            aria-busy={pending}
+          >
             {pending ? "로그인 중..." : "로그인"}
           </button>
         </form>
@@ -148,10 +191,25 @@ function Login() {
           또는
           <span className="h-px flex-1 bg-[#e5e7eb]" />
         </div>
-        <button type="button" className="h-14 w-full rounded-xl border border-[#d1d5db] bg-white text-[15px] font-semibold text-[#374151] hover:bg-[#f9fafb]" onClick={() => startProvider("google")}>구글로 로그인</button>
-        <button type="button" className="h-14 w-full rounded-xl bg-[#fee500] text-[15px] font-semibold text-[#3a1d1d] hover:bg-[#f5dc00]" onClick={() => startProvider("kakao")}>카카오로 로그인</button>
+        <button
+          type="button"
+          className="h-14 w-full rounded-xl border border-[#d1d5db] bg-white text-[15px] font-semibold text-[#374151] hover:bg-[#f9fafb]"
+          onClick={() => startProvider("google")}
+        >
+          구글로 로그인
+        </button>
+        <button
+          type="button"
+          className="h-14 w-full rounded-xl bg-[#fee500] text-[15px] font-semibold text-[#3a1d1d] hover:bg-[#f5dc00]"
+          onClick={() => startProvider("kakao")}
+        >
+          카카오로 로그인
+        </button>
         <p className="pt-2 text-center text-sm text-[#6b7280]">
-          계정이 없으신가요? <Link className="font-semibold text-[#2563eb]" to="/signup">회원가입</Link>
+          계정이 없으신가요?{" "}
+          <Link className="font-semibold text-[#2563eb]" to="/signup">
+            회원가입
+          </Link>
         </p>
       </section>
     </main>

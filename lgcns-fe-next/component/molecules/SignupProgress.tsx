@@ -23,11 +23,19 @@ export default function SignupProgress({ step }: { step: number }) {
               aria-current={active ? "step" : undefined}
             >
               {done ? (
-                <img src="/signup/check-13.svg" alt="" width={13} height={13} className="h-[13px] w-[13px] max-w-none" />
+                <img
+                  src="/signup/check-13.svg"
+                  alt=""
+                  width={13}
+                  height={13}
+                  className="h-[13px] w-[13px] max-w-none"
+                />
               ) : (
                 <span className="font-semibold">{item.id}</span>
               )}
-              <span className={active ? "font-bold" : "font-medium"}>{item.label}</span>
+              <span className={active ? "font-bold" : "font-medium"}>
+                {item.label}
+              </span>
             </li>
           );
         })}
