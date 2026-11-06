@@ -2,6 +2,7 @@ import { safeCallbackPath } from "@/config/initial";
 
 const RETURN_TO_COOKIE = "returnTo";
 const CONTINUE_PATH = "/auth/continue";
+const REMEMBER_PATH = "/auth/remember";
 const RETURN_TO_MAX_AGE = 60 * 30;
 
 function returnToCookieOptions() {
@@ -29,6 +30,7 @@ function decodeReturnTo(value: string | undefined) {
 
 export {
   CONTINUE_PATH,
+  REMEMBER_PATH,
   RETURN_TO_COOKIE,
   decodeReturnTo,
   encodeReturnTo,

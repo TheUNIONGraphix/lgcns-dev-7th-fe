@@ -3,7 +3,7 @@ import { createPost, updatePost } from "@/actions/postActions";
 import PostWriteSheet from "@/component/templates/PostWriteSheet";
 import { readCurrentUser } from "@/lib/currentUser";
 import { getCachedPost } from "@/lib/postCache";
-import { saveReturnTo } from "@/lib/returnToCookie";
+import { REMEMBER_PATH } from "@/lib/returnTo";
 
 export function readCompose(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -24,8 +24,8 @@ export default async function PostCompose({
 
   const user = await readCurrentUser();
   if (!user) {
-    await saveReturnTo(returnTo);
-    redirect("/login");
+    const params = new URLSearchParams({ returnTo });
+    redirect(`${REMEMBER_PATH}?${params.toString()}`);
   }
 
   if (compose === "new") {
