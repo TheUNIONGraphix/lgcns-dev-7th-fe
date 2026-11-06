@@ -8,6 +8,7 @@ export default function PostDetail() {
   const navigate = useNavigate();
   const [post, setPost] = useState<PostItem | null>(null);
   const [liked, setLiked] = useState(false);
+  const [likedCommentIds, setLikedCommentIds] = useState<string[]>([]);
   const [canManage, setCanManage] = useState(false);
   const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
@@ -19,6 +20,7 @@ export default function PostDetail() {
         if (cancelled) return;
         setPost(next.post);
         setLiked(next.liked);
+        setLikedCommentIds(next.likedCommentIds ?? []);
         setCanManage(next.canManage);
       })
       .catch((reason: unknown) => {
@@ -44,6 +46,7 @@ export default function PostDetail() {
           post={post}
           full
           liked={liked}
+          likedCommentIds={likedCommentIds}
           canManage={canManage}
           onChange={() => setReloadKey((value) => value + 1)}
           onDeleted={() => navigate("/posts")}

@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { getCachedPost } from "@/lib/postCache";
+import { commentIdsOf, getCachedPost } from "@/lib/postCache";
 import { postCorsHeaders, userFromRequest } from "@/lib/postApi";
 import { postService } from "@/service/postService";
 
@@ -20,15 +20,22 @@ export async function GET(request: Request, { params }: Context) {
     );
   }
   const user = await userFromRequest(request);
-  const likedPostIds = user
-    ? await postService.findLikedPostIds({ userId: user.id, postIds: [post.id] })
-    : [];
+  const [likedPostIds, likedCommentIds] = user
+    ? await Promise.all([
+        postService.findLikedPostIds({ userId: user.id, postIds: [post.id] }),
+        postService.findLikedCommentIds({
+          userId: user.id,
+          commentIds: commentIdsOf([post]),
+        }),
+      ])
+    : [[], []];
   return NextResponse.json(
     {
       success: true,
       data: {
         post,
         liked: likedPostIds.includes(post.id),
+        likedCommentIds,
         canManage: post.authorId === user?.id,
       },
     },

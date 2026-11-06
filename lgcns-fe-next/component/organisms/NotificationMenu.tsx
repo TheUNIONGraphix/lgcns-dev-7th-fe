@@ -1,63 +1,57 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  listNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
-  type NotificationItem,
-} from "@/actions/notificationActions";
 import { useAuth } from "@/component/providers/AuthProvider";
 import NotificationToast from "../atoms/NotificationToast";
 import NotificationItemRow from "../molecules/NotificationItem";
+import NotificationStream from "../molecules/NotificationStream";
+import type { NotificationItem, NotificationSnapshot, NotificationStreamEvent } from "@/types/notification";
 
-const POLL_MS = 5000;
+type MarkRead = (formData: FormData) => Promise<{ ok: boolean }>;
+type MarkAll = () => Promise<{ ok: boolean }>;
 
-type Snapshot = {
-  items: NotificationItem[];
-  unreadCount: number;
-};
-
-type Toast = {
-  id: string;
-  message: string;
-  postId: string;
-};
+const empty: NotificationSnapshot = { items: [], unreadCount: 0 };
 
 function messageOf(item: NotificationItem) {
   if (item.kind === "like") return `${item.actorName}님이 내 글에 좋아요를 눌렀습니다.`;
+  if (item.kind === "commentLike") return `${item.actorName}님이 내 댓글에 좋아요를 눌렀습니다.`;
+  if (item.kind === "reply") return `${item.actorName}님이 내 댓글에 답글을 남겼습니다.`;
   return `${item.actorName}님이 내 글에 댓글을 남겼습니다.`;
 }
 
-export default function NotificationMenu() {
+export default function NotificationMenu({
+  notifications,
+  markRead,
+  markAll,
+}: {
+  notifications: NotificationSnapshot | null;
+  markRead: MarkRead;
+  markAll: MarkAll;
+}) {
   const { isLoggedIn } = useAuth();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [snapshot, setSnapshot] = useState<Snapshot>({ items: [], unreadCount: 0 });
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [snapshot, setSnapshot] = useState<NotificationSnapshot>(notifications ?? empty);
+  const [toasts, setToasts] = useState<{ id: string; message: string; postId: string }[]>([]);
   const [trackedLogin, setTrackedLogin] = useState(isLoggedIn);
   const seenRef = useRef<Set<string> | null>(null);
+  const initialIds = useRef((notifications?.items ?? []).map((item) => item.id));
 
   if (trackedLogin !== isLoggedIn) {
     setTrackedLogin(isLoggedIn);
-    setSnapshot({ items: [], unreadCount: 0 });
+    setSnapshot(isLoggedIn ? (notifications ?? empty) : empty);
     setToasts([]);
     setOpen(false);
   }
 
-  const apply = useCallback((next: Snapshot) => {
-    setSnapshot(next);
-    if (seenRef.current === null) {
-      seenRef.current = new Set(next.items.map((item) => item.id));
-      return;
-    }
-    const fresh = next.items.filter((item) => !item.read && !seenRef.current?.has(item.id));
-    for (const item of next.items) seenRef.current.add(item.id);
-    if (fresh.length === 0) return;
+  useEffect(() => {
+    if (!isLoggedIn) seenRef.current = null;
+  }, [isLoggedIn]);
+
+  const pushToasts = useCallback((items: NotificationItem[]) => {
+    if (items.length === 0) return;
     setToasts((current) =>
       [
-        ...fresh.map((item) => ({
+        ...items.map((item) => ({
           id: item.id,
           message: messageOf(item),
           postId: item.postId,
@@ -67,53 +61,7 @@ export default function NotificationMenu() {
     );
   }, []);
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      seenRef.current = null;
-      return;
-    }
-
-    let stopped = false;
-    let timer = 0;
-
-    const load = async () => {
-      if (document.visibilityState !== "visible") return;
-      const next = await listNotifications();
-      if (!stopped) apply(next);
-    };
-
-    const arm = () => {
-      window.clearInterval(timer);
-      if (document.visibilityState !== "visible") return;
-      timer = window.setInterval(() => {
-        void load();
-      }, POLL_MS);
-    };
-
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") void load();
-      arm();
-    };
-
-    void load();
-    arm();
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      stopped = true;
-      window.clearInterval(timer);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [apply, isLoggedIn]);
-
-  useEffect(() => {
-    if (toasts.length === 0) return;
-    const timer = window.setTimeout(() => {
-      setToasts((current) => current.slice(0, -1));
-    }, 4000);
-    return () => window.clearTimeout(timer);
-  }, [toasts]);
-
-  const markReadLocal = (id: string) => {
+  const markReadLocal = useCallback((id: string) => {
     setSnapshot((current) => {
       const target = current.items.find((item) => item.id === id);
       if (!target || target.read) return current;
@@ -123,16 +71,69 @@ export default function NotificationMenu() {
       };
     });
     seenRef.current?.add(id);
-  };
+  }, []);
+
+  const onEvent = useCallback(
+    (event: NotificationStreamEvent) => {
+      const seen = seenRef.current ?? new Set(initialIds.current);
+      seenRef.current = seen;
+
+      if (event.type === "snapshot") {
+        setSnapshot({ items: event.items, unreadCount: event.unreadCount });
+        const fresh = event.items.filter((item) => !item.read && !seen.has(item.id));
+        for (const item of event.items) seen.add(item.id);
+        pushToasts(fresh);
+        return;
+      }
+
+      if (event.type === "insert") {
+        setSnapshot((current) => {
+          if (current.items.some((item) => item.id === event.item.id)) return current;
+          return {
+            unreadCount: event.item.read ? current.unreadCount : current.unreadCount + 1,
+            items: [event.item, ...current.items].slice(0, 20),
+          };
+        });
+        if (!event.item.read && !seen.has(event.item.id)) {
+          seen.add(event.item.id);
+          pushToasts([event.item]);
+        }
+        return;
+      }
+
+      if (event.type === "read") {
+        markReadLocal(event.id);
+        return;
+      }
+
+      setSnapshot((current) => {
+        const target = current.items.find((item) => item.id === event.id);
+        if (!target) return current;
+        return {
+          unreadCount: target.read ? current.unreadCount : Math.max(0, current.unreadCount - 1),
+          items: current.items.filter((item) => item.id !== event.id),
+        };
+      });
+    },
+    [markReadLocal, pushToasts],
+  );
+
+  useEffect(() => {
+    if (toasts.length === 0) return;
+    const timer = window.setTimeout(() => {
+      setToasts((current) => current.slice(0, -1));
+    }, 4000);
+    return () => window.clearTimeout(timer);
+  }, [toasts]);
 
   const openNotification = async (id: string, postId: string) => {
     const formData = new FormData();
     formData.set("notificationId", id);
+    formData.set("postId", postId);
     markReadLocal(id);
     setToasts((current) => current.filter((toast) => toast.id !== id));
     setOpen(false);
-    await markNotificationRead(formData);
-    router.push(`/postdetail/${postId}`);
+    await markRead(formData);
   };
 
   const readAll = async () => {
@@ -140,15 +141,16 @@ export default function NotificationMenu() {
       unreadCount: 0,
       items: current.items.map((item) => ({ ...item, read: true })),
     }));
-    await markAllNotificationsRead();
+    await markAll();
   };
 
-  if (!isLoggedIn) return null;
+  if (!isLoggedIn || !notifications) return null;
 
   const badge = snapshot.unreadCount > 9 ? "9+" : String(snapshot.unreadCount);
 
   return (
     <>
+      <NotificationStream enabled onEvent={onEvent} />
       <div className="relative">
         <button
           type="button"

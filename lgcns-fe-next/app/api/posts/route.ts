@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { getCachedPosts, normalizePostKeyword } from "@/lib/postCache";
+import { commentIdsOf, getCachedPosts, normalizePostKeyword } from "@/lib/postCache";
 import { postCorsHeaders, userFromRequest } from "@/lib/postApi";
 import { postService } from "@/service/postService";
 
@@ -26,16 +26,22 @@ export async function GET(request: Request) {
     normalizePostKeyword(url.searchParams.get("q") ?? ""),
   );
   const user = await userFromRequest(request);
-  const likedPostIds = user
-    ? await postService.findLikedPostIds({
-        userId: user.id,
-        postIds: data.posts.map((post) => post.id),
-      })
-    : [];
+  const [likedPostIds, likedCommentIds] = user
+    ? await Promise.all([
+        postService.findLikedPostIds({
+          userId: user.id,
+          postIds: data.posts.map((post) => post.id),
+        }),
+        postService.findLikedCommentIds({
+          userId: user.id,
+          commentIds: commentIdsOf(data.posts),
+        }),
+      ])
+    : [[], []];
   return NextResponse.json(
     {
       success: true,
-      data: { ...data, viewerId: user?.id ?? null, likedPostIds },
+      data: { ...data, viewerId: user?.id ?? null, likedPostIds, likedCommentIds },
     },
     { headers: postCorsHeaders },
   );

@@ -10,10 +10,11 @@ if (appEnv !== "local" && appEnv !== "develop") {
   throw new Error(`APP_ENV는 local 또는 develop 이어야 합니다: ${appEnv}`);
 }
 
-const databaseUrl = process.env[databaseUrlKey[appEnv]];
-if (!databaseUrl) {
+const configuredDatabaseUrl = process.env[databaseUrlKey[appEnv]];
+if (!configuredDatabaseUrl) {
   throw new Error(`${databaseUrlKey[appEnv]} 이 .env에 없습니다.`);
 }
+export const databaseUrl = configuredDatabaseUrl;
 process.env.DATABASE_URL = databaseUrl;
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };

@@ -44,12 +44,23 @@ model Post {
 model Comment {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   postId     String
+  parentId   String?
   authorId   String
   authorName String
   body       String
   createdAt  DateTime @default(now())
 
   @@index([postId])
+}
+
+model CommentLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId])
+  @@index([commentId])
 }
 
 model Like {
@@ -69,6 +80,7 @@ model Notification {
   actorName   String
   kind        String
   postId      String
+  commentId   String?
   readAt      DateTime?
   createdAt   DateTime  @default(now())
 

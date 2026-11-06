@@ -1,38 +1,13 @@
 import { prisma } from "@/lib/prisma";
-
-export type NotificationItem = {
-  id: string;
-  kind: "like" | "comment";
-  actorName: string;
-  postId: string;
-  read: boolean;
-  createdAt: string;
-};
+import { toNotificationItem } from "@/service/notificationItem";
+import { notificationWatch } from "@/service/notificationWatch";
+import type { NotificationLiveEvent, NotificationSnapshot } from "@/types/notification";
 
 function isObjectId(value: string) {
   return /^[a-f\d]{24}$/i.test(value);
 }
 
-function toItem(row: {
-  id: string;
-  kind: string;
-  actorName: string;
-  postId: string;
-  readAt: Date | null;
-  createdAt: Date;
-}): NotificationItem | null {
-  if (row.kind !== "like" && row.kind !== "comment") return null;
-  return {
-    id: row.id,
-    kind: row.kind,
-    actorName: row.actorName,
-    postId: row.postId,
-    read: row.readAt !== null,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
-async function listForUser(userId: string) {
+async function listForUser(userId: string): Promise<NotificationSnapshot> {
   const [rows, unreadCount] = await Promise.all([
     prisma.notification.findMany({
       where: { recipientId: userId },
@@ -45,10 +20,10 @@ async function listForUser(userId: string) {
   ]);
   return {
     items: rows.flatMap((row) => {
-      const item = toItem(row);
+      const item = toNotificationItem(row);
       return item ? [item] : [];
     }),
-    unreadCount,
+    unreadCount
   };
 }
 
@@ -76,8 +51,18 @@ async function markAllRead(userId: string) {
   return { ok: true as const };
 }
 
+function subscribe(recipientId: string, listener: (event: NotificationLiveEvent) => void) {
+  return notificationWatch.subscribe(recipientId, listener);
+}
+
+function whenReady() {
+  return notificationWatch.whenReady();
+}
+
 export const notificationService = {
   listForUser,
   markRead,
   markAllRead,
+  subscribe,
+  whenReady,
 };

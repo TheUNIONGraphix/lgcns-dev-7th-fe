@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
     },
   },
   cacheComponents: true,
+  serverExternalPackages: ["mongodb"],
   partialPrefetching: true,
   turbopack: {
     rules: {

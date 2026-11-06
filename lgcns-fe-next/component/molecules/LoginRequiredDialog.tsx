@@ -14,19 +14,19 @@ export default function LoginRequiredDialog({
   open,
   onOpenChange,
   onLogin,
+  description = "좋아요는 로그인 후 이용할 수 있어요.",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLogin: () => void;
+  description?: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>로그인이 필요해요</DialogTitle>
-          <DialogDescription>
-            좋아요는 로그인 후 이용할 수 있어요.
-          </DialogDescription>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

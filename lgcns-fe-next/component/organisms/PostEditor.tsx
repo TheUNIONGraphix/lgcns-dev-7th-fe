@@ -80,14 +80,14 @@ export default function PostEditor({
   const [html, setHtml] = useState(initialHtml);
 
   return (
-    <form action={action} className="post-editor flex flex-col gap-4">
+    <form action={action} className="post-editor flex w-full flex-col gap-6">
       {postId ? <input type="hidden" name="postId" value={postId} /> : null}
       <input type="hidden" name="body" value={html} />
       <QuillBox initialHtml={initialHtml} onChange={setHtml} />
       <button
         type="submit"
         disabled={!visibleText(html)}
-        className="h-11 rounded-xl bg-[#2563eb] text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+        className="h-14 w-full rounded-[12px] bg-[#2563eb] text-[16px] font-semibold text-white shadow-[0px_4px_6px_rgba(37,99,235,0.2)] hover:bg-[#1d4ed8] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {submitLabel}
       </button>

@@ -105,6 +105,7 @@ export default function Posts() {
                 <PostCard
                   post={post}
                   liked={data.likedPostIds.includes(post.id)}
+                  likedCommentIds={data.likedCommentIds ?? []}
                   canManage={post.authorId === data.viewerId}
                   onChange={() => setReloadKey((value) => value + 1)}
                 />

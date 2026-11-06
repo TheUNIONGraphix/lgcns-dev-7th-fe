@@ -21,7 +21,7 @@ async function author(formData: FormData, fallback: string) {
 }
 
 export async function createPost(formData: FormData) {
-  const user = await author(formData, "/postwrite");
+  const user = await author(formData, "/posts?compose=new");
   const result = await postService.createPost({
     authorId: user.id,
     authorName: user.name,
@@ -37,7 +37,7 @@ export async function updatePost(formData: FormData) {
   const user = await author(
     formData,
     postService.isObjectId(postId)
-      ? `/postwrite?postId=${encodeURIComponent(postId)}`
+      ? `/posts?compose=${encodeURIComponent(postId)}`
       : "/posts",
   );
   const result = await postService.updatePost({
@@ -80,14 +80,31 @@ export async function toggleLike(formData: FormData) {
   updateTag("posts");
 }
 
+export async function toggleCommentLike(formData: FormData) {
+  const postId = String(formData.get("postId") ?? "");
+  const user = await author(
+    formData,
+    postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
+  );
+  const result = await postService.toggleCommentLike({
+    commentId: String(formData.get("commentId") ?? ""),
+    userId: user.id,
+    actorName: user.name,
+  });
+  if (!result.ok) return;
+  updateTag("posts");
+}
+
 export async function createComment(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
+  const parentId = String(formData.get("parentId") ?? "");
   const user = await author(
     formData,
     postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
   );
   const result = await postService.createComment({
     postId,
+    parentId: parentId || undefined,
     authorId: user.id,
     authorName: user.name,
     body: String(formData.get("body") ?? ""),

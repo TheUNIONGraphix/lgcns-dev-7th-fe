@@ -12,7 +12,11 @@ export default function PostInlineLink({
   return (
     <Link
       href={href}
-      className={tone === "accent" ? "font-medium text-[#2563eb]" : "font-medium text-[#111827]"}
+      className={
+        tone === "accent"
+          ? "font-medium text-[#2563eb] hover:underline"
+          : "font-medium text-[#374151] hover:underline"
+      }
     >
       {children}
     </Link>

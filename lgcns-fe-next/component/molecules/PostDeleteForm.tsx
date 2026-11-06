@@ -18,7 +18,7 @@ export default function PostDeleteForm({
       }}
     >
       <input type="hidden" name="postId" value={postId} />
-      <button type="submit" className="font-medium text-red-600">
+      <button type="submit" className="font-medium text-red-600 hover:underline">
         삭제
       </button>
     </form>

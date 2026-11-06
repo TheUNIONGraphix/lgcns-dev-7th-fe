@@ -18,9 +18,13 @@ export async function POST(request: Request, { params }: Context) {
     );
   }
   const { postId } = await params;
-  const body = (await request.json().catch(() => null)) as { body?: unknown } | null;
+  const body = (await request.json().catch(() => null)) as {
+    body?: unknown;
+    parentId?: unknown;
+  } | null;
   const result = await postService.createComment({
     postId,
+    parentId: typeof body?.parentId === "string" ? body.parentId : undefined,
     authorId: user.id,
     authorName: user.name,
     body: String(body?.body ?? ""),

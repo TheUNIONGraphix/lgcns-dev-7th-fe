@@ -17,7 +17,7 @@ export default function PostBody({ body, full }: { body: string; full: boolean }
     return (
       <div className="ql-snow">
         <div
-          className="ql-editor !px-0 !py-0 text-[15px] leading-6 text-[#111827]"
+          className="ql-editor !px-0 !py-0 text-[15px] leading-7 text-[#1f2937]"
           dangerouslySetInnerHTML={{ __html: body }}
         />
       </div>
@@ -25,7 +25,7 @@ export default function PostBody({ body, full }: { body: string; full: boolean }
   }
 
   return (
-    <p className="whitespace-pre-wrap text-[15px] leading-6 text-[#111827]">
+    <p className="whitespace-pre-wrap text-[15px] leading-7 text-[#1f2937]">
       {full ? body : excerpt(body)}
     </p>
   );

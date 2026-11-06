@@ -184,15 +184,31 @@ h1 {
   color: #111827;
 }
 
-.post-editor .ql-toolbar.ql-snow,
-.post-editor .ql-container.ql-snow,
-.post-editor .ql-editor {
+.post-editor .ql-toolbar.ql-snow {
+  border: 1px solid #d1d5db;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
   background: #fff;
+  font-family: inherit;
+}
+
+.post-editor .ql-container.ql-snow {
+  border: 1px solid #d1d5db;
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.post-editor .ql-editor {
+  min-height: 240px;
   color: #111827;
 }
 
 .post-editor .ql-editor.ql-blank::before {
   color: #9ca3af;
+  font-style: normal;
 }
 
 @layer base {

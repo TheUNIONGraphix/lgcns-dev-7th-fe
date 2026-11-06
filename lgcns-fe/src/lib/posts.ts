@@ -1,11 +1,16 @@
 import { apiBaseUrl } from "./env";
 import { readAccessToken } from "./auth";
 
-export type CommentItem = {
+export type CommentReply = {
   id: string;
   authorName: string;
   body: string;
   createdAt: string;
+  likeCount: number;
+};
+
+export type CommentItem = CommentReply & {
+  replies: CommentReply[];
 };
 
 export type PostItem = {
@@ -29,6 +34,7 @@ export type PostListData = {
   hasPreviousPage: boolean;
   viewerId: string | null;
   likedPostIds: string[];
+  likedCommentIds: string[];
 };
 
 function authHeaders() {
@@ -62,7 +68,9 @@ export function fetchPost(postId: string) {
   return fetch(`${apiBaseUrl}/api/posts/${postId}`, {
     headers: authHeaders(),
   }).then((response) =>
-    readJson<{ post: PostItem; liked: boolean; canManage: boolean }>(response),
+    readJson<{ post: PostItem; liked: boolean; likedCommentIds: string[]; canManage: boolean }>(
+      response,
+    ),
   );
 }
 
@@ -89,11 +97,18 @@ export function deletePost(postId: string) {
   }).then((response) => readJson<unknown>(response));
 }
 
-export function createComment(postId: string, body: string) {
+export function createComment(postId: string, body: string, parentId?: string) {
   return fetch(`${apiBaseUrl}/api/posts/${postId}/comments`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ body }),
+    body: JSON.stringify({ body, parentId }),
+  }).then((response) => readJson<unknown>(response));
+}
+
+export function toggleCommentLike(postId: string, commentId: string) {
+  return fetch(`${apiBaseUrl}/api/posts/${postId}/comments/${commentId}/like`, {
+    method: "POST",
+    headers: authHeaders(),
   }).then((response) => readJson<unknown>(response));
 }
 

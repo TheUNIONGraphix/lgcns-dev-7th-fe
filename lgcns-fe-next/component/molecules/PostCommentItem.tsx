@@ -8,9 +8,9 @@ export default function PostCommentItem({
   body: string;
 }) {
   return (
-    <li className="text-sm text-[#111827]">
+    <div className="flex flex-col gap-1">
       <PostAuthorName name={authorName} />
-      <span className="ml-2">{body}</span>
-    </li>
+      <p className="whitespace-pre-wrap text-sm leading-6 text-[#374151]">{body}</p>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import Header from "@/component/templates/Header";
+import AppHeader from "@/app/AppHeader";
 
 export default function MainLayout({
   children,
@@ -7,7 +7,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <Header />
+      <AppHeader />
       {children}
     </>
   );
