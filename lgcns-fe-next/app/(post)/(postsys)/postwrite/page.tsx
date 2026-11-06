@@ -5,6 +5,7 @@ import { createPost, updatePost } from "@/actions/postActions";
 import PostEditor from "@/component/organisms/PostEditor";
 import { readCurrentUser } from "@/lib/currentUser";
 import { getCachedPost } from "@/lib/postCache";
+import { saveReturnTo } from "@/lib/returnToCookie";
 
 function readPostId(
   value: string | string[] | undefined,
@@ -29,7 +30,8 @@ async function PostWriteContent({
   const postId = readPostId(postIdParam);
   const user = await readCurrentUser();
   if (!user) {
-    redirect(`/login?callbackUrl=${encodeURIComponent(writePath(postId))}`);
+    await saveReturnTo(writePath(postId));
+    redirect("/login");
   }
   if (!postId) {
     return (

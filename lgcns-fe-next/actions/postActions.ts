@@ -3,16 +3,25 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { readCurrentUser } from "@/lib/currentUser";
+import { saveReturnTo } from "@/lib/returnToCookie";
 import { postService } from "@/service/postService";
 
-async function author(callbackPath: string) {
+function requestedPath(formData: FormData, fallback: string) {
+  const value = formData.get("returnTo");
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+async function author(formData: FormData, fallback: string) {
   const user = await readCurrentUser();
-  if (!user) redirect(`/login?callbackUrl=${encodeURIComponent(callbackPath)}`);
+  if (!user) {
+    await saveReturnTo(requestedPath(formData, fallback));
+    redirect("/login");
+  }
   return user;
 }
 
 export async function createPost(formData: FormData) {
-  const user = await author("/postwrite");
+  const user = await author(formData, "/postwrite");
   const result = await postService.createPost({
     authorId: user.id,
     authorName: user.name,
@@ -26,6 +35,7 @@ export async function createPost(formData: FormData) {
 export async function updatePost(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const user = await author(
+    formData,
     postService.isObjectId(postId)
       ? `/postwrite?postId=${encodeURIComponent(postId)}`
       : "/posts",
@@ -46,6 +56,7 @@ export async function updatePost(formData: FormData) {
 export async function deletePost(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const user = await author(
+    formData,
     postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
   );
   const result = await postService.deletePost({ postId, authorId: user.id });
@@ -57,9 +68,14 @@ export async function deletePost(formData: FormData) {
 export async function toggleLike(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const user = await author(
+    formData,
     postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
   );
-  const result = await postService.toggleLike({ postId, userId: user.id });
+  const result = await postService.toggleLike({
+    postId,
+    userId: user.id,
+    actorName: user.name,
+  });
   if (!result.ok) return;
   updateTag("posts");
 }
@@ -67,6 +83,7 @@ export async function toggleLike(formData: FormData) {
 export async function createComment(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const user = await author(
+    formData,
     postService.isObjectId(postId) ? `/postdetail/${postId}` : "/posts",
   );
   const result = await postService.createComment({

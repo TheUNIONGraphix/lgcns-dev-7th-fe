@@ -1,16 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import { CONTINUE_PATH } from "@/lib/returnTo";
 
-export default function KakaoLoginButton({
-  callbackUrl,
-}: {
-  callbackUrl: string;
-}) {
+export default function KakaoLoginButton() {
   const handleKakaoLogin = () => {
     signIn("kakao", {
       redirect: true,
-      callbackUrl: callbackUrl || "/",
+      callbackUrl: CONTINUE_PATH,
     });
   };
   return (

@@ -1,15 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { safeCallbackPath } from "@/config/initial";
 import LoginForm from "../organisms/LoginForm";
 import KakaoLoginButton from "../molecules/KakaoLoginButton";
 import GoogleLoginButton from "../molecules/GoogleLoginButton";
 
 export default function LoginSection() {
-  const callbackUrl = safeCallbackPath(useSearchParams().get("callbackUrl"));
-
   return (
     <section className="flex min-h-dvh flex-1 items-center justify-center bg-[#f3f4f6] px-4 py-10">
       <div className="flex w-full max-w-[484px] flex-col items-center gap-6 rounded-[24px] border border-[#e5e7eb] bg-white px-8 pt-[72px] pb-12 shadow-[0px_12px_16px_rgba(0,0,0,0.08)] min-[480px]:px-12">
@@ -21,7 +15,7 @@ export default function LoginSection() {
             계정으로 로그인해주세요
           </p>
         </header>
-        <LoginForm callbackUrl={callbackUrl} />
+        <LoginForm />
         <div className="flex w-full items-center gap-4">
           <span className="h-px flex-1 bg-[#e5e7eb]" />
           <span className="text-[12px] leading-[normal] text-[#9ca3af]">
@@ -30,8 +24,8 @@ export default function LoginSection() {
           <span className="h-px flex-1 bg-[#e5e7eb]" />
         </div>
         <div className="flex w-full flex-col gap-3">
-          <GoogleLoginButton callbackUrl={callbackUrl} />
-          <KakaoLoginButton callbackUrl={callbackUrl} />
+          <GoogleLoginButton />
+          <KakaoLoginButton />
         </div>
         <p className="pt-6 text-center text-[14px] leading-[normal] text-[#6b7280]">
           계정이 없으신가요?{" "}

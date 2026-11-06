@@ -4,6 +4,11 @@ import type { PostListResponseType } from "@/types/response/ResponseType";
 
 const MAX_POST_TEXT = 5000;
 const MAX_COMMENT_TEXT = 300;
+const MAX_KEYWORD = 100;
+
+function normalizeKeyword(value: string) {
+  return value.trim().replace(/\s+/g, " ").slice(0, MAX_KEYWORD);
+}
 
 export type CommentItem = {
   id: string;
@@ -51,16 +56,27 @@ function toComment(comment: {
 async function listPosts(
   pageNumber: number,
   sortOrder: "ASC" | "DESC",
+  keyword = "",
 ): Promise<PostListResponseType> {
   const pageSize = 20;
   const requestedPage = Number.isInteger(pageNumber) && pageNumber > 0 ? pageNumber : 1;
-  const totalItems = await prisma.post.count();
+  const normalized = normalizeKeyword(keyword);
+  const where = normalized
+    ? {
+        OR: [
+          { authorName: { contains: normalized, mode: "insensitive" as const } },
+          { body: { contains: normalized, mode: "insensitive" as const } },
+        ],
+      }
+    : undefined;
+  const totalItems = await prisma.post.count({ where });
   const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / pageSize);
   const currentPage = totalPages === 0 ? 1 : Math.min(requestedPage, totalPages);
   const posts =
     totalItems === 0
       ? []
       : await prisma.post.findMany({
+          where,
           orderBy: { createdAt: sortOrder === "ASC" ? "asc" : "desc" },
           skip: (currentPage - 1) * pageSize,
           take: pageSize,
@@ -190,6 +206,7 @@ async function deletePost(input: { postId: string; authorId: string }) {
   }
   await prisma.comment.deleteMany({ where: { postId: input.postId } });
   await prisma.like.deleteMany({ where: { postId: input.postId } });
+  await prisma.notification.deleteMany({ where: { postId: input.postId } });
   await prisma.post.delete({ where: { id: input.postId } });
   return { ok: true as const };
 }
@@ -204,7 +221,26 @@ async function findLikedPostIds(input: { userId: string; postIds: string[] }) {
   return likes.map((like) => like.postId);
 }
 
-async function toggleLike(input: { postId: string; userId: string }) {
+async function notifyAuthor(input: {
+  postId: string;
+  authorId: string;
+  actorId: string;
+  actorName: string;
+  kind: "like" | "comment";
+}) {
+  if (input.authorId === input.actorId) return;
+  await prisma.notification.create({
+    data: {
+      recipientId: input.authorId,
+      actorId: input.actorId,
+      actorName: input.actorName,
+      kind: input.kind,
+      postId: input.postId,
+    },
+  });
+}
+
+async function toggleLike(input: { postId: string; userId: string; actorName: string }) {
   if (!isObjectId(input.postId)) {
     return { ok: false as const, reason: "invalid" as const };
   }
@@ -213,9 +249,25 @@ async function toggleLike(input: { postId: string; userId: string }) {
   });
   if (existing) {
     await prisma.like.delete({ where: { id: existing.id } });
-  } else {
-    await prisma.like.create({
-      data: { postId: input.postId, userId: input.userId },
+    await prisma.notification.deleteMany({
+      where: { actorId: input.userId, postId: input.postId, kind: "like" },
+    });
+    return { ok: true as const };
+  }
+  await prisma.like.create({
+    data: { postId: input.postId, userId: input.userId },
+  });
+  const post = await prisma.post.findUnique({
+    where: { id: input.postId },
+    select: { authorId: true },
+  });
+  if (post) {
+    await notifyAuthor({
+      postId: input.postId,
+      authorId: post.authorId,
+      actorId: input.userId,
+      actorName: input.actorName,
+      kind: "like",
     });
   }
   return { ok: true as const };
@@ -233,7 +285,7 @@ async function createComment(input: {
   }
   const post = await prisma.post.findUnique({
     where: { id: input.postId },
-    select: { id: true },
+    select: { id: true, authorId: true },
   });
   if (!post) return { ok: false as const, reason: "missing" as const };
   await prisma.comment.create({
@@ -244,11 +296,19 @@ async function createComment(input: {
       body,
     },
   });
+  await notifyAuthor({
+    postId: input.postId,
+    authorId: post.authorId,
+    actorId: input.authorId,
+    actorName: input.authorName,
+    kind: "comment",
+  });
   return { ok: true as const };
 }
 
 export const postService = {
   isObjectId,
+  normalizeKeyword,
   listPosts,
   getPost,
   createPost,

@@ -6,7 +6,7 @@ const authPrefixList = ["/postwrite"];
 function safeCallbackPath(value: string | null | undefined) {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
   const pathname = value.split("?")[0];
-  if (withoutAuthUrlList.includes(pathname)) return "/";
+  if (withoutAuthUrlList.includes(pathname) || pathname === "/auth/continue") return "/";
   return value;
 }
 

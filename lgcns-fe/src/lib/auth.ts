@@ -11,6 +11,20 @@ export function saveAccessToken(token: string) {
   window.dispatchEvent(new Event("auth-change"));
 }
 
+export function takeAccessTokenFromHash() {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const token = params.get("accessToken");
+  if (!token) return;
+  saveAccessToken(token);
+  params.delete("accessToken");
+  const nextHash = params.toString();
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}${nextHash ? `#${nextHash}` : ""}`,
+  );
+}
+
 export function clearAccessToken() {
   sessionStorage.removeItem(TOKEN_KEY);
   window.dispatchEvent(new Event("auth-change"));

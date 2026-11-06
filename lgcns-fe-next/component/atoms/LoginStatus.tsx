@@ -1,28 +1,26 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useTransition } from "react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { rememberReturnPath } from "@/actions/returnToActions";
 import { useAuth } from "@/component/providers/AuthProvider";
 
 export default function LoginStatus() {
   const { isLoggedIn } = useAuth();
-  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   if (!isLoggedIn) {
-    const callbackUrl =
-      pathname === "/login" || pathname === "/signup" ? "/" : pathname;
+    const handleLogin = () => {
+      const formData = new FormData();
+      formData.set("returnTo", `${window.location.pathname}${window.location.search}`);
+      startTransition(() => {
+        void rememberReturnPath(formData);
+      });
+    };
+
     return (
-      <Button
-        nativeButton={false}
-        render={
-          <Link href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`} />
-        }
-        className="shrink-0"
-      >
+      <Button type="button" onClick={handleLogin} className="shrink-0">
         로그인
       </Button>
     );

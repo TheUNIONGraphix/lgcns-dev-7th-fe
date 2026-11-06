@@ -61,3 +61,17 @@ model Like {
   @@unique([postId, userId])
   @@index([postId])
 }
+
+model Notification {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  recipientId String
+  actorId     String
+  actorName   String
+  kind        String
+  postId      String
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([recipientId, createdAt])
+  @@index([recipientId, readAt])
+}

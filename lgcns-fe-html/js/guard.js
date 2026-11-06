@@ -12,7 +12,10 @@
     return;
   }
 
-  if (window.authUrlList.indexOf(path) !== -1 && !loggedIn) {
+  var prefixed = (window.authPrefixList || []).some(function (prefix) {
+    return path === prefix || path.indexOf(prefix + "/") === 0;
+  });
+  if ((window.authUrlList.indexOf(path) !== -1 || prefixed) && !loggedIn) {
     var callback = path + window.location.search;
     window.location.replace("login.html?callbackUrl=" + encodeURIComponent(callback));
   }

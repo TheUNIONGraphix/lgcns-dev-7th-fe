@@ -1,16 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
+import { CONTINUE_PATH } from "@/lib/returnTo";
 
-export default function GoogleLoginButton({
-  callbackUrl,
-}: {
-  callbackUrl: string;
-}) {
+export default function GoogleLoginButton() {
   const handleGoogleLogin = () => {
     signIn("google", {
       redirect: true,
-      callbackUrl: callbackUrl || "/",
+      callbackUrl: CONTINUE_PATH,
     });
   };
   return (

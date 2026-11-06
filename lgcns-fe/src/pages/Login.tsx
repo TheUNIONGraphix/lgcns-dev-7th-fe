@@ -1,6 +1,6 @@
 import { type FormEvent, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { apiBaseUrl } from "../lib/env";
+import { authOrigin } from "../lib/env";
 import { loginRequest, saveAccessToken } from "../lib/auth";
 import { safeCallbackPath } from "../lib/routes";
 import {
@@ -53,8 +53,9 @@ function Login() {
   const rememberId = rememberChoice ?? savedUserId.length > 0;
 
   const startProvider = (provider: "google" | "kakao") => {
-    const target = `${apiBaseUrl}${callbackUrl}`;
-    window.location.href = `${apiBaseUrl}/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(target)}`;
+    const returnTo = `${window.location.origin}${callbackUrl}`;
+    const handoff = `/api/auth/handoff?returnTo=${encodeURIComponent(returnTo)}`;
+    window.location.href = `${authOrigin}/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(handoff)}`;
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

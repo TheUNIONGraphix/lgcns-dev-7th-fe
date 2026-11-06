@@ -92,6 +92,7 @@ button {
 }
 
 .site-header {
+  position: relative;
   width: 100%;
   margin-inline: auto;
   display: flex;
@@ -158,11 +159,47 @@ button {
   left: -20px;
 }
 
+.global-nav {
+  display: flex;
+  align-items: center;
+}
+
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+}
+
 .nav-toggle svg {
   width: 1.5rem;
   height: 1.5rem;
   display: block;
   fill: currentColor;
+}
+
+.mobile-menu {
+  position: absolute;
+  top: 7rem;
+  left: 1rem;
+  z-index: 20;
+  min-width: 12rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+}
+
+.mobile-menu a {
+  display: block;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .desktop-nav {
@@ -171,9 +208,6 @@ button {
   gap: 1rem;
 }
 
-.mobile-menu {
-  padding-top: 0.5rem;
-}
 
 @media (min-width: 768px) {
   .mobile-nav {
@@ -397,4 +431,233 @@ button {
 
 .page-block {
   padding: 16px;
+}
+
+.login-link,
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login-link {
+  border: 1px solid #171717;
+  background: #171717;
+  color: #fff;
+}
+
+.logout-button {
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  color: #171717;
+}
+
+#swiper button,
+#about-click {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: #171717;
+  color: #fff;
+}
+
+#swiper button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#about-click {
+  margin: 80px 16px;
+  padding: 32px 24px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.post-page {
+  width: min(100%, 768px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 16px 64px;
+  color: #111827;
+}
+
+.post-head,
+.post-card-meta,
+.post-actions,
+.pager,
+.comment-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-head,
+.post-card-meta,
+.pager {
+  justify-content: space-between;
+}
+
+.post-page h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 24px;
+  background: transparent;
+}
+
+.post-list,
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff;
+  padding: 20px;
+}
+
+.post-card p,
+.post-body {
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.post-actions {
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.post-actions button,
+.post-actions a,
+.pager a,
+.pager span,
+.sort-links a {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.like-button,
+.write-button,
+.comment-form button,
+.editor-submit {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 6px 12px;
+}
+
+.like-button.is-liked,
+.write-button,
+.comment-form button,
+.editor-submit {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.like-button.is-liked {
+  border-color: #2563eb;
+}
+
+.write-button,
+.editor-submit,
+.comment-form button {
+  border-color: #111827;
+  background: #111827;
+}
+
+.write-button {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.comment-form input,
+.comment-form button {
+  height: 40px;
+}
+
+.comment-form input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
+.editor-submit {
+  height: 44px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.editor-submit:disabled {
+  opacity: 0.6;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.danger {
+  color: #dc2626;
+  background: transparent;
+  border: 0;
+  font-weight: 500;
+}
+
+.text-link {
+  color: #2563eb;
+  font-weight: 500;
+  background: transparent;
+  border: 0;
+}
+
+.sort-links {
+  display: flex;
+  gap: 12px;
+}
+
+.pager ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#editor {
+  min-height: 192px;
+  background: #fff;
 }

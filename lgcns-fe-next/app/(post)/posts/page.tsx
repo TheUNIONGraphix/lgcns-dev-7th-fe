@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import PostSearchForm from "@/component/molecules/PostSearchForm";
 import Pagination from "@/component/organisms/Pagination";
 import PostListSection from "@/component/organisms/PostListSection";
 import PostLiveRefresh from "@/component/organisms/PostLiveRefresh";
-import { getCachedPosts } from "@/lib/postCache";
+import { getCachedPosts, normalizePostKeyword, postsListHref } from "@/lib/postCache";
 
 function readPage(page: string | string[] | undefined) {
   const raw = Array.isArray(page) ? page[0] : page;
@@ -17,40 +18,47 @@ function readSort(sort: string | string[] | undefined): "ASC" | "DESC" {
   return raw === "ASC" ? "ASC" : "DESC";
 }
 
-function postsHref(page: number, sortOrder: "ASC" | "DESC") {
-  return `/posts?page=${page}&sort=${sortOrder}`;
+function readKeyword(keyword: string | string[] | undefined) {
+  const raw = Array.isArray(keyword) ? keyword[0] : keyword;
+  return normalizePostKeyword(raw ?? "");
 }
 
 async function PostsContent({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[]; sort?: string | string[] }>;
+  searchParams: Promise<{
+    page?: string | string[];
+    sort?: string | string[];
+    q?: string | string[];
+  }>;
 }) {
-  const { page, sort } = await searchParams;
+  const { page, sort, q } = await searchParams;
   const pageNumber = readPage(page);
   const sortOrder = readSort(sort);
-  const postList = getCachedPosts(pageNumber, sortOrder);
+  const keyword = readKeyword(q);
+  const postList = getCachedPosts(pageNumber, sortOrder, keyword);
 
   return (
     <>
+      <PostSearchForm sortOrder={sortOrder} keyword={keyword} />
       <div className="flex gap-3 text-sm font-medium">
         <Link
-          href={postsHref(1, "DESC")}
+          href={postsListHref(1, "DESC", keyword)}
           aria-current={sortOrder === "DESC" ? "true" : undefined}
           className={sortOrder === "DESC" ? "text-foreground" : "text-[#2563eb]"}
         >
           최신순
         </Link>
         <Link
-          href={postsHref(1, "ASC")}
+          href={postsListHref(1, "ASC", keyword)}
           aria-current={sortOrder === "ASC" ? "true" : undefined}
           className={sortOrder === "ASC" ? "text-foreground" : "text-[#2563eb]"}
         >
           오래된순
         </Link>
       </div>
-      <PostListSection sortOrder={sortOrder} postList={postList} />
-      <Pagination sortOrder={sortOrder} postList={postList} />
+      <PostListSection sortOrder={sortOrder} keyword={keyword} postList={postList} />
+      <Pagination sortOrder={sortOrder} keyword={keyword} postList={postList} />
     </>
   );
 }
@@ -58,7 +66,11 @@ async function PostsContent({
 export default function PostsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string | string[]; sort?: string | string[] }>;
+  searchParams: Promise<{
+    page?: string | string[];
+    sort?: string | string[];
+    q?: string | string[];
+  }>;
 }) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-16">

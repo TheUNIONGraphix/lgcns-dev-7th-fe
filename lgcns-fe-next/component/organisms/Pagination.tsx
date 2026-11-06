@@ -1,15 +1,13 @@
 import Link from "next/link";
-import type { PostListResponseType } from "@/lib/postCache";
-
-function postsHref(page: number, sortOrder: "ASC" | "DESC") {
-  return `/posts?page=${page}&sort=${sortOrder}`;
-}
+import { postsListHref, type PostListResponseType } from "@/lib/postCache";
 
 export default async function Pagination({
   sortOrder,
+  keyword,
   postList,
 }: {
   sortOrder: "ASC" | "DESC";
+  keyword: string;
   postList: Promise<PostListResponseType>;
 }) {
   const { currentPage, totalPages, hasNextPage, hasPreviousPage } = await postList;
@@ -19,7 +17,7 @@ export default async function Pagination({
     <nav aria-label="글 목록 페이지" className="flex items-center justify-between gap-3">
       {hasPreviousPage ? (
         <Link
-          href={postsHref(currentPage - 1, sortOrder)}
+          href={postsListHref(currentPage - 1, sortOrder, keyword)}
           className="text-sm font-medium text-[#2563eb]"
         >
           이전
@@ -39,7 +37,7 @@ export default async function Pagination({
                 </span>
               ) : (
                 <Link
-                  href={postsHref(page, sortOrder)}
+                  href={postsListHref(page, sortOrder, keyword)}
                   className="text-sm font-medium text-[#2563eb]"
                 >
                   {page}
@@ -51,7 +49,7 @@ export default async function Pagination({
       </ul>
       {hasNextPage ? (
         <Link
-          href={postsHref(currentPage + 1, sortOrder)}
+          href={postsListHref(currentPage + 1, sortOrder, keyword)}
           className="text-sm font-medium text-[#2563eb]"
         >
           다음

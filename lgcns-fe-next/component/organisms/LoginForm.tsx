@@ -11,6 +11,7 @@ import initialValues from "@/types/initial/loginInitial";
 import { UserPayloadType } from "@/types/request/RequestType";
 import { emptyErrors } from "@/types/error/loginError";
 import loginSchema, { loginFieldMessage } from "@/schema/loginSchema";
+import { CONTINUE_PATH } from "@/lib/returnTo";
 
 type LoginFieldName = keyof UserPayloadType;
 
@@ -19,7 +20,7 @@ const inputClassName =
 
 const fieldErrorClassName = "py-1 text-[12px] leading-[normal] text-red-500";
 
-export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
+export default function LoginForm() {
   const [userId, setUserId] = useState(initialValues.userId);
   const [password, setPassword] = useState(initialValues.password);
   const [rememberId, setRememberId] = useState(false);
@@ -57,7 +58,7 @@ export default function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         email: payload.userId,
         password: payload.password,
         redirect: true,
-        callbackUrl,
+        callbackUrl: CONTINUE_PATH,
       });
     });
   };

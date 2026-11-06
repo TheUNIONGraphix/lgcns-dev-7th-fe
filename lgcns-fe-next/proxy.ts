@@ -4,9 +4,14 @@ import { verifyAccessToken } from "./lib/accessJwt";
 import {
   authPrefixList,
   authUrlList,
-  safeCallbackPath,
   withoutAuthUrlList,
 } from "./config/initial";
+import {
+  RETURN_TO_COOKIE,
+  decodeReturnTo,
+  encodeReturnTo,
+  returnToCookieOptions,
+} from "./lib/returnTo";
 
 async function isLoggedIn(request: NextRequest) {
   try {
@@ -30,12 +35,20 @@ function requiresAuth(pathname: string) {
 }
 
 function loginRedirect(request: NextRequest) {
-  const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set(
-    "callbackUrl",
-    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+  const response = NextResponse.redirect(new URL("/login", request.url));
+  response.cookies.set(
+    RETURN_TO_COOKIE,
+    encodeReturnTo(`${request.nextUrl.pathname}${request.nextUrl.search}`),
+    returnToCookieOptions(),
   );
-  return NextResponse.redirect(loginUrl);
+  return response;
+}
+
+function continueRedirect(request: NextRequest) {
+  const path = decodeReturnTo(request.cookies.get(RETURN_TO_COOKIE)?.value);
+  const response = NextResponse.redirect(new URL(path, request.url));
+  response.cookies.set(RETURN_TO_COOKIE, "", { ...returnToCookieOptions(), maxAge: 0 });
+  return response;
 }
 
 export async function proxy(request: NextRequest) {
@@ -44,10 +57,7 @@ export async function proxy(request: NextRequest) {
 
   if (withoutAuthUrlList.includes(pathname)) {
     if (!loggedIn) return NextResponse.next();
-    const callbackUrl = safeCallbackPath(
-      request.nextUrl.searchParams.get("callbackUrl"),
-    );
-    return NextResponse.redirect(new URL(callbackUrl, request.url));
+    return continueRedirect(request);
   }
 
   if (requiresAuth(pathname) && !loggedIn) return loginRedirect(request);

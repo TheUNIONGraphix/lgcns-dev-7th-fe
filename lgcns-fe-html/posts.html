@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" data-path="/posts">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Posts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/config.js"></script>
+    <script src="js/guard.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1 class="logo">
+        <a href="https://www.lgcns.com/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://www.lgcns.com/etc.clientlibs/lgcns/clientlibs/clientlib-site/resources/image/common/logo.svg"
+            alt="logo"
+            width="100"
+            height="100"
+          />
+        </a>
+        <span class="sr-only">LGCNS</span>
+      </h1>
+      <nav class="global-nav" aria-label="Global">
+        <div class="mobile-nav">
+          <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="mobile-menu">
+            <span class="sr-only">메뉴 열기</span>
+            <svg aria-hidden="true" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
+          <div id="mobile-menu" class="mobile-menu" hidden>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="posts.html">Posts</a></li>
+            </ul>
+          </div>
+        </div>
+        <ul class="desktop-nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="posts.html" aria-current="page">Posts</a></li>
+        </ul>
+      </nav>
+      <span class="login-status" data-login-status></span>
+    </header>
+    <main class="post-page" data-posts="list"></main>
+    <script src="js/auth-status.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/posts.js"></script>
+  </body>
+</html>

@@ -11,13 +11,14 @@ function fieldMessage(name, value) {
 }
 
 function startProvider(provider, callbackUrl) {
-  var target = window.apiBaseUrl + callbackUrl;
+  var returnTo = new URL(window.pageHref(callbackUrl), window.location.href).href;
+  var handoff = "/api/auth/handoff?returnTo=" + encodeURIComponent(returnTo);
   window.location.href =
-    window.apiBaseUrl +
+    window.authOrigin +
     "/api/auth/signin/" +
     provider +
     "?callbackUrl=" +
-    encodeURIComponent(target);
+    encodeURIComponent(handoff);
 }
 
 if (loginForm) {

@@ -10,6 +10,9 @@ import Feed from "./pages/Feed";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Order from "./pages/Order";
+import PostDetail from "./pages/PostDetail";
+import Posts from "./pages/Posts";
+import PostWrite from "./pages/PostWrite";
 import Product from "./pages/Product";
 import Signup from "./pages/Signup";
 
@@ -32,6 +35,16 @@ function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/blog/:blogId" element={<Blog />} />
         <Route path="/product/*" element={<Product />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/postdetail/:postId" element={<PostDetail />} />
+        <Route
+          path="/postwrite"
+          element={
+            <MemberRoute>
+              <PostWrite />
+            </MemberRoute>
+          }
+        />
         <Route
           path="/cart"
           element={
