@@ -1,3 +1,4 @@
+import { Nav } from "@/components/ui/landmark";
 import MobileNavigation from "../molecules/MobileNavigation";
 import DesktopNavigation from "../molecules/DesktopNavigation";
 
@@ -10,9 +11,9 @@ const items = [
 
 export default function GlobalNavigation() {
   return (
-    <nav className="flex items-center">
+    <Nav className="flex items-center">
       <MobileNavigation items={items} />
       <DesktopNavigation items={items} />
-    </nav>
+    </Nav>
   );
 }

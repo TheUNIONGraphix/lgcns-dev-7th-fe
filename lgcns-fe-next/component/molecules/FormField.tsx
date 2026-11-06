@@ -40,24 +40,15 @@ export default function FormField({
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   const errorId = `${id}-error`;
-  const [isVisible, setIsVisible] = useState(false);
   const isControlled = value !== undefined;
-  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
-  const currentValue = isControlled ? value : uncontrolledValue;
-  const showClear = Boolean(isClearable && currentValue);
+  const [isVisible, setIsVisible] = useState(false);
   const showToggle = showPasswordToggle && type === "password";
   const inputType = showToggle && isVisible ? "text" : type;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isControlled) setUncontrolledValue(event.target.value);
-    onChange?.(event);
-  };
-
-  const handleClear = () => {
-    if (!isControlled) setUncontrolledValue("");
-    onChange?.({
-      target: { name, value: "" },
-    } as React.ChangeEvent<HTMLInputElement>);
+  const clear = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const input = event.currentTarget.parentElement?.querySelector("input");
+    if (input instanceof HTMLInputElement && !isControlled) input.value = "";
+    onChange?.({ target: { name, value: "" } } as React.ChangeEvent<HTMLInputElement>);
   };
 
   return (
@@ -69,22 +60,20 @@ export default function FormField({
           name={name}
           form={form}
           placeholder={placeholder}
-          value={currentValue}
+          value={isControlled ? value : undefined}
+          defaultValue={isControlled ? undefined : defaultValue}
           required={required}
           autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
           className={[
+            "peer",
             inputClassName,
-            showClear && showToggle
-              ? "pr-14"
-              : showClear || showToggle
-                ? "pr-8"
-                : undefined,
+            isClearable && showToggle ? "pr-14" : isClearable || showToggle ? "pr-8" : undefined,
           ]
             .filter(Boolean)
             .join(" ")}
-          onChange={handleChange}
+          onChange={onChange}
         />
         {showToggle ? (
           <button
@@ -94,19 +83,15 @@ export default function FormField({
             className="absolute top-1/2 right-1.5 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground"
             onClick={() => setIsVisible((current) => !current)}
           >
-            {isVisible ? (
-              <EyeOff className="size-3.5" />
-            ) : (
-              <Eye className="size-3.5" />
-            )}
+            {isVisible ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
           </button>
         ) : null}
-        {showClear ? (
+        {isClearable ? (
           <button
             type="button"
             aria-label={`${placeholder} 입력 지우기`}
-            className={`absolute top-1/2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:text-foreground ${showToggle ? "right-7" : "right-1.5"}`}
-            onClick={handleClear}
+            className={`absolute top-1/2 inline-flex size-5 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground peer-placeholder-shown:hidden hover:text-foreground ${showToggle ? "right-7" : "right-1.5"}`}
+            onClick={clear}
           >
             <X className="size-3.5" />
           </button>

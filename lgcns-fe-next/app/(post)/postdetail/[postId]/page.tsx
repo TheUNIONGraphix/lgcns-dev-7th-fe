@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Header, Main } from "@/components/ui/landmark";
 import { notFound } from "next/navigation";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
 import PostCard from "@/component/organisms/PostCard";
@@ -55,9 +56,9 @@ export default function PostDetailPage({
   searchParams: Promise<{ compose?: string | string[] }>;
 }) {
   return (
-    <main className="min-h-dvh bg-[#f3f4f6] px-4 py-10">
+    <Main className="min-h-dvh bg-[#f3f4f6] px-4 py-10">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <header className="flex items-end justify-between gap-4">
+      <Header className="flex items-end justify-between gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="!font-sans text-[28px] leading-[normal] font-bold text-[#111827]">
             글
@@ -69,12 +70,12 @@ export default function PostDetailPage({
         <Link href="/posts" className="text-[14px] font-semibold text-[#2563eb]">
           목록
         </Link>
-      </header>
+      </Header>
       <PostLiveRefresh />
       <Suspense fallback={<p className="text-[14px] text-[#6b7280]">글을 불러오는 중...</p>}>
         <PostDetail params={params} searchParams={searchParams} />
       </Suspense>
       </div>
-    </main>
+    </Main>
   );
 }

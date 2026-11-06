@@ -1,8 +1,9 @@
+import { Section } from "@/components/ui/landmark";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SignupFallback() {
   return (
-    <section
+    <Section
       className="flex min-h-dvh flex-col items-center bg-[#f3f4f6] px-4 py-10"
       aria-busy="true"
     >
@@ -12,6 +13,6 @@ export default function SignupFallback() {
         <Skeleton className="h-40 w-full" />
         <Skeleton className="h-14 w-full" />
       </div>
-    </section>
+    </Section>
   );
 }

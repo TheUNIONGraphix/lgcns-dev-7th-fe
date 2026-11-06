@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Nav } from "@/components/ui/landmark";
 import { useLayoutEffect, useRef, useState } from "react";
 import { postsListHref } from "@/lib/postsListHref";
 
@@ -119,7 +120,7 @@ export default function PostPageNav({
   const marks = pageMarks(currentPage, totalPages, slots);
 
   return (
-    <nav aria-label="글 목록 페이지" className="flex items-center justify-between gap-3">
+    <Nav aria-label="글 목록 페이지" className="flex items-center justify-between gap-3">
       {hasPreviousPage ? (
         <Link href={postsListHref(currentPage - 1, sortOrder, keyword)} className={stepClass}>
           이전
@@ -168,6 +169,6 @@ export default function PostPageNav({
       ) : (
         <span className={stepDisabledClass}>다음</span>
       )}
-    </nav>
+    </Nav>
   );
 }

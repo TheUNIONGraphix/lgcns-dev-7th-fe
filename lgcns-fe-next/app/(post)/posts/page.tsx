@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Header, Main } from "@/components/ui/landmark";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
 import PostComposeLink from "@/component/molecules/PostComposeLink";
 import PostSearchForm from "@/component/molecules/PostSearchForm";
@@ -96,9 +97,9 @@ export default function PostsPage({
   }>;
 }) {
   return (
-    <main className="min-h-dvh bg-[#f3f4f6] px-4 py-10">
+    <Main className="min-h-dvh bg-[#f3f4f6] px-4 py-10">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <Header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="!font-sans text-[28px] leading-[normal] font-bold text-[#111827]">
             글
@@ -119,12 +120,12 @@ export default function PostsPage({
         >
           <PostComposeLink />
         </Suspense>
-      </header>
+      </Header>
       <PostLiveRefresh />
       <Suspense fallback={<p className="text-[14px] text-[#6b7280]">글 목록을 불러오는 중...</p>}>
         <PostsContent searchParams={searchParams} />
       </Suspense>
       </div>
-    </main>
+    </Main>
   );
 }

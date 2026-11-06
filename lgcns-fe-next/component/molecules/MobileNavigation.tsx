@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -18,15 +18,11 @@ export default function MobileNavigation({
 }: {
   items: { href: string; label: string }[];
 }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet>
       <SheetTrigger
         className="md:hidden"
-        render={
-          <Button variant="outline" size="icon" className="md:hidden" />
-        }
+        render={<Button variant="outline" size="icon" className="md:hidden" />}
       >
         <Menu />
         <span className="sr-only">메뉴 열기</span>
@@ -39,13 +35,16 @@ export default function MobileNavigation({
         <ul className="flex flex-col gap-1 px-2">
           {items.map((item) => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className="block rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
-                onClick={() => setOpen(false)}
+              <SheetClose
+                render={
+                  <Link
+                    href={item.href}
+                    className="block rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+                  />
+                }
               >
                 {item.label}
-              </Link>
+              </SheetClose>
             </li>
           ))}
         </ul>

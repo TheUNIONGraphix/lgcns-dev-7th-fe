@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { createComment, deletePost, toggleCommentLike, toggleLike } from "@/actions/postActions";
 import { rememberReturnPath } from "@/actions/returnToActions";
@@ -31,9 +31,8 @@ export default function PostCard({
   canManage?: boolean;
   full?: boolean;
 }) {
-  const [open, setOpen] = useState(full);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [loginMessage, setLoginMessage] = useState("좋아요는 로그인 후 이용할 수 있어요.");
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const messageRef = useRef<HTMLParagraphElement>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { isLoggedIn } = useAuth();
@@ -44,8 +43,9 @@ export default function PostCard({
 
   const allow = (message: string) => {
     if (isLoggedIn) return true;
-    setLoginMessage(message);
-    setLoginOpen(true);
+    if (messageRef.current) messageRef.current.textContent = message;
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
     return false;
   };
 
@@ -59,41 +59,38 @@ export default function PostCard({
     <article className="flex flex-col gap-5 rounded-3xl border border-[#e5e7eb] bg-white px-5 py-5 shadow-[0_10px_30px_rgba(15,23,42,0.06)] sm:px-7 sm:py-6">
       <PostMeta authorName={post.authorName} createdAt={post.createdAt} />
       <PostBody body={post.body} full={full} />
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#f3f4f6] pt-4 text-sm">
-        <div className="flex items-center gap-2">
-          <PostLikeForm
-            postId={post.id}
-            count={post.likeCount}
-            liked={liked}
-            action={toggleLike}
-            onBeforeSubmit={() => allow("좋아요는 로그인 후 이용할 수 있어요.")}
-          />
-          <PostCommentCount
-            count={post.commentCount}
-            pressed={open}
-            onClick={() => setOpen((value) => !value)}
-          />
+      <div className="group/comments flex flex-col gap-4 border-t border-[#f3f4f6] pt-4 text-sm">
+        <input
+          id={`comments-${post.id}`}
+          type="checkbox"
+          defaultChecked={full}
+          className="comments-toggle sr-only"
+        />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <PostLikeForm
+              postId={post.id}
+              count={post.likeCount}
+              liked={liked}
+              action={toggleLike}
+              onBeforeSubmit={() => allow("좋아요는 로그인 후 이용할 수 있어요.")}
+            />
+            <PostCommentCount count={post.commentCount} htmlFor={`comments-${post.id}`} />
+          </div>
+          <div className="flex items-center gap-3">
+            {full ? null : <PostInlineLink href={`/postdetail/${post.id}`}>보기</PostInlineLink>}
+            {canManage ? (
+              <>
+                <PostInlineLink href={editHref} tone="default">
+                  수정
+                </PostInlineLink>
+                <PostDeleteForm postId={post.id} action={deletePost} />
+              </>
+            ) : null}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {full ? null : <PostInlineLink href={`/postdetail/${post.id}`}>보기</PostInlineLink>}
-          {canManage ? (
-            <>
-              <PostInlineLink href={editHref} tone="default">
-                수정
-              </PostInlineLink>
-              <PostDeleteForm postId={post.id} action={deletePost} />
-            </>
-          ) : null}
-        </div>
-      </div>
-      <LoginRequiredDialog
-        open={loginOpen}
-        onOpenChange={setLoginOpen}
-        onLogin={goLogin}
-        description={loginMessage}
-      />
-      {open ? (
-        <div className="flex flex-col gap-4 rounded-2xl bg-[#f8fafc] p-4">
+        <LoginRequiredDialog dialogRef={dialogRef} messageRef={messageRef} onLogin={goLogin} />
+        <div className="hidden flex-col gap-4 rounded-2xl bg-[#f8fafc] p-4 group-has-[.comments-toggle:checked]/comments:flex">
           {post.comments.length === 0 ? (
             <p className="text-sm text-[#6b7280]">아직 댓글이 없습니다.</p>
           ) : (
@@ -142,7 +139,7 @@ export default function PostCard({
           )}
           <PostCommentForm postId={post.id} action={createComment} />
         </div>
-      ) : null}
+      </div>
     </article>
   );
 }

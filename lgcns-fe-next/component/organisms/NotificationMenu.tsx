@@ -29,10 +29,10 @@ export default function NotificationMenu({
   markAll: MarkAll;
 }) {
   const { isLoggedIn } = useAuth();
-  const [open, setOpen] = useState(false);
   const [snapshot, setSnapshot] = useState<NotificationSnapshot>(notifications ?? empty);
   const [toasts, setToasts] = useState<{ id: string; message: string; postId: string }[]>([]);
   const [trackedLogin, setTrackedLogin] = useState(isLoggedIn);
+  const menuRef = useRef<HTMLDetailsElement>(null);
   const seenRef = useRef<Set<string> | null>(null);
   const initialIds = useRef((notifications?.items ?? []).map((item) => item.id));
 
@@ -40,7 +40,6 @@ export default function NotificationMenu({
     setTrackedLogin(isLoggedIn);
     setSnapshot(isLoggedIn ? (notifications ?? empty) : empty);
     setToasts([]);
-    setOpen(false);
   }
 
   useEffect(() => {
@@ -118,21 +117,13 @@ export default function NotificationMenu({
     [markReadLocal, pushToasts],
   );
 
-  useEffect(() => {
-    if (toasts.length === 0) return;
-    const timer = window.setTimeout(() => {
-      setToasts((current) => current.slice(0, -1));
-    }, 4000);
-    return () => window.clearTimeout(timer);
-  }, [toasts]);
-
   const openNotification = async (id: string, postId: string) => {
     const formData = new FormData();
     formData.set("notificationId", id);
     formData.set("postId", postId);
     markReadLocal(id);
     setToasts((current) => current.filter((toast) => toast.id !== id));
-    setOpen(false);
+    if (menuRef.current) menuRef.current.open = false;
     await markRead(formData);
   };
 
@@ -151,13 +142,10 @@ export default function NotificationMenu({
   return (
     <>
       <NotificationStream enabled onEvent={onEvent} />
-      <div className="relative">
-        <button
-          type="button"
-          aria-expanded={open}
+      <details ref={menuRef} className="relative">
+        <summary
           aria-label={snapshot.unreadCount > 0 ? `알림 ${snapshot.unreadCount}개` : "알림"}
-          onClick={() => setOpen((value) => !value)}
-          className="relative rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground"
+          className="relative inline-block cursor-pointer list-none rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden"
         >
           알림
           {snapshot.unreadCount > 0 ? (
@@ -165,8 +153,7 @@ export default function NotificationMenu({
               {badge}
             </span>
           ) : null}
-        </button>
-        {open ? (
+        </summary>
           <div className="absolute right-0 z-20 mt-2 w-80 rounded-xl border border-border bg-card text-card-foreground shadow-lg">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">
               <span className="text-sm font-semibold">알림</span>
@@ -195,8 +182,7 @@ export default function NotificationMenu({
               </ul>
             )}
           </div>
-        ) : null}
-      </div>
+      </details>
       <div className="fixed right-4 bottom-4 z-30 flex flex-col gap-2">
         {toasts.map((toast) => (
           <NotificationToast

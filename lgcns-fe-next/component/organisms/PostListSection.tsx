@@ -1,3 +1,4 @@
+import { Section } from "@/components/ui/landmark";
 import CustomTitle from "../atoms/CustomTitle";
 import PostCard from "./PostCard";
 import { readCurrentUser } from "@/lib/currentUser";
@@ -41,7 +42,7 @@ export default async function PostListSection({
   }
 
   return (
-    <section className="flex flex-col gap-4">
+    <Section className="flex flex-col gap-4">
       <CustomTitle
         TitleType="h2"
         className="text-left text-[14px] leading-[normal] font-normal text-[#6b7280]"
@@ -61,6 +62,6 @@ export default async function PostListSection({
           </li>
         ))}
       </ul>
-    </section>
+    </Section>
   );
 }
