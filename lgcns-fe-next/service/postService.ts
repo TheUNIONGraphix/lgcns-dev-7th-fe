@@ -1,6 +1,6 @@
 import { postText, sanitizePostHtml } from "@/lib/postHtml";
 import { prisma } from "@/lib/prisma";
-import type { PostListResponseType } from "@/types/response/ResponseType";
+import type { PostListResponseType, CommentRow, CommentReply, CommentItem } from "@/types/response/ResponseType";
 
 const MAX_POST_TEXT = 5000;
 const MAX_COMMENT_TEXT = 300;
@@ -10,28 +10,6 @@ function normalizeKeyword(value: string) {
   return value.trim().replace(/\s+/g, " ").slice(0, MAX_KEYWORD);
 }
 
-export type CommentReply = {
-  id: string;
-  authorName: string;
-  body: string;
-  createdAt: string;
-  likeCount: number;
-};
-
-export type CommentItem = CommentReply & {
-  replies: CommentReply[];
-};
-
-export type PostItem = {
-  id: string;
-  authorId: string;
-  authorName: string;
-  body: string;
-  createdAt: string;
-  likeCount: number;
-  commentCount: number;
-  comments: CommentItem[];
-};
 
 function isObjectId(value: string) {
   return /^[a-f\d]{24}$/i.test(value);
@@ -43,15 +21,6 @@ function preparePostBody(raw: string) {
   if (!text || text.length > MAX_POST_TEXT) return null;
   return body;
 }
-
-type CommentRow = {
-  id: string;
-  postId: string;
-  parentId: string | null;
-  authorName: string;
-  body: string;
-  createdAt: Date;
-};
 
 function toReply(comment: CommentRow, likeCount: number): CommentReply {
   return {
@@ -130,6 +99,18 @@ async function listPosts(
   const pageSize = 20;
   const requestedPage = Number.isInteger(pageNumber) && pageNumber > 0 ? pageNumber : 1;
   const normalized = normalizeKeyword(keyword);
+  /**
+   * 
+   * 
+   * const response = await fetch('https://api.example.com/posts?page=1&sort=ASC&keyword=test', {
+   *    method: 'GET',
+   *    headers: {
+   *      'Content-Type': 'application/json',
+   *      'Authorization': 'Bearer <token>',
+   *    },
+   * })
+   * const data = await response.json();
+  **/
   const where = normalized
     ? {
         OR: [

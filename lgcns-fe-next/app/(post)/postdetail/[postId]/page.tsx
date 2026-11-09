@@ -4,7 +4,6 @@ import { Header, Main } from "@/components/ui/landmark";
 import { notFound } from "next/navigation";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
 import PostCard from "@/component/organisms/PostCard";
-import PostLiveRefresh from "@/component/organisms/PostLiveRefresh";
 import { readCurrentUser } from "@/lib/currentUser";
 import { commentIdsOf, findViewerLikedCommentIds, findViewerLikedPostIds, getCachedPost } from "@/lib/postCache";
 
@@ -71,7 +70,6 @@ export default function PostDetailPage({
           목록
         </Link>
       </Header>
-      <PostLiveRefresh />
       <Suspense fallback={<p className="text-[14px] text-[#6b7280]">글을 불러오는 중...</p>}>
         <PostDetail params={params} searchParams={searchParams} />
       </Suspense>

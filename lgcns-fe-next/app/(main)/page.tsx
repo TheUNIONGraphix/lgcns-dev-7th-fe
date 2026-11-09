@@ -10,9 +10,7 @@ import {
   getCachedPosts,
 } from "@/lib/postCache";
 
-
-export default async function Home() {
-
+async function HomePosts() {
   const postList = getCachedPosts(1, "DESC");
   const [user, data] = await Promise.all([readCurrentUser(), postList]);
   const viewerId = user?.id ?? null;
@@ -28,10 +26,25 @@ export default async function Home() {
     : [[], []];
 
   return (
+    <HomeLatestPosts
+      posts={data.posts}
+      likedPostIds={likedPostIds}
+      likedCommentIds={likedCommentIds}
+      viewerId={viewerId}
+    />
+  );
+}
+
+export default function Home() {
+  return (
     <Main>
       <HeroSection />
-      <Suspense fallback={<p className="px-4 py-10 text-[14px] text-[#6b7280]">최신 글을 불러오는 중...</p>}>
-        <HomeLatestPosts posts={data.posts} likedPostIds={likedPostIds} likedCommentIds={likedCommentIds} viewerId={viewerId} />
+      <Suspense
+        fallback={
+          <p className="px-4 py-10 text-[14px] text-[#6b7280]">최신 글을 불러오는 중...</p>
+        }
+      >
+        <HomePosts />
       </Suspense>
     </Main>
   );

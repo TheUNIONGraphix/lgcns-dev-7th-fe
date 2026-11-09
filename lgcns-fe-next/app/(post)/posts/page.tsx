@@ -6,7 +6,8 @@ import PostComposeLink from "@/component/molecules/PostComposeLink";
 import PostSearchForm from "@/component/molecules/PostSearchForm";
 import Pagination from "@/component/organisms/Pagination";
 import PostListSection from "@/component/organisms/PostListSection";
-import PostLiveRefresh from "@/component/organisms/PostLiveRefresh";
+import PostInsertStream from "@/component/molecules/PostInsertStream";
+import PostInfinityScrollList from "@/component/organisms/PostInfinityScrollList";
 import { getCachedPosts, normalizePostKeyword, postsListHref } from "@/lib/postCache";
 
 function readPage(page: string | string[] | undefined) {
@@ -42,7 +43,7 @@ async function PostsContent({
   const keyword = readKeyword(q);
   const compose = readCompose(composeParam);
   const closeHref = postsListHref(pageNumber, sortOrder, keyword);
-  const postList = getCachedPosts(pageNumber, sortOrder, keyword);
+  const postList = await getCachedPosts(pageNumber, sortOrder, keyword);
 
   return (
     <>
@@ -71,9 +72,11 @@ async function PostsContent({
           오래된순
         </Link>
       </div>
-      <PostListSection sortOrder={sortOrder} keyword={keyword} postList={postList} />
-      <Pagination sortOrder={sortOrder} keyword={keyword} postList={postList} />
-      <Suspense fallback={null}>
+      <PostInfinityScrollList posts={postList} pageNumber={pageNumber} sortOrder={sortOrder} keyword={keyword} />
+      {/* <PostListSection sortOrder={sortOrder} keyword={keyword} postList={postList} />
+      <Pagination sortOrder={sortOrder} keyword={keyword} postList={postList} /> */}
+      {/*  error handling modal 추가 */}
+      {/* <Suspense fallback={null}>
         <PostCompose
           compose={compose}
           closeHref={closeHref}
@@ -81,7 +84,7 @@ async function PostsContent({
             compose ? `${closeHref}&compose=${encodeURIComponent(compose)}` : closeHref
           }
         />
-      </Suspense>
+      </Suspense> */}
     </>
   );
 }
@@ -121,7 +124,7 @@ export default function PostsPage({
           <PostComposeLink />
         </Suspense>
       </Header>
-      <PostLiveRefresh />
+      <PostInsertStream />
       <Suspense fallback={<p className="text-[14px] text-[#6b7280]">글 목록을 불러오는 중...</p>}>
         <PostsContent searchParams={searchParams} />
       </Suspense>

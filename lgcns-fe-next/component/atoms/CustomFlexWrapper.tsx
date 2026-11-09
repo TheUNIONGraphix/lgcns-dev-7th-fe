@@ -1,11 +1,11 @@
 import { twMerge } from "tailwind-merge";
 
 export default function CustomFlexWrapper({
-  direction = "column",
+  direction = "col",
   className,
   children,
 }: {
-  direction?: "column" | "row";
+  direction?: "col" | "row";
   className?: string;
   children: React.ReactNode;
 }) {
