@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { createComment, deletePost, toggleCommentLike, toggleLike } from "@/actions/postActions";
 import { rememberReturnPath } from "@/actions/returnToActions";
-import { useAuth } from "@/component/providers/AuthProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import type { PostItem } from "@/lib/postCache";
 import PostCommentCount from "../atoms/PostCommentCount";
 import PostInlineLink from "../atoms/PostInlineLink";

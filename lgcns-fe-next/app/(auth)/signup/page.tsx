@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { submitSignup } from "@/actions/userActions";
-import SignupSection from "@/component/templates/SignupSection";
+import SignupSection from "@/components/templates/SignupSection";
 import SignupFallback from "@/components/loader/SignupFallback";
 
 export default function SignupPage() {

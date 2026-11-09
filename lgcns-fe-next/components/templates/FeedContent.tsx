@@ -1,4 +1,4 @@
-import FeedNextButton from "@/component/molecules/FeedNextButton";
+import FeedNextButton from "@/components/molecules/FeedNextButton";
 
 export default async function FeedContent({
   searchParams,

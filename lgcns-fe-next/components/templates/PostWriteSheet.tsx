@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import PostEditor from "@/component/organisms/PostEditor";
+import PostEditor from "@/components/organisms/PostEditor";
 import {
   Sheet,
   SheetContent,

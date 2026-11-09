@@ -1,4 +1,4 @@
-import HomeLatestPosts from "@/component/templates/HomeLatestPosts";
+import HomeLatestPosts from "@/components/templates/HomeLatestPosts";
 import { readCurrentUser } from "@/lib/currentUser";
 import {
   commentIdsOf,

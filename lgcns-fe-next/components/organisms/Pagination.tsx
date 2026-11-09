@@ -1,4 +1,4 @@
-import PostPageNav from "@/component/molecules/PostPageNav";
+import PostPageNav from "@/components/molecules/PostPageNav";
 import type { PostListResponseType } from "@/lib/postCache";
 
 export default async function Pagination({

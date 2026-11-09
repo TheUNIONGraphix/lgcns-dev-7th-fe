@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "@/component/providers/AuthProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 import NotificationToast from "../atoms/NotificationToast";
 import NotificationItemRow from "../molecules/NotificationItem";
 import NotificationStream from "../molecules/NotificationStream";

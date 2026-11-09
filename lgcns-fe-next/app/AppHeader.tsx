@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { markAllNotificationsRead, markNotificationRead } from "@/actions/notificationActions";
-import Header from "@/component/templates/Header";
+import Header from "@/components/templates/Header";
 import { readNotificationSnapshot } from "@/lib/readNotificationSnapshot";
 
 async function HeaderData() {

@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Gothic_A1, Black_Han_Sans } from "next/font/google";
-import AuthShell from "@/component/providers/AuthShell";
-import ServiceWorkerRegister from "@/component/providers/ServiceWorkerRegister";
+import AuthShell from "@/components/providers/AuthShell";
+import ServiceWorkerRegister from "@/components/providers/ServiceWorkerRegister";
 import "./globals.css";
 
 const geistSans = Geist({

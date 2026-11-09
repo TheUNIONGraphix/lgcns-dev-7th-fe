@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { userService } from "@/service/userService";
+import { loginWithCredentials } from "@/actions/authActions";
+import { signAccessToken } from "@/lib/accessJwt";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await userService.login(parsed.data);
+  const result = await loginWithCredentials(parsed.data.email, parsed.data.password);
   if (!result.ok) {
     return NextResponse.json(
       { success: false, message: result.message },
@@ -39,13 +40,19 @@ export async function POST(request: Request) {
     );
   }
 
+  const accessToken = await signAccessToken({
+    id: result.user.id,
+    email: result.user.email,
+    name: result.user.name,
+  });
+
   return NextResponse.json(
     {
       success: true,
       message: "OK",
       data: {
-        accessToken: result.accessToken,
-        expiresIn: result.expiresIn,
+        accessToken,
+        expiresIn: result.user.expiresIn,
         email: result.user.email,
         name: result.user.name,
         userId: result.user.id,

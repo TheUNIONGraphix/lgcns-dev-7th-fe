@@ -1,8 +1,6 @@
 import { matchApiUrl } from "@/config/apiuri";
 import { springFetch } from "@/lib/fetchClients";
 import { SpringLoginData } from "@/types/response/springApiResponseType";
-import { authOptions } from "@/lib/authOptions";
-import { getServerSession } from "next-auth";
 
 function isLoginData(value: SpringLoginData | null): value is SpringLoginData {
   return Boolean(value && value.accessToken && typeof value.userId === "number" && value.email);
@@ -55,9 +53,7 @@ export async function springAuthLogin(email: string, password: string) {
   return { ok: true as const, data: response.data };
 }
 
-export async function springUserGetData() {
-
-  const accessToken = await getServerSession(authOptions);
+export async function springUserGetData(accessToken: string) {
   if (!accessToken) {
     return {
       ok: false as const,

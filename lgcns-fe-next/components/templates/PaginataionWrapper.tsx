@@ -1,6 +1,6 @@
-import PostPageNav from "@/component/molecules/PostPageNav";
-import PostCard from "@/component/organisms/PostCard";
-import type { PostListShellProps } from "@/component/organisms/postListShell";
+import PostPageNav from "@/components/molecules/PostPageNav";
+import PostCard from "@/components/organisms/PostCard";
+import type { PostListShellProps } from "@/components/organisms/postListShell";
 import { Section } from "@/components/ui/landmark";
 
 export default function PostPaginataionWrapper({

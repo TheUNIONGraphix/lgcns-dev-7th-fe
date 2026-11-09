@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import FeedContent from "@/component/templates/FeedContent";
+import FeedContent from "@/components/templates/FeedContent";
 
 export default function FeedPage({
   searchParams,

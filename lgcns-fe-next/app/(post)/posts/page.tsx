@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Header, Main } from "@/components/ui/landmark";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
-import PostComposeLink from "@/component/molecules/PostComposeLink";
-import PostSearchForm from "@/component/molecules/PostSearchForm";
-import PostPaginataionWrapper from "@/component/templates/PaginataionWrapper";
-import PostInsertStream from "@/component/molecules/PostInsertStream";
-import PostInfinityWrapper from "@/component/templates/InfinityWrapper";
+import PostComposeLink from "@/components/molecules/PostComposeLink";
+import PostSearchForm from "@/components/molecules/PostSearchForm";
+import PostPaginataionWrapper from "@/components/templates/PaginataionWrapper";
+import PostInsertStream from "@/components/molecules/PostInsertStream";
+import PostInfinityWrapper from "@/components/templates/InfinityWrapper";
 import { getCachedPosts, normalizePostKeyword, postsListHref } from "@/lib/postCache";
 
 function readPage(page: string | string[] | undefined) {

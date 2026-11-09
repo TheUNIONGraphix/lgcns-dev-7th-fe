@@ -1,5 +1,5 @@
 import type { PostItem } from "@/lib/postCache";
-import LatestPostFeed from "@/component/templates/LatestPostFeed";
+import LatestPostFeed from "@/components/templates/LatestPostFeed";
 
 export default async function HomeLatestPosts({
     posts,

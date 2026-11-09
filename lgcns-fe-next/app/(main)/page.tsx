@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Main } from "@/components/ui/landmark";
-import HeroSection from "@/component/templates/HeroSection";
+import HeroSection from "@/components/templates/HeroSection";
 import HomePosts from "@/app/(main)/HomePosts";
 
 export default function Home() {

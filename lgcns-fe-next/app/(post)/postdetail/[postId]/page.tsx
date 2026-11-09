@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Header, Main } from "@/components/ui/landmark";
 import { notFound } from "next/navigation";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
-import PostCard from "@/component/organisms/PostCard";
+import PostCard from "@/components/organisms/PostCard";
 import { readCurrentUser } from "@/lib/currentUser";
 import { commentIdsOf, findViewerLikedCommentIds, findViewerLikedPostIds, getCachedPost } from "@/lib/postCache";
 

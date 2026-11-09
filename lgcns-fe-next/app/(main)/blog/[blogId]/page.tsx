@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import BlogContent from "@/component/templates/BlogContent";
+import BlogContent from "@/components/templates/BlogContent";
 
 export default function BlogPage({
   params,

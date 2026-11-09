@@ -1,1 +1,1 @@
-cd lgcns-fe-next && npm run lint
+cd lgcns-fe-next && npm run lint && npm run build

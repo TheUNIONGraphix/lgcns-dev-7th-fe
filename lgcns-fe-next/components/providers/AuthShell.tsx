@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { AuthProvider } from "@/component/providers/AuthProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { getServerSession } from "next-auth";
 import { verifyAccessToken } from "@/lib/accessJwt";
 import { authOptions } from "@/lib/authOptions";

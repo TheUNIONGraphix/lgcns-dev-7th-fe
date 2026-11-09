@@ -4,9 +4,10 @@ import KakaoProvider from "next-auth/providers/kakao";
 import GoogleProvider from "next-auth/providers/google";
 
 import { EXPIRES_IN_SECONDS, signAccessToken } from "@/lib/accessJwt";
-import { userService } from "@/service/userService";
-import { springAuthLogin } from "@/service/spring/sprignAuthService";
-import { SpringLoginData } from "@/types/response/springApiResponseType";
+import {
+  linkAuthSocialAccount,
+  loginWithCredentials,
+} from "@/actions/authActions";
 
 function text(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
@@ -58,29 +59,28 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // const result = await userService.login({
-        //   email: credentials.email,
-        //   password: credentials.password,
-        // });
-        const result = await springAuthLogin(credentials.email, credentials.password);
-        const data = result.data as SpringLoginData;
+        const result = await loginWithCredentials(
+          credentials.email,
+          credentials.password,
+        );
         if (!result.ok) return null;
+        const user = result.user;
 
         return {
-          id: data.userId.toString(),
-          email: data.email,
-          name: data.name,
-          profileImageUrl: data.avatarUrl ?? "",
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
-          expiresIn: data.expiresIn,
-          role: data.role,
-          platformRole: data.platformRole,
-          avatarUrl: data.avatarUrl ?? "",
-          presenceStatus: data.presenceStatus,
-          statusMessage: data.statusMessage ?? "",
-          accountStatus: data.accountStatus,
-          companyId: data.companyId?.toString() ?? "",
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          profileImageUrl: user.profileImageUrl,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          expiresIn: user.expiresIn,
+          role: user.role,
+          platformRole: user.platformRole,
+          avatarUrl: user.avatarUrl,
+          presenceStatus: user.presenceStatus,
+          statusMessage: user.statusMessage,
+          accountStatus: user.accountStatus,
+          companyId: user.companyId,
         } as User;
       },
     }),
@@ -106,7 +106,7 @@ export const authOptions: NextAuthOptions = {
         (account.provider === "kakao" || account.provider === "google")
       ) {
         const social = socialProfile(account.provider, profile, user ?? {});
-        const linked = await userService.linkSocialAccount({
+        const linked = await linkAuthSocialAccount({
           provider: account.provider,
           providerAccountId: account.providerAccountId,
           email: social.email,

@@ -297,6 +297,22 @@ async function create(input: {
 //   };
 // }
 
+async function login(input: { email: string; password: string }) {
+  const user = input.email.trim();
+  const password = input.password.trim();
+  if (!user || !password) {
+    return { ok: false as const, message: "이메일 또는 비밀번호를 입력해 주세요." };
+  }
+  const result = await prisma.user.findUnique({
+    where: { email: user },
+    select: { id: true, email: true, name: true, profileImageUrl: true },
+  });
+  if (!result) {
+    return { ok: false as const, message: "이메일 또는 비밀번호가 올바르지 않습니다." };
+  }
+  return { ok: true as const, data: result };
+}
+
 function socialUserId(provider: string, providerAccountId: string) {
   const prefix = provider === "google" ? "g_" : "k_";
   const hash = createHash("sha256")
@@ -431,6 +447,7 @@ async function linkSocialAccount(input: {
 const PROFILE_IMAGE_TYPES = new Set(["image/png", "image/jpeg"]);
 
 async function findSessionUser(id: string) {
+  if (!/^[a-f\d]{24}$/i.test(id)) return null;
   const user = await prisma.user.findUnique({
     where: { id },
     select: { id: true, email: true, name: true },
@@ -574,7 +591,7 @@ function acceptProfileImage(input: {
 export const userService = {
   list,
   create,
-  // login,
+  login,
   checkIdentity,
   linkSocialAccount,
   findSessionUser,

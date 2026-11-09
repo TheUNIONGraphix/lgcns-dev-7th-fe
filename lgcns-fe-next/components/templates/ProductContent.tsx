@@ -1,4 +1,4 @@
-import CustomTitle from "@/component/atoms/CustomTitle";
+import CustomTitle from "@/components/atoms/CustomTitle";
 
 export default async function ProductContent({
   params,

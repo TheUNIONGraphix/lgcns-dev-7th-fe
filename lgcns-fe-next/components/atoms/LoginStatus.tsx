@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { rememberReturnPath } from "@/actions/returnToActions";
-import { useAuth } from "@/component/providers/AuthProvider";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export default function LoginStatus() {
   const { isLoggedIn } = useAuth();

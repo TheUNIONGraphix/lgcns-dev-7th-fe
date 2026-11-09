@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createPost, updatePost } from "@/actions/postActions";
-import PostWriteSheet from "@/component/templates/PostWriteSheet";
+import PostWriteSheet from "@/components/templates/PostWriteSheet";
 import { readCurrentUser } from "@/lib/currentUser";
 import { getCachedPost } from "@/lib/postCache";
 import { REMEMBER_PATH } from "@/lib/returnTo";

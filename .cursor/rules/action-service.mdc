@@ -7,19 +7,25 @@ alwaysApply: true
 
 `lgcns-fe-next`에서 서버 작업은 이 경계만 사용한다.
 
-- **Action** (`actions/`): `"use server"`. FormData를 읽고, service를 호출한 뒤 `updateTag`·redirect만 처리한다. 반환값으로 다음 화면 상태를 돌려준다.
+- **Action** (`actions/`): `"use server"`. FormData를 읽고, 어댑터를 고른 뒤 호출한다. 이어서 `updateTag`·redirect만 처리한다. 반환값으로 다음 화면 상태를 돌려준다.
 - **임시 입력**은 쿠키, localStorage, sessionStorage에 두지 않는다. 서버 컴포넌트가 서버 액션을 `form action`으로 넘기고, 단계마다 FormData로 값을 다시 보낸다. 로그인 세션 쿠키는 인증용이라 이 제한 밖에 둔다.
-- **Service** (`service/`): 검증, 권한 판단, Prisma 조회와 변경. `{ ok, message }` 또는 데이터를 반환한다. `redirect`, `cookies`, FormData를 쓰지 않는다.
+- **Service** (`service/`): 포트의 어댑터다. 검증, 권한 판단, Prisma 또는 외부 API 호출만 한다. `{ ok, message }` 또는 데이터를 반환한다. `redirect`, `cookies`, FormData를 쓰지 않는다.
+- 구현이 둘 이상이면 action이 어댑터를 고른다. 호출부는 구현을 고르지 않는다. 어댑터를 바꿀 때는 action의 분기만 바꾼다.
+- **NextAuth** (`lib/authOptions.ts`)와 Route Handler는 service를 import하지 않는다. action을 호출하고, action이 어댑터를 가져온다.
 - **Prisma**는 `lib/prisma.ts`와 `service/`에서만 import한다. action, page, component, `lib`의 다른 파일은 service를 통한다.
 - 컴포넌트는 service를 import하지 않는다. 서버 변경은 action을 organism에 연결한다.
 
 ```ts
-// action
-const result = await postService.createPost({ authorId, authorName, body });
-if (!result.ok) return;
-updateTag("posts");
-redirect(`/postdetail/${result.id}`);
+// action: 어댑터를 고른다
+function authAdapter() {
+  if (process.env.AUTH_ADAPTER === "prisma") return prismaAuthAdapter;
+  return springAuthAdapter;
+}
+const result = await authAdapter().login({ email, password });
 
-// service
+// NextAuth는 action만 호출한다
+const result = await loginWithCredentials(email, password);
+
+// service 어댑터
 await prisma.post.create({ data: { authorId, authorName, body } });
 ```
