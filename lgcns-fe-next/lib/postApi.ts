@@ -13,5 +13,11 @@ export async function userFromRequest(request: Request) {
   if (!token) return null;
   const payload = await verifyAccessToken(token);
   if (!payload) return null;
-  return userService.findSessionUser(payload.id);
+  const user = await userService.findSessionUser(payload.id);
+  if (user) return user;
+  return {
+    id: payload.id,
+    email: payload.email,
+    name: payload.name || payload.email || "회원",
+  };
 }

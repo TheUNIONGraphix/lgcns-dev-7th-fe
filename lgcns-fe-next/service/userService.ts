@@ -1,7 +1,8 @@
-import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, scryptSync } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { EXPIRES_IN_SECONDS, signAccessToken } from "@/lib/accessJwt";
 import { prisma } from "@/lib/prisma";
+import { authType } from "@/types/response/ResponseType";
 import {
   interestsFromText,
   MAX_PROFILE_IMAGE_BYTES,
@@ -29,15 +30,6 @@ function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(password, salt, 64).toString("hex");
   return `${salt}:${hash}`;
-}
-
-function verifyPassword(password: string, stored: string) {
-  const [salt, hash] = stored.split(":");
-  if (!salt || !hash) return false;
-  const actual = scryptSync(password, salt, 64);
-  const expected = Buffer.from(hash, "hex");
-  if (actual.length !== expected.length) return false;
-  return timingSafeEqual(actual, expected);
 }
 
 function duplicateMessage(error: unknown) {
@@ -286,35 +278,24 @@ async function create(input: {
   }
 }
 
-async function login(input: { email: string; password: string }) {
-  const loginId = input.email.trim();
-  const user = await prisma.user.findFirst({
-    where: { OR: [{ email: loginId }, { userId: loginId }] },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      password: true,
-    },
-  });
-  if (!user?.password || !verifyPassword(input.password, user.password)) {
-    return {
-      ok: false as const,
-      message: "이메일 또는 비밀번호가 올바르지 않습니다.",
-    };
-  }
+// async function login(input: { email: string; password: string }) {
+//   const result = await prisma.(input.email, input.password);
+//   if (!result.ok) return result;
 
-  return {
-    ok: true as const,
-    accessToken: await signAccessToken({
-      id: user.id,
-      email: user.email,
-      name: user.name ?? "",
-    }),
-    expiresIn: EXPIRES_IN_SECONDS,
-    user: { id: user.id, email: user.email, name: user.name },
-  };
-}
+//   const profile = {
+//     id: String(result.data.userId),
+//     email: result.data.email,
+//     name: result.data.name ?? "",
+//   };
+//   return {
+//     ok: true as const,
+//     accessToken: await signAccessToken(profile),
+//     springAccessToken: result.data.accessToken,
+//     refreshToken: result.data.refreshToken,
+//     expiresIn: result.data.expiresIn || EXPIRES_IN_SECONDS,
+//     user: profile,
+//   };
+// }
 
 function socialUserId(provider: string, providerAccountId: string) {
   const prefix = provider === "google" ? "g_" : "k_";
@@ -593,7 +574,7 @@ function acceptProfileImage(input: {
 export const userService = {
   list,
   create,
-  login,
+  // login,
   checkIdentity,
   linkSocialAccount,
   findSessionUser,

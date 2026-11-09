@@ -46,3 +46,10 @@ export type PostItem = {
   commentCount: number;
   comments: CommentItem[];
 };
+
+export type authType = {
+  userId: string;
+  email: string;
+  name: string;
+  profileImageUrl: string;
+}

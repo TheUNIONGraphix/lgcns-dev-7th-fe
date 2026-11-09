@@ -1,10 +1,12 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import KakaoProvider from "next-auth/providers/kakao";
 import GoogleProvider from "next-auth/providers/google";
 
 import { EXPIRES_IN_SECONDS, signAccessToken } from "@/lib/accessJwt";
 import { userService } from "@/service/userService";
+import { springAuthLogin } from "@/service/spring/sprignAuthService";
+import { SpringLoginData } from "@/types/response/springApiResponseType";
 
 function text(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
@@ -53,22 +55,33 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Login ID", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const result = await userService.login({
-          email: credentials.email,
-          password: credentials.password,
-        });
+        // const result = await userService.login({
+        //   email: credentials.email,
+        //   password: credentials.password,
+        // });
+        const result = await springAuthLogin(credentials.email, credentials.password);
+        const data = result.data as SpringLoginData;
         if (!result.ok) return null;
 
         return {
-          id: result.user.id,
-          email: result.user.email,
-          name: result.user.name ?? "",
-          accessToken: result.accessToken,
-          expiresIn: result.expiresIn,
-        };
+          id: data.userId.toString(),
+          email: data.email,
+          name: data.name,
+          profileImageUrl: data.avatarUrl ?? "",
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+          expiresIn: data.expiresIn,
+          role: data.role,
+          platformRole: data.platformRole,
+          avatarUrl: data.avatarUrl ?? "",
+          presenceStatus: data.presenceStatus,
+          statusMessage: data.statusMessage ?? "",
+          accountStatus: data.accountStatus,
+          companyId: data.companyId?.toString() ?? "",
+        } as User;
       },
     }),
     KakaoProvider({
@@ -116,6 +129,7 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "credentials" && user) {
         token.accessToken = user.accessToken;
         token.expiresIn = user.expiresIn;
+        token.refreshToken = user.refreshToken;
         token.id = user.id;
         token.email = user.email ?? token.email;
         token.name = user.name ?? token.name;
@@ -130,8 +144,11 @@ export const authOptions: NextAuthOptions = {
         id: token.id ?? "",
         email: token.email ?? "",
         name: token.name ?? "",
-        profileImageUrl: token.profileImageUrl,
-      };
+        profileImageUrl: token.profileImageUrl ?? "",
+        accessToken: token.accessToken ?? "",
+        refreshToken: token.refreshToken ?? "",
+        expiresIn: token.expiresIn ?? EXPIRES_IN_SECONDS,
+      } as User;
       return session;
     },
     async redirect({ url, baseUrl }) {

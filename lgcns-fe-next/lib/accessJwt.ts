@@ -26,7 +26,7 @@ export async function verifyAccessToken(token: string) {
     const { payload } = await jwtVerify(token, secret(), {
       algorithms: ["HS256"],
     });
-    if (!payload.sub || !/^[a-f\d]{24}$/i.test(payload.sub)) return null;
+    if (!payload.sub || /\s/.test(payload.sub)) return null;
     return {
       id: payload.sub,
       email: typeof payload.email === "string" ? payload.email : "",

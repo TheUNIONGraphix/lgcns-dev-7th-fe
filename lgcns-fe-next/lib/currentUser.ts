@@ -19,5 +19,11 @@ export async function readCurrentUser() {
   const payload = await verifyAccessToken(accessToken);
   if (!payload) return null;
 
-  return userService.findSessionUser(payload.id);
+  const user = await userService.findSessionUser(payload.id);
+  if (user) return user;
+  return {
+    id: payload.id,
+    email: payload.email,
+    name: payload.name || payload.email || "회원",
+  };
 }
