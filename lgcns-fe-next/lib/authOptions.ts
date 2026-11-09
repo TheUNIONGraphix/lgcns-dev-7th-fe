@@ -127,12 +127,18 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (account?.provider === "credentials" && user) {
-        token.accessToken = user.accessToken;
-        token.expiresIn = user.expiresIn;
+        token.springAccessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
+        token.accessToken = await signAccessToken({
+          id: user.id,
+          email: user.email ?? "",
+          name: user.name ?? "",
+        });
+        token.expiresIn = user.expiresIn;
         token.id = user.id;
         token.email = user.email ?? token.email;
         token.name = user.name ?? token.name;
+        token.profileImageUrl = user.profileImageUrl;
         return token;
       }
       return token;

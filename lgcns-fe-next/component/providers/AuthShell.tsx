@@ -12,8 +12,6 @@ export default async function AuthShell({
   await connection();
   const session = await getServerSession(authOptions);
   const accessToken = session?.accessToken ?? "";
-  console.log("============");
-  console.log("authProvider session", session);
   const verified = accessToken ? await verifyAccessToken(accessToken) : null;
 
   return (
