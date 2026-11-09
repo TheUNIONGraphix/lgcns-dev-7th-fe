@@ -4,10 +4,9 @@ import { Header, Main } from "@/components/ui/landmark";
 import PostCompose, { readCompose } from "@/app/(post)/PostCompose";
 import PostComposeLink from "@/component/molecules/PostComposeLink";
 import PostSearchForm from "@/component/molecules/PostSearchForm";
-import Pagination from "@/component/organisms/Pagination";
-import PostListSection from "@/component/organisms/PostListSection";
+import PostPaginataionWrapper from "@/component/templates/PaginataionWrapper";
 import PostInsertStream from "@/component/molecules/PostInsertStream";
-import PostInfinityScrollList from "@/component/organisms/PostInfinityScrollList";
+import PostInfinityWrapper from "@/component/templates/InfinityWrapper";
 import { getCachedPosts, normalizePostKeyword, postsListHref } from "@/lib/postCache";
 
 function readPage(page: string | string[] | undefined) {
@@ -72,19 +71,18 @@ async function PostsContent({
           오래된순
         </Link>
       </div>
-      <PostInfinityScrollList posts={postList} pageNumber={pageNumber} sortOrder={sortOrder} keyword={keyword} />
-      {/* <PostListSection sortOrder={sortOrder} keyword={keyword} postList={postList} />
-      <Pagination sortOrder={sortOrder} keyword={keyword} postList={postList} /> */}
-      {/*  error handling modal 추가 */}
-      {/* <Suspense fallback={null}>
-        <PostCompose
-          compose={compose}
-          closeHref={closeHref}
-          returnTo={
-            compose ? `${closeHref}&compose=${encodeURIComponent(compose)}` : closeHref
-          }
-        />
-      </Suspense> */}
+      <PostInfinityWrapper
+        posts={postList}
+        pageNumber={pageNumber}
+        sortOrder={sortOrder}
+        keyword={keyword}
+      />
+      {/* <PostPaginataionWrapper
+        posts={postList}
+        pageNumber={pageNumber}
+        sortOrder={sortOrder}
+        keyword={keyword}
+      /> */}
     </>
   );
 }
