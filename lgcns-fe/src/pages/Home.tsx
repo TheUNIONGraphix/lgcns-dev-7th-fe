@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 const banner =
   "https://i.pinimg.com/1200x/49/9b/65/499b651238e31591d4f0f15bd36042bf.jpg";
 
@@ -15,12 +17,9 @@ function Banner() {
         Cat Banner Title
       </h3>
       <p>Cat Banner Description</p>
-      <button
-        type="button"
-        className="rounded-lg bg-[#171717] px-4 py-2 text-sm font-medium text-white"
-      >
+      <Button type="button" className="h-auto rounded-lg px-4 py-2 text-sm font-medium">
         View More
-      </button>
+      </Button>
     </article>
   );
 }
@@ -36,13 +35,13 @@ function Home() {
         </div>
       </section>
       <section className="flex flex-col gap-4 px-4 py-20">
-        <button
+        <Button
           type="button"
-          className="rounded-lg bg-[#171717] px-6 py-8 text-2xl font-bold text-white"
+          className="h-auto rounded-lg px-6 py-8 text-2xl font-bold"
           onClick={() => console.log("Click me")}
         >
           Click me
-        </button>
+        </Button>
       </section>
     </>
   );

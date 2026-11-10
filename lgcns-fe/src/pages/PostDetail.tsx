@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import PostCard from "../components/PostCard";
-import { fetchPost, type PostItem } from "../lib/posts";
+import PostCard from "@/components/organisms/PostCard";
+import { fetchPost, type PostItem } from "@/lib/posts";
 
 export default function PostDetail() {
   const { postId = "" } = useParams();

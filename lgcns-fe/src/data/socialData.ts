@@ -1,8 +1,8 @@
-import GitHubIcon from "../components/svg/GitHubIcon";
-import DiscordIcon from "../components/svg/DiscordIcon";
-import XcomIcon from "../components/svg/XcomIcon";
-import BlueSkyIcon from "../components/svg/BlueSkyIcon";
-import type { socialDataType } from "../types/initialTypes";
+import GitHubIcon from "@/components/atoms/svg/GitHubIcon";
+import DiscordIcon from "@/components/atoms/svg/DiscordIcon";
+import XcomIcon from "@/components/atoms/svg/XcomIcon";
+import BlueSkyIcon from "@/components/atoms/svg/BlueSkyIcon";
+import type { socialDataType } from "@/types/initialTypes";
 
 const socialData: socialDataType[] = [
   {

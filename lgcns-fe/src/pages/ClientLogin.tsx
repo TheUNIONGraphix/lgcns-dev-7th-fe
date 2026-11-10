@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from "react";
-import { fieldLabel, primaryButton, textInput } from "../lib/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { fieldLabel, primaryButton, textInput } from "@/lib/ui";
 
 function ClientLogin() {
   const [userId, setUserId] = useState("");
@@ -19,7 +21,7 @@ function ClientLogin() {
     >
       <label className={fieldLabel}>
         ID
-        <input
+        <Input
           className={textInput}
           type="text"
           placeholder="ID"
@@ -32,7 +34,7 @@ function ClientLogin() {
       </label>
       <label className={fieldLabel}>
         Password
-        <input
+        <Input
           className={textInput}
           type="password"
           placeholder="Password"
@@ -43,9 +45,9 @@ function ClientLogin() {
           }}
         />
       </label>
-      <button className={primaryButton} type="submit">
+      <Button className={primaryButton} type="submit">
         Login
-      </button>
+      </Button>
     </form>
   );
 }

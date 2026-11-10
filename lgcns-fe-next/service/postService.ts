@@ -1,6 +1,14 @@
 import { postText, sanitizePostHtml } from "@/lib/postHtml";
 import { prisma } from "@/lib/prisma";
-import type { PostListResponseType, CommentRow, CommentReply, CommentItem } from "@/types/response/ResponseType";
+import type {
+  CommentItem,
+  CommentReply,
+  CommentRow,
+  PostItem,
+  PostListResponseType,
+} from "@/types/response/ResponseType";
+
+export type { CommentItem, CommentReply, PostItem };
 
 const MAX_POST_TEXT = 5000;
 const MAX_COMMENT_TEXT = 300;

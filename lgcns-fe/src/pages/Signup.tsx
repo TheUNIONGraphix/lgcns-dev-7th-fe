@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { apiBaseUrl } from "../lib/env";
+import { apiBaseUrl } from "@/lib/env";
 import {
   authCard,
   authMain,
@@ -9,7 +9,7 @@ import {
   outlineButton,
   primaryButton,
   textInput,
-} from "../lib/ui";
+} from "@/lib/ui";
 
 const USER_ID_PATTERN = /^[a-z0-9_]{4,20}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

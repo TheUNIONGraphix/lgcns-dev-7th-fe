@@ -1,4 +1,4 @@
-import type { socialDataType } from "../types/initialTypes";
+import type { socialDataType } from "@/types/initialTypes";
 
 export default function SocialIconItem({
   social,

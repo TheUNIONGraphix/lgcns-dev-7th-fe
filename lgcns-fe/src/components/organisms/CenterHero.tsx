@@ -1,7 +1,7 @@
-import heroImg from "../assets/hero.png";
-import reactLogo from "../assets/react.svg";
-import viteLogo from "../assets/vite.svg";
-import CountBtn from "./CountBtn";
+import heroImg from "@/assets/hero.png";
+import reactLogo from "@/assets/react.svg";
+import viteLogo from "@/assets/vite.svg";
+import CountBtn from "@/components/atoms/CountBtn";
 
 export default function CenterHero() {
   return (

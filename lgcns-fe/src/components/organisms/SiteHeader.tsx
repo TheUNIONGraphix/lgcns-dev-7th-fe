@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { clearAccessToken } from "../lib/auth";
-import { useLoggedIn } from "./AuthGate";
+import { clearAccessToken } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { useLoggedIn } from "@/components/providers/AuthGate";
 
 const logoSrc =
   "https://www.lgcns.com/etc.clientlibs/lgcns/clientlibs/clientlib-site/resources/image/common/logo.svg";
@@ -78,22 +79,24 @@ export default function SiteHeader() {
         </ul>
       </nav>
       {loggedIn ? (
-        <button
+        <Button
           type="button"
-          className="inline-flex h-8 shrink-0 items-center rounded-lg border border-[#e5e5e5] bg-white px-2.5 text-sm font-medium text-[#171717] disabled:opacity-60"
+          variant="outline"
           onClick={logout}
           disabled={pending}
           aria-busy={pending}
         >
           {pending ? "로그아웃 중..." : "로그아웃"}
-        </button>
+        </Button>
       ) : (
-        <NavLink
-          to={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-          className="inline-flex h-8 shrink-0 items-center rounded-lg bg-[#171717] px-2.5 text-sm font-medium text-white"
+        <Button
+          nativeButton={false}
+          render={
+            <NavLink to={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`} />
+          }
         >
           로그인
-        </NavLink>
+        </Button>
       )}
     </header>
   );

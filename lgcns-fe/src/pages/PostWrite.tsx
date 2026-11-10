@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import PostEditor from "../components/PostEditor";
-import { createPost, fetchPost, updatePost } from "../lib/posts";
+import PostEditor from "@/components/organisms/PostEditor";
+import { createPost, fetchPost, updatePost } from "@/lib/posts";
 
 export default function PostWrite() {
   const [params] = useSearchParams();

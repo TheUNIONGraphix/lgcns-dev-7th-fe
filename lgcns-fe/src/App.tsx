@@ -1,29 +1,20 @@
-import { Outlet, Route, Routes } from "react-router-dom";
-import { GuestRoute, MemberRoute } from "./components/AuthGate";
-import SiteHeader from "./components/SiteHeader";
-import About from "./pages/About";
-import Blog from "./pages/Blog";
-import Cart from "./pages/Cart";
-import ClientLogin from "./pages/ClientLogin";
-import Contact from "./pages/Contact";
-import Feed from "./pages/Feed";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Order from "./pages/Order";
-import PostDetail from "./pages/PostDetail";
-import Posts from "./pages/Posts";
-import PostWrite from "./pages/PostWrite";
-import Product from "./pages/Product";
-import Signup from "./pages/Signup";
-
-function MainLayout() {
-  return (
-    <>
-      <SiteHeader />
-      <Outlet />
-    </>
-  );
-}
+import { Route, Routes } from "react-router-dom";
+import { GuestRoute, MemberRoute } from "@/components/providers/AuthGate";
+import MainLayout from "@/components/templates/MainLayout";
+import About from "@/pages/About";
+import Blog from "@/pages/Blog";
+import Cart from "@/pages/Cart";
+import ClientLogin from "@/pages/ClientLogin";
+import Contact from "@/pages/Contact";
+import Feed from "@/pages/Feed";
+import Home from "@/pages/Home";
+import Login from "@/pages/Login";
+import Order from "@/pages/Order";
+import PostDetail from "@/pages/PostDetail";
+import Posts from "@/pages/Posts";
+import PostWrite from "@/pages/PostWrite";
+import Product from "@/pages/Product";
+import Signup from "@/pages/Signup";
 
 function App() {
   return (

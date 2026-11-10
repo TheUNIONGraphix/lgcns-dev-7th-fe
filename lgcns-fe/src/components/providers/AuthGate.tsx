@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { readAccessToken } from "../lib/auth";
-import { safeCallbackPath } from "../lib/routes";
+import { readAccessToken } from "@/lib/auth";
+import { safeCallbackPath } from "@/lib/routes";
 
 function useLoggedIn() {
   const [loggedIn, setLoggedIn] = useState(() => {

@@ -7,7 +7,7 @@ import {
   toggleLike,
   type CommentReply,
   type PostItem,
-} from "../lib/posts";
+} from "@/lib/posts";
 
 function formatTime(iso: string) {
   return new Intl.DateTimeFormat("ko-KR", {

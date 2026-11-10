@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Form, Link, useSearchParams } from "react-router-dom";
-import PostCard from "../components/PostCard";
-import { fetchPosts, type PostListData } from "../lib/posts";
+import PostCard from "@/components/organisms/PostCard";
+import { fetchPosts, type PostListData } from "@/lib/posts";
 
 function readPage(value: string | null) {
   const page = Number(value);

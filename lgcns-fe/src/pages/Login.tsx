@@ -1,8 +1,8 @@
 import { type FormEvent, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { authOrigin } from "../lib/env";
-import { loginRequest, saveAccessToken } from "../lib/auth";
-import { safeCallbackPath } from "../lib/routes";
+import { authOrigin } from "@/lib/env";
+import { loginRequest, saveAccessToken } from "@/lib/auth";
+import { safeCallbackPath } from "@/lib/routes";
 import {
   authCard,
   authMain,
@@ -10,7 +10,7 @@ import {
   fieldLabel,
   primaryButton,
   textInput,
-} from "../lib/ui";
+} from "@/lib/ui";
 
 const SAVED_USER_ID_KEY = "lgcns-saved-user-id";
 

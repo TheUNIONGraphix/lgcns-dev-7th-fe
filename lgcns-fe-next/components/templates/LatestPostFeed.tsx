@@ -23,9 +23,9 @@ export default function LatestPostFeed({
 
   return (
     <Section>
-      <CustomFlexWrapper direction="column" className="mx-auto w-full max-w-3xl gap-6">
+      <CustomFlexWrapper direction="col" className="mx-auto w-full max-w-3xl gap-6">
         <Header className="flex items-end justify-between gap-4">
-          <CustomFlexWrapper direction="column">
+          <CustomFlexWrapper direction="col">
             <CustomTitle TitleType="h2" className="!font-sans text-[28px] leading-[normal] font-bold text-[#111827]">
               최신 글
             </CustomTitle>
