@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Main } from "@/components/ui/landmark";
 import { redirect } from "next/navigation";
 import { readCompose } from "@/app/(post)/PostCompose";
@@ -7,10 +7,11 @@ async function PostWriteRedirect({
   searchParams,
 }: {
   searchParams: Promise<{ postId?: string | string[] }>;
-}) {
+}): Promise<ReactNode> {
   const { postId } = await searchParams;
   const compose = readCompose(postId) ?? "new";
   redirect(`/posts?compose=${encodeURIComponent(compose)}`);
+  return null;
 }
 
 export default function PostWritePage({

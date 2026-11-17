@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MAX_PROFILE_IMAGE_BYTES } from "@/schema/signupSchema";
 
 const IMAGE_TYPES = ["image/png", "image/jpeg"];
 
@@ -10,7 +9,13 @@ function formatSize(bytes: number) {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-export default function SignupPhotoInput({ error }: { error?: string }) {
+export default function SignupPhotoInput({
+  error,
+  maxBytes,
+}: {
+  error?: string;
+  maxBytes: number;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState("");
   const [fileName, setFileName] = useState("");
@@ -62,7 +67,7 @@ export default function SignupPhotoInput({ error }: { error?: string }) {
       setLocalError("JPG, PNG 이미지만 등록할 수 있습니다.");
       return;
     }
-    if (file.size > MAX_PROFILE_IMAGE_BYTES) {
+    if (file.size > maxBytes) {
       event.target.value = "";
       replacePreview("");
       setFileName("");

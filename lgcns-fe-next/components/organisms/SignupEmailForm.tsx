@@ -1,18 +1,45 @@
+"use client";
+
+import { useState } from "react";
 import type { SignupIntent } from "@/actions/signupForm";
-import SignupEmailField from "../molecules/SignupEmailField";
+import ErrorMessage from "../atoms/ErrorMessage";
+import SignupCheckMessage from "../atoms/SignupCheckMessage";
+import FormField from "../molecules/FormField";
+import SignupEmailNotice from "../molecules/SignupEmailNotice";
 import SignupStepActions from "../molecules/SignupStepActions";
+import SignupStepIntro from "../molecules/SignupStepIntro";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const inputClassName =
+  "h-[52px] rounded-[10px] bg-white px-4 text-[15px] leading-[normal] text-[#111827] shadow-none placeholder:text-[#9ca3af] focus-visible:ring-0 md:text-[15px]";
+
+const fieldErrorClassName = "py-1 text-[13px] leading-[1.5] text-red-500";
 
 export default function SignupEmailForm({
   email = "",
   errors = {},
+  seq = 0,
   isPending = false,
   pendingIntent,
 }: {
   email?: string;
   errors?: { email?: string; form?: string };
+  seq?: number;
   isPending?: boolean;
   pendingIntent?: SignupIntent;
 }) {
+  const [value, setValue] = useState(email);
+  const [hideError, setHideError] = useState(false);
+  const [seenSeq, setSeenSeq] = useState(seq);
+  if (seenSeq !== seq) {
+    setSeenSeq(seq);
+    setValue(email);
+    setHideError(false);
+  }
+  const message = hideError ? "" : (errors.email ?? "");
+  const showSuccess = EMAIL_PATTERN.test(value) && !message;
+
   return (
     <SignupStepActions
       showBack
@@ -23,39 +50,54 @@ export default function SignupEmailForm({
       isPending={isPending}
       pendingIntent={pendingIntent}
     >
-      <div className="flex flex-col gap-[10px]">
-        <h2 className="text-[22px] leading-[normal] font-bold text-[#111827]">
-          이메일을 입력해주세요
-        </h2>
-        <p className="text-[14px] leading-[1.6] text-[#6b7280]">
-          계정에 연결할 이메일 주소를 알려주세요.
-        </p>
-      </div>
-      <SignupEmailField defaultValue={email} error={errors.email} />
-      {errors.form ? (
-        <p className="text-[13px] text-red-500" role="alert">
-          {errors.form}
-        </p>
-      ) : null}
-      <div className="flex items-start gap-3 rounded-[10px] bg-[#f9fafb] p-4">
-        <img
-          src="/signup/mail.svg"
-          alt=""
-          width={18}
-          height={18}
-          className="h-[18px] w-[18px] max-w-none shrink-0"
-        />
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5 text-[13px]">
-          <p className="leading-[normal] font-semibold text-[#374151]">
-            자주 사용하는 이메일을 입력해주세요
-          </p>
-          <p className="leading-[1.6] text-[#6b7280]">
-            비밀번호를 잊었을 때 계정을 찾거나
-            <br />
-            중요한 안내를 받는 데 사용해요.
-          </p>
+      <SignupStepIntro
+        title="이메일을 입력해주세요"
+        description="계정에 연결할 이메일 주소를 알려주세요."
+      />
+      <div className="flex w-full flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="email"
+            className="text-[14px] leading-[normal] font-medium text-[#374151]"
+          >
+            이메일
+          </label>
+          <FormField
+            id="email"
+            name="email"
+            type="email"
+            placeholder="이메일을 입력해주세요"
+            value={value}
+            error={message}
+            autoComplete="email"
+            required={false}
+            collapseEmptyError
+            errorClassName={fieldErrorClassName}
+            inputClassName={`${inputClassName} ${
+              message
+                ? "border-red-500 focus-visible:border-red-500"
+                : showSuccess
+                  ? "border-[1.5px] border-[#2563eb] focus-visible:border-[#2563eb]"
+                  : "border-[#d1d5db] focus-visible:border-[#2563eb]"
+            }`}
+            onChange={(event) => {
+              setHideError(true);
+              setValue(event.target.value);
+            }}
+          />
         </div>
+        {showSuccess ? (
+          <SignupCheckMessage>올바른 이메일 형식이에요.</SignupCheckMessage>
+        ) : null}
       </div>
+      {errors.form ? (
+        <ErrorMessage
+          id="signup-email-error"
+          error={errors.form}
+          className="text-[13px] text-red-500"
+        />
+      ) : null}
+      <SignupEmailNotice />
     </SignupStepActions>
   );
 }
