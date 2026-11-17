@@ -101,6 +101,7 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account, profile }) {
+      console.log("jwt", token, user, account, profile);
       if (
         account &&
         (account.provider === "kakao" || account.provider === "google")
